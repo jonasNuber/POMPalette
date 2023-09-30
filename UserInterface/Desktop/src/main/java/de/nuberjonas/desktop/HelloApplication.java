@@ -1,4 +1,4 @@
-package de.nuberjonas.pompalette;
+package de.nuberjonas.desktop;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

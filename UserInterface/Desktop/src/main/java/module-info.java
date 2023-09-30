@@ -1,4 +1,4 @@
-module de.nuberjonas.pompalette {
+module de.nuberjonas.desktop {
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.web;
@@ -8,6 +8,6 @@ module de.nuberjonas.pompalette {
     requires org.kordamp.ikonli.javafx;
     requires org.kordamp.bootstrapfx.core;
 
-    opens de.nuberjonas.pompalette to javafx.fxml;
-    exports de.nuberjonas.pompalette;
+    opens de.nuberjonas.desktop to javafx.fxml;
+    exports de.nuberjonas.desktop;
 }

@@ -6,7 +6,9 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="POMPalette" />
+        <module name="Desktop" />
+        <module name="Core-Impl" />
+        <module name="Core-API" />
       </profile>
     </annotationProcessing>
   </component>

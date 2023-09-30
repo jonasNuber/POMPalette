@@ -1,4 +1,4 @@
-package de.nuberjonas.pompalette;
+package de.nuberjonas.desktop;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
