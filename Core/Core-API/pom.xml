@@ -8,6 +8,7 @@
     </parent>
     <artifactId>Core-API</artifactId>
     <version>1.0.0-SNAPSHOT</version>
+
     <name>Core-API</name>
 
     <packaging>jar</packaging>
