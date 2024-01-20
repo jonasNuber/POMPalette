@@ -4,19 +4,15 @@
 
     <parent>
         <groupId>de.nuberjonas</groupId>
-        <artifactId>POMPalette</artifactId>
+        <artifactId>pompalette</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
-    <artifactId>Infrastructure</artifactId>
-    <name>Infrastructure</name>
 
+    <groupId>de.nuberjonas.pompalette</groupId>
+    <artifactId>infrastructure</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <dependencies>
-        <dependency>
-            <groupId>de.nuberjonas</groupId>
-            <artifactId>Core-Impl</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-    </dependencies>
+    <name>Infrastructure</name>
+
 </project>

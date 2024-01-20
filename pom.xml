@@ -5,18 +5,28 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>de.nuberjonas</groupId>
-    <artifactId>POMPalette</artifactId>
+    <artifactId>pompalette</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <name>POMPalette</name>
-
     <packaging>pom</packaging>
 
+    <name>POMPalette</name>
+
+    <modules>
+        <module>Core</module>
+        <module>Infrastructure</module>
+        <module>UserInterface</module>
+        <module>Application</module>
+        <module>Application/JavaFXApplication</module>
+    </modules>
+
     <properties>
-        <java.version>20</java.version>
-        <maven.compiler.source>20</maven.compiler.source>
-        <maven.compiler.target>20</maven.compiler.target>
+        <java.version>21</java.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
         <junit.version>5.9.1</junit.version>
+        <javafx.version>20-ea+4</javafx.version>
     </properties>
 
     <dependencyManagement>
@@ -25,19 +35,81 @@
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-api</artifactId>
                 <version>${junit.version}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-engine</artifactId>
                 <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-controls</artifactId>
+                <version>${javafx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-fxml</artifactId>
+                <version>${javafx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-web</artifactId>
+                <version>${javafx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.controlsfx</groupId>
+                <artifactId>controlsfx</artifactId>
+                <version>11.1.2</version>
+            </dependency>
+            <dependency>
+                <groupId>com.dlsc.formsfx</groupId>
+                <artifactId>formsfx-core</artifactId>
+                <version>11.6.0</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.openjfx</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.kordamp.ikonli</groupId>
+                <artifactId>ikonli-javafx</artifactId>
+                <version>12.3.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.kordamp.bootstrapfx</groupId>
+                <artifactId>bootstrapfx-core</artifactId>
+                <version>0.4.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
 
-    <modules>
-        <module>Core</module>
-        <module>Infrastructure</module>
-        <module>UserInterface</module>
-    </modules>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>versions-maven-plugin</artifactId>
+                    <version>2.7</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>javafx-maven-plugin</artifactId>
+                    <version>0.0.8</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
