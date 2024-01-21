@@ -142,6 +142,7 @@
                                     <overWriteSnapshots>false</overWriteSnapshots>
                                     <overWriteIfNewer>true</overWriteIfNewer>
                                 </configuration>
+                                <inherited>false</inherited>
                             </execution>
                             <execution>
                                 <id>copy-jars</id>
@@ -160,6 +161,7 @@
                                     </artifactItems>
                                     <outputDirectory>${project.build.directory}/POMPalette/bin</outputDirectory>
                                 </configuration>
+                                <inherited>false</inherited>
                             </execution>
                         </executions>
                     </plugin>
