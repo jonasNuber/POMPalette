@@ -17,5 +17,6 @@
 
     <modules>
         <module>Model</module>
+        <module>Model-API</module>
     </modules>
 </project>
