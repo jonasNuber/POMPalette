@@ -16,7 +16,6 @@
         <module>Infrastructure</module>
         <module>UserInterface</module>
         <module>Application</module>
-        <module>Application/JavaFXApplication</module>
     </modules>
 
     <properties>

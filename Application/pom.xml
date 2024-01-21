@@ -16,6 +16,6 @@
     <name>Application</name>
 
     <modules>
-
+        <module>JavaFXApplication</module>
     </modules>
 </project>
