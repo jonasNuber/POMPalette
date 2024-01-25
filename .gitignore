@@ -85,6 +85,8 @@ local.properties
 .idea/modules
 .idea/encodings.xml
 .idea/misc.xml
+.idea/vcs.xml
+.idea/saveactions_settings.xml
 *.iml
 *.ipr
 
