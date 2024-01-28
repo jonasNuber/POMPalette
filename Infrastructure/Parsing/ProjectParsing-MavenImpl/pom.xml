@@ -56,11 +56,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.mapstruct</groupId>
-            <artifactId>mapstruct</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>de.nuberjonas.pompalette.infrastructure.parsing</groupId>
             <artifactId>de.nuberjonas.pompalette.infrastructure.parsing.project-parsing-api</artifactId>
         </dependency>

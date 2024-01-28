@@ -5,7 +5,6 @@ module de.nuberjonas.pompalette.infrastructure.parsing.projectparsingmavenimpl {
     requires maven.model;
     requires plexus.xml;
     requires plexus.utils;
-    requires org.mapstruct;
 
     exports de.nuberjonas.pompalette.infrastructure.parsing.projectparsingmavenimpl;
 
