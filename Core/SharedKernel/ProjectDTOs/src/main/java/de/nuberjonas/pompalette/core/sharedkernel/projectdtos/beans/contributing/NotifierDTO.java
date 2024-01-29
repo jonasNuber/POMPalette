@@ -11,7 +11,7 @@ public record NotifierDTO(
         boolean sendOnFailure,
         boolean sendOnSuccess,
         boolean sendOnWarning,
-        Properties properties,
+        Properties configuration,
         Map<Object, InputLocationDTO> locations,
         InputLocationDTO location,
         InputLocationDTO typeLocation,

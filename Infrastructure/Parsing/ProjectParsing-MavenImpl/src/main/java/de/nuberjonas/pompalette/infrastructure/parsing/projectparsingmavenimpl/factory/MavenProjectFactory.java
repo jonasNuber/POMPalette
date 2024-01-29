@@ -1,11 +1,10 @@
 package de.nuberjonas.pompalette.infrastructure.parsing.projectparsingmavenimpl.factory;
 
-import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.contributing.ContributerDTO;
-import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.contributing.DeveloperDTO;
-import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.contributing.MailingListDTO;
-import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.contributing.OrganizationDTO;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.build.BuildDTO;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.contributing.*;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.input.InputLocationDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.input.InputSourceDTO;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.management.CiManagementDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.management.IssueManagementDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.project.*;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.factory.ProjectFactory;
@@ -51,7 +50,7 @@ public class MavenProjectFactory implements ProjectFactory<Model> {
                        project.getName(),
                        project.getDescription(),
                        project.getUrl(),
-                       null,
+                       false,
                        project.getInceptionYear(),
                        createOrganizationDTO(project.getOrganization()),
                        createList(project.getLicenses(), (license) -> createLicenseDTO(license)),
@@ -61,7 +60,7 @@ public class MavenProjectFactory implements ProjectFactory<Model> {
                        createPrerequisitesDTO(project.getPrerequisites()),
                        createScmDTO(project.getScm()),
                        createIssueManagementDTO(project.getIssueManagement()),
-                       null,
+                       createCiManagementDTO(project.getCiManagement()),
                        null,
                        null,
                        null
@@ -180,7 +179,7 @@ public class MavenProjectFactory implements ProjectFactory<Model> {
                 createInputLocationDTO(developer.getLocation("organizationUrl")),
                 createInputLocationDTO(developer.getLocation("roles")),
                 createInputLocationDTO(developer.getLocation("timezone")),
-                createInputLocationDTO(developer.getLocation("properties")),
+                createInputLocationDTO(developer.getLocation("configuration")),
                 developer.getId());
     }
 
@@ -203,7 +202,7 @@ public class MavenProjectFactory implements ProjectFactory<Model> {
                 createInputLocationDTO(contributor.getLocation("organizationUrl")),
                 createInputLocationDTO(contributor.getLocation("roles")),
                 createInputLocationDTO(contributor.getLocation("timezone")),
-                createInputLocationDTO(contributor.getLocation("properties")));
+                createInputLocationDTO(contributor.getLocation("configuration")));
     }
 
     private MailingListDTO createMailingListDTO(MailingList mailingList){
@@ -238,9 +237,9 @@ public class MavenProjectFactory implements ProjectFactory<Model> {
                 scm.getDeveloperConnection(),
                 scm.getTag(),
                 scm.getUrl(),
-                scm.getChildScmConnectionInheritAppendPath(),
-                scm.getChildScmDeveloperConnectionInheritAppendPath(),
-                scm.getChildScmUrlInheritAppendPath(),
+                scm.isChildScmConnectionInheritAppendPath(),
+                scm.isChildScmDeveloperConnectionInheritAppendPath(),
+                scm.isChildScmUrlInheritAppendPath(),
                 createInputLocationDTOMap(scm),
                 createInputLocationDTO(scm.getLocation("")),
                 createInputLocationDTO(scm.getLocation("connection")),
@@ -260,6 +259,58 @@ public class MavenProjectFactory implements ProjectFactory<Model> {
                 createInputLocationDTO(issueManagement.getLocation("")),
                 createInputLocationDTO(issueManagement.getLocation("system")),
                 createInputLocationDTO(issueManagement.getLocation("url")));
+    }
+
+    private CiManagementDTO createCiManagementDTO(CiManagement ciManagement){
+        return new CiManagementDTO(
+                ciManagement.getSystem(),
+                ciManagement.getUrl(),
+                createList(ciManagement.getNotifiers(), this::createNotifierDTO),
+                createInputLocationDTOMap(ciManagement),
+                createInputLocationDTO(ciManagement.getLocation("")),
+                createInputLocationDTO(ciManagement.getLocation("system")),
+                createInputLocationDTO(ciManagement.getLocation("url")),
+                createInputLocationDTO(ciManagement.getLocation("notifiers")));
+    }
+
+    private NotifierDTO createNotifierDTO(Notifier notifier){
+        return new NotifierDTO(
+                notifier.getType(),
+                notifier.isSendOnError(),
+                notifier.isSendOnFailure(),
+                notifier.isSendOnSuccess(),
+                notifier.isSendOnWarning(),
+                notifier.getConfiguration(),
+                createInputLocationDTOMap(notifier),
+                createInputLocationDTO(notifier.getLocation("")),
+                createInputLocationDTO(notifier.getLocation("type")),
+                createInputLocationDTO(notifier.getLocation("sendOnError")),
+                createInputLocationDTO(notifier.getLocation("sendOnFailure")),
+                createInputLocationDTO(notifier.getLocation("sendOnSuccess")),
+                createInputLocationDTO(notifier.getLocation("sendOnWarning")),
+                createInputLocationDTO(notifier.getLocation("address")),
+                createInputLocationDTO(notifier.getLocation("configuration")));
+    }
+
+    private BuildDTO createBuildDTO(Build build){
+        return new BuildDTO(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
     }
 
     @Override

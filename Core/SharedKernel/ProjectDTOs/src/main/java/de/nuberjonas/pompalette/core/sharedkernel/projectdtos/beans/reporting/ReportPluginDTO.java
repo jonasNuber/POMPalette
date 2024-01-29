@@ -7,12 +7,13 @@ import java.util.Map;
 
 public record ReportPluginDTO(
         //ConfigurationContainer
-        String inherited,
+        boolean inherited,
         Object configuration,
         Map<Object, InputLocationDTO> locations,
         InputLocationDTO location,
         InputLocationDTO inheritedLocation,
         InputLocationDTO configurationLocation,
+        boolean inheritanceApplied,
 
         //ReportPlugin
         String groupId,

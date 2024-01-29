@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public record ReportingDTO(
-        String excludeDefaults,
+        boolean excludeDefaults,
         String outputDirectory,
         List<ReportPluginDTO> plugins,
         Map<Object, InputLocationDTO> locations,

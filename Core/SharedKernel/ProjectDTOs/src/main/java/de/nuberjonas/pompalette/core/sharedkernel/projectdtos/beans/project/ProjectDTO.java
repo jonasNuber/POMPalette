@@ -51,7 +51,7 @@ public record ProjectDTO(
         String name,
         String description,
         String url,
-        String childProjectUrlInheritAppendPath,
+        boolean childProjectUrlInheritAppendPath,
         String inceptionYear,
         OrganizationDTO organization,
         List<LicenseDTO> licenses,

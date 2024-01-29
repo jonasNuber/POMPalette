@@ -14,7 +14,7 @@ public record DependencyDTO(
         String scope,
         String systemPath,
         List<ExclusionDTO> exclusions,
-        String optional,
+        boolean optional,
         Map<Object, InputLocationDTO> locations,
         InputLocationDTO location,
         InputLocationDTO groupIdLocation,

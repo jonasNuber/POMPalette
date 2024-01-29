@@ -1,11 +1,10 @@
 package de.nuberjonas.pompalette.infrastructure.parsing.projectparsingmavenimpl.factory;
 
-import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.contributing.ContributerDTO;
-import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.contributing.DeveloperDTO;
-import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.contributing.MailingListDTO;
-import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.contributing.OrganizationDTO;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.build.BuildDTO;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.contributing.*;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.input.InputLocationDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.input.InputSourceDTO;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.management.CiManagementDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.management.IssueManagementDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.project.*;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.factory.ProjectFactory;
@@ -106,7 +105,7 @@ class MavenProjectFactoryTest {
         developer.setLocation("organizationUrl", location2);
         developer.setLocation("roles", location2);
         developer.setLocation("timezone", location2);
-        developer.setLocation("properties", location2);
+        developer.setLocation("configuration", location2);
 
         MailingList mailingList = new MailingList();
         mailingList.setName("User List");
@@ -157,12 +156,22 @@ class MavenProjectFactoryTest {
         notifier.setAddress("mail@address");
         notifier.setConfiguration(properties);
         notifier.setLocation("", location2);
+        notifier.setLocation("type", location2);
+        notifier.setLocation("sendOnError", location2);
+        notifier.setLocation("sendOnFailure", location2);
+        notifier.setLocation("sendOnSuccess", location2);
+        notifier.setLocation("sendOnWarning", location2);
+        notifier.setLocation("address", location2);
+        notifier.setLocation("configuration", location2);
 
         CiManagement ciManagement = new CiManagement();
         ciManagement.setSystem("Jenkins");
         ciManagement.setUrl("https://example.com/jenkins");
         ciManagement.setNotifiers(List.of(notifier));
         ciManagement.setLocation("", location);
+        ciManagement.setLocation("system", location);
+        ciManagement.setLocation("url", location);
+        ciManagement.setLocation("notifiers", location);
 
         Extension extension = new Extension();
         extension.setGroupId("com.example");
@@ -585,8 +594,8 @@ class MavenProjectFactoryTest {
         assertEquals(developerDTO.rolesLocation(), developer.getLocation("roles"));
         assertTrue(bothAreEmptyOrBothArePresent(developerDTO.timezoneLocation(), developer.getLocation("timezone")));
         assertEquals(developerDTO.timezoneLocation(), developer.getLocation("timezone"));
-        assertTrue(bothAreEmptyOrBothArePresent(developerDTO.propertiesLocation(), developer.getLocation("properties")));
-        assertEquals(developerDTO.propertiesLocation(), developer.getLocation("properties"));
+        assertTrue(bothAreEmptyOrBothArePresent(developerDTO.propertiesLocation(), developer.getLocation("configuration")));
+        assertEquals(developerDTO.propertiesLocation(), developer.getLocation("configuration"));
     }
 
     @Test
@@ -626,8 +635,8 @@ class MavenProjectFactoryTest {
         assertEquals(contributerDTO.rolesLocation(), contributor.getLocation("roles"));
         assertTrue(bothAreEmptyOrBothArePresent(contributerDTO.timezoneLocation(), contributor.getLocation("timezone")));
         assertEquals(contributerDTO.timezoneLocation(), contributor.getLocation("timezone"));
-        assertTrue(bothAreEmptyOrBothArePresent(contributerDTO.propertiesLocation(), contributor.getLocation("properties")));
-        assertEquals(contributerDTO.propertiesLocation(), contributor.getLocation("properties"));
+        assertTrue(bothAreEmptyOrBothArePresent(contributerDTO.propertiesLocation(), contributor.getLocation("configuration")));
+        assertEquals(contributerDTO.propertiesLocation(), contributor.getLocation("configuration"));
     }
 
     @Test
@@ -688,9 +697,9 @@ class MavenProjectFactoryTest {
         assertThat(scmDTO.connection()).isEqualTo(scm.getConnection());
         assertThat(scmDTO.developerConnection()).isEqualTo(scm.getDeveloperConnection());
         assertThat(scmDTO.tag()).isEqualTo(scm.getTag());
-        assertThat(scmDTO.childScmConnectionInheritAppendPath()).isEqualTo(scm.getChildScmConnectionInheritAppendPath());
-        assertThat(scmDTO.childScmDeveloperConnectionInheritAppendPath()).isEqualTo(scm.getChildScmDeveloperConnectionInheritAppendPath());
-        assertThat(scmDTO.childScmUrlInheritAppendPath()).isEqualTo(scm.getChildScmUrlInheritAppendPath());
+        assertThat(scmDTO.childScmConnectionInheritAppendPath()).isEqualTo(scm.isChildScmConnectionInheritAppendPath());
+        assertThat(scmDTO.childScmDeveloperConnectionInheritAppendPath()).isEqualTo(scm.isChildScmDeveloperConnectionInheritAppendPath());
+        assertThat(scmDTO.childScmUrlInheritAppendPath()).isEqualTo(scm.isChildScmUrlInheritAppendPath());
         assertLocationsAreEqual(scmDTO, scm);
 
         assertTrue(bothAreEmptyOrBothArePresent(scmDTO.location(), scm.getLocation("")));
@@ -727,5 +736,62 @@ class MavenProjectFactoryTest {
         assertEquals(issueManagementDTO.systemLocation(), issueManagement.getLocation("system"));
         assertTrue(bothAreEmptyOrBothArePresent(issueManagementDTO.urlLocation(), issueManagement.getLocation("url")));
         assertEquals(issueManagementDTO.urlLocation(), issueManagement.getLocation("url"));
+    }
+
+    @Test
+    public void createProjectDTO_shouldMapCiManagementCorrectly() throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertEquals(generatedProjectDTO.ciManagement(), validModel.getCiManagement());
+    }
+
+    private void assertEquals(CiManagementDTO ciManagementDTO, CiManagement ciManagement) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertThat(ciManagementDTO.system()).isEqualTo(ciManagement.getSystem());
+        assertThat(ciManagementDTO.url()).isEqualTo(ciManagement.getUrl());
+        assertListsAreEqual(ciManagementDTO.notifiers(), ciManagement.getNotifiers(), this::assertEquals);
+        assertLocationsAreEqual(ciManagementDTO, ciManagement);
+
+        assertTrue(bothAreEmptyOrBothArePresent(ciManagementDTO.location(), ciManagement.getLocation("")));
+        assertEquals(ciManagementDTO.location(), ciManagement.getLocation(""));
+        assertTrue(bothAreEmptyOrBothArePresent(ciManagementDTO.systemLocation(), ciManagement.getLocation("system")));
+        assertEquals(ciManagementDTO.systemLocation(), ciManagement.getLocation("system"));
+        assertTrue(bothAreEmptyOrBothArePresent(ciManagementDTO.urlLocation(), ciManagement.getLocation("url")));
+        assertEquals(ciManagementDTO.urlLocation(), ciManagement.getLocation("url"));
+        assertTrue(bothAreEmptyOrBothArePresent(ciManagementDTO.notifiersLocation(), ciManagement.getLocation("notifiers")));
+        assertEquals(ciManagementDTO.notifiersLocation(), ciManagement.getLocation("notifiers"));
+    }
+
+    private void assertEquals(NotifierDTO notifierDTO, Notifier notifier) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertThat(notifierDTO.type()).isEqualTo(notifier.getType());
+        assertThat(notifierDTO.sendOnError()).isEqualTo(notifier.isSendOnError());
+        assertThat(notifierDTO.sendOnFailure()).isEqualTo(notifier.isSendOnFailure());
+        assertThat(notifierDTO.sendOnSuccess()).isEqualTo(notifier.isSendOnSuccess());
+        assertThat(notifierDTO.sendOnWarning()).isEqualTo(notifier.isSendOnWarning());
+        assertThat(notifierDTO.configuration()).isEqualTo(notifier.getConfiguration());
+        assertLocationsAreEqual(notifierDTO, notifier);
+
+        assertTrue(bothAreEmptyOrBothArePresent(notifierDTO.location(), notifier.getLocation("")));
+        assertEquals(notifierDTO.location(), notifier.getLocation(""));
+        assertTrue(bothAreEmptyOrBothArePresent(notifierDTO.typeLocation(), notifier.getLocation("type")));
+        assertEquals(notifierDTO.typeLocation(), notifier.getLocation("type"));
+        assertTrue(bothAreEmptyOrBothArePresent(notifierDTO.sendOnErrorLocation(), notifier.getLocation("sendOnError")));
+        assertEquals(notifierDTO.sendOnErrorLocation(), notifier.getLocation("sendOnError"));
+        assertTrue(bothAreEmptyOrBothArePresent(notifierDTO.sendOnFailureLocation(), notifier.getLocation("sendOnFailure")));
+        assertEquals(notifierDTO.sendOnFailureLocation(), notifier.getLocation("sendOnFailure"));
+        assertTrue(bothAreEmptyOrBothArePresent(notifierDTO.sendOnSuccessLocation(), notifier.getLocation("sendOnSuccess")));
+        assertEquals(notifierDTO.sendOnSuccessLocation(), notifier.getLocation("sendOnSuccess"));
+        assertTrue(bothAreEmptyOrBothArePresent(notifierDTO.sendOnWarningLocation(), notifier.getLocation("sendOnWarning")));
+        assertEquals(notifierDTO.sendOnWarningLocation(), notifier.getLocation("sendOnWarning"));
+        assertTrue(bothAreEmptyOrBothArePresent(notifierDTO.addressLocation(), notifier.getLocation("address")));
+        assertEquals(notifierDTO.addressLocation(), notifier.getLocation("address"));
+        assertTrue(bothAreEmptyOrBothArePresent(notifierDTO.configurationLocation(), notifier.getLocation("configuration")));
+        assertEquals(notifierDTO.configurationLocation(), notifier.getLocation("configuration"));
+    }
+
+    @Test
+    public void createProjectDTO_shouldMapBuildCorrectly() throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertEquals(generatedProjectDTO.build(), validModel.getBuild());
+    }
+
+    private void assertEquals(BuildDTO buildDTO, Build build){
+        
     }
 }

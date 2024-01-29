@@ -8,7 +8,7 @@ public record SiteDTO(
         String id,
         String name,
         String url,
-        String childSiteUrlInheritAppendPath,
+        boolean childSiteUrlInheritAppendPath,
         Map<Object, InputLocationDTO> locations,
         InputLocationDTO location,
         InputLocationDTO idLocation,

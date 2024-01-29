@@ -5,7 +5,7 @@ import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.input.InputL
 import java.util.Map;
 
 public record RepositoryPolicyDTO(
-        String enabled,
+        boolean enabled,
         String updatePolicy,
         String checksumPolicy,
         Map<Object, InputLocationDTO> locations,

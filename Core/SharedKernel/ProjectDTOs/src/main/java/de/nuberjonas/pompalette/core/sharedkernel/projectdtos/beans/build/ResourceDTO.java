@@ -19,7 +19,7 @@ public record ResourceDTO(
 
         //Resource
         String targetPath,
-        String filtering,
+        boolean filtering,
         String mergeId
 ) {
 }
