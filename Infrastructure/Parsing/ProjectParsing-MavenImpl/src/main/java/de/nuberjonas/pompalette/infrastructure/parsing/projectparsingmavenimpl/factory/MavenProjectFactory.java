@@ -2,10 +2,13 @@ package de.nuberjonas.pompalette.infrastructure.parsing.projectparsingmavenimpl.
 
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.build.BuildDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.contributing.*;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.dependency.DependencyDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.input.InputLocationDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.input.InputSourceDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.management.CiManagementDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.management.IssueManagementDTO;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.plugin.PluginDTO;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.plugin.PluginExecutionDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.project.*;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.factory.ProjectFactory;
 import org.apache.maven.model.*;
@@ -61,7 +64,7 @@ public class MavenProjectFactory implements ProjectFactory<Model> {
                        createScmDTO(project.getScm()),
                        createIssueManagementDTO(project.getIssueManagement()),
                        createCiManagementDTO(project.getCiManagement()),
-                       null,
+                       createBuildDTO(project.getBuild()),
                        null,
                        null
                )
@@ -294,7 +297,7 @@ public class MavenProjectFactory implements ProjectFactory<Model> {
 
     private BuildDTO createBuildDTO(Build build){
         return new BuildDTO(
-                null,
+                createList(build.getPlugins(), this::createPluginDTO),
                 null,
                 null,
                 null,
@@ -311,6 +314,62 @@ public class MavenProjectFactory implements ProjectFactory<Model> {
                 null,
                 null,
                 null);
+    }
+
+    private PluginDTO createPluginDTO(Plugin plugin){
+        return new PluginDTO(
+                plugin.isInherited(),
+                plugin.getConfiguration(),
+                createInputLocationDTOMap(plugin),
+                createInputLocationDTO(plugin.getLocation("")),
+                createInputLocationDTO(plugin.getLocation("inherited")),
+                createInputLocationDTO(plugin.getLocation("configuration")),
+                plugin.isInheritanceApplied(),
+                plugin.getGroupId(),
+                plugin.getArtifactId(),
+                plugin.getVersion(),
+                plugin.getExtensions(),
+                createList(plugin.getExecutions(), this::createPluginExecutionDTO),
+                createList(plugin.getDependencies(), this::createDependencyDTO));
+    }
+
+    private PluginExecutionDTO createPluginExecutionDTO(PluginExecution pluginExecution){
+        return new PluginExecutionDTO(
+                pluginExecution.isInherited(),
+                pluginExecution.getConfiguration(),
+                createInputLocationDTOMap(pluginExecution),
+                createInputLocationDTO(pluginExecution.getLocation("")),
+                createInputLocationDTO(pluginExecution.getLocation("inherited")),
+                createInputLocationDTO(pluginExecution.getLocation("configuration")),
+                pluginExecution.isInheritanceApplied(),
+                pluginExecution.getId(),
+                pluginExecution.getPhase(),
+                pluginExecution.getGoals());
+    }
+
+    private DependencyDTO createDependencyDTO(Dependency dependency){
+        return new DependencyDTO(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                false,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
     }
 
     @Override

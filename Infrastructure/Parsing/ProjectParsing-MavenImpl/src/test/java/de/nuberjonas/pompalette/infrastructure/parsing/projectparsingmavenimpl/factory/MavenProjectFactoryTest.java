@@ -2,10 +2,13 @@ package de.nuberjonas.pompalette.infrastructure.parsing.projectparsingmavenimpl.
 
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.build.BuildDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.contributing.*;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.dependency.DependencyDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.input.InputLocationDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.input.InputSourceDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.management.CiManagementDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.management.IssueManagementDTO;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.plugin.PluginDTO;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.plugin.PluginExecutionDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.project.*;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.factory.ProjectFactory;
 import org.apache.maven.model.*;
@@ -28,7 +31,7 @@ class MavenProjectFactoryTest {
     private static ProjectDTO validProjectDTO;
     private static ProjectDTO generatedProjectDTO;
 
-    private static ProjectFactory factory;
+    private static ProjectFactory<Model> factory;
 
     @BeforeAll
     public static void initialize(){
@@ -190,6 +193,9 @@ class MavenProjectFactoryTest {
         PluginExecution pluginExecution = new PluginExecution();
         pluginExecution.setPhase("compile");
         pluginExecution.setGoals(List.of("install"));
+        pluginExecution.setLocation("", location);
+        pluginExecution.setLocation("inherited", location);
+        pluginExecution.setLocation("configuration", location);
 
         Exclusion exclusion = new Exclusion();
         exclusion.setGroupId("some.artifact.I.do.not.want");
@@ -214,6 +220,8 @@ class MavenProjectFactoryTest {
         plugin.setDependencies(List.of(dependency));
         plugin.setInherited(false);
         plugin.setLocation("", location2);
+        plugin.setLocation("inherited", location2);
+        plugin.setLocation("configuration", location2);
 
         PluginManagement pluginManagement = new PluginManagement();
         pluginManagement.setPlugins(List.of(plugin));
@@ -791,7 +799,50 @@ class MavenProjectFactoryTest {
         assertEquals(generatedProjectDTO.build(), validModel.getBuild());
     }
 
-    private void assertEquals(BuildDTO buildDTO, Build build){
+    private void assertEquals(BuildDTO buildDTO, Build build) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertListsAreEqual(buildDTO.plugins(), build.getPlugins(), this::assertEquals);
+    }
+
+    private void assertEquals(PluginDTO pluginDTO, Plugin plugin) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertThat(pluginDTO.inherited()).isEqualTo(plugin.isInherited());
+        assertThat(pluginDTO.configuration()).isEqualTo(plugin.getConfiguration());
+        assertLocationsAreEqual(pluginDTO, plugin);
+
+        assertTrue(bothAreEmptyOrBothArePresent(pluginDTO.location(), plugin.getLocation("")));
+        assertEquals(pluginDTO.location(), plugin.getLocation(""));
+        assertTrue(bothAreEmptyOrBothArePresent(pluginDTO.inheritedLocation(), plugin.getLocation("inherited")));
+        assertEquals(pluginDTO.inheritedLocation(), plugin.getLocation("inherited"));
+        assertTrue(bothAreEmptyOrBothArePresent(pluginDTO.configurationLocation(), plugin.getLocation("configuration")));
+        assertEquals(pluginDTO.configurationLocation(), plugin.getLocation("configuration"));
+
+        assertThat(pluginDTO.inheritanceApplied()).isEqualTo(plugin.isInheritanceApplied());
+        assertThat(pluginDTO.groupId()).isEqualTo(plugin.getGroupId());
+        assertThat(pluginDTO.artifactId()).isEqualTo(plugin.getArtifactId());
+        assertThat(pluginDTO.version()).isEqualTo(plugin.getVersion());
+        assertThat(pluginDTO.extensions()).isEqualTo(plugin.getExtensions());
+        assertListsAreEqual(pluginDTO.executions(), plugin.getExecutions(), this::assertEquals);
+        assertListsAreEqual(pluginDTO.dependencies(), plugin.getDependencies(), this::assertEquals);
+    }
+
+    private void assertEquals(PluginExecutionDTO pluginExecutionDTO, PluginExecution pluginExecution) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertThat(pluginExecutionDTO.inherited()).isEqualTo(pluginExecution.isInherited());
+        assertThat(pluginExecutionDTO.configuration()).isEqualTo(pluginExecution.getConfiguration());
+        assertLocationsAreEqual(pluginExecutionDTO, pluginExecution);
+
+        assertTrue(bothAreEmptyOrBothArePresent(pluginExecutionDTO.location(), pluginExecution.getLocation("")));
+        assertEquals(pluginExecutionDTO.location(), pluginExecution.getLocation(""));
+        assertTrue(bothAreEmptyOrBothArePresent(pluginExecutionDTO.inheritedLocation(), pluginExecution.getLocation("inherited")));
+        assertEquals(pluginExecutionDTO.inheritedLocation(), pluginExecution.getLocation("inherited"));
+        assertTrue(bothAreEmptyOrBothArePresent(pluginExecutionDTO.configurationLocation(), pluginExecution.getLocation("configuration")));
+        assertEquals(pluginExecutionDTO.configurationLocation(), pluginExecution.getLocation("configuration"));
+
+        assertThat(pluginExecutionDTO.inheritanceApplied()).isEqualTo(pluginExecution.isInheritanceApplied());
+        assertThat(pluginExecutionDTO.id()).isEqualTo(pluginExecution.getId());
+        assertThat(pluginExecutionDTO.phase()).isEqualTo(pluginExecution.getPhase());
+        assertThat(pluginExecutionDTO.goals()).isEqualTo(pluginExecution.getGoals());
+    }
+
+    private void assertEquals(DependencyDTO dependencyDTO, Dependency dependency) {
         
     }
 }
