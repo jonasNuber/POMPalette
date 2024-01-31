@@ -2,9 +2,10 @@ package de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.activation;
 
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.input.InputLocationDTO;
 
+import java.io.Serializable;
 import java.util.Map;
 
-public record ActivationOS_DTO(
+public record ActivationOsDTO(
         String name,
         String family,
         String arch,
@@ -15,5 +16,5 @@ public record ActivationOS_DTO(
         InputLocationDTO familyLocation,
         InputLocationDTO archLocation,
         InputLocationDTO versionLocation
-) {
+) implements Serializable {
 }

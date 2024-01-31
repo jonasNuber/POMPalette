@@ -2,6 +2,7 @@ package de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.project;
 
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.input.InputLocationDTO;
 
+import java.io.Serializable;
 import java.util.Map;
 
 public record ScmDTO(
@@ -21,5 +22,5 @@ public record ScmDTO(
         InputLocationDTO childScmConnectionInheritAppendPathLocation,
         InputLocationDTO childScmDeveloperConnectionInheritAppendPathLocation,
         InputLocationDTO childScmUrlInheritAppendPathLocation
-) {
+) implements Serializable {
 }

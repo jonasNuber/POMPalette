@@ -2,6 +2,7 @@ package de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.dependency;
 
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.input.InputLocationDTO;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -26,5 +27,5 @@ public record DependencyDTO(
         InputLocationDTO systemPathLocation,
         InputLocationDTO exclusionsLocation,
         InputLocationDTO optionalLocation
-) {
+) implements Serializable {
 }

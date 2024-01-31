@@ -2,11 +2,12 @@ package de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.management;
 
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.input.InputLocationDTO;
 
+import java.io.Serializable;
 import java.util.Map;
 
 public record RelocationDTO(
-        String artifactId,
         String groupId,
+        String artifactId,
         String version,
         String message,
         Map<Object, InputLocationDTO> locations,
@@ -15,5 +16,5 @@ public record RelocationDTO(
         InputLocationDTO artifactIdLocation,
         InputLocationDTO versionLocation,
         InputLocationDTO messageLocation
-) {
+) implements Serializable {
 }

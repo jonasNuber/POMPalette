@@ -3,6 +3,7 @@ package de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.management;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.input.InputLocationDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.repository.DeploymentRepositoryDTO;
 
+import java.io.Serializable;
 import java.util.Map;
 
 public record DistributionManagementDTO(
@@ -20,5 +21,5 @@ public record DistributionManagementDTO(
         InputLocationDTO downloadUrlLocation,
         InputLocationDTO relocationLocation,
         InputLocationDTO statusLocation
-) {
+) implements Serializable {
 }

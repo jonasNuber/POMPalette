@@ -1,24 +1,15 @@
 package de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.reporting;
 
-import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.input.InputLocationDTO;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.plugin.ConfigurationContainerDTO;
 
+import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 public record ReportPluginDTO(
-        //ConfigurationContainer
-        boolean inherited,
-        Object configuration,
-        Map<Object, InputLocationDTO> locations,
-        InputLocationDTO location,
-        InputLocationDTO inheritedLocation,
-        InputLocationDTO configurationLocation,
-        boolean inheritanceApplied,
-
-        //ReportPlugin
+        ConfigurationContainerDTO configurationContainer,
         String groupId,
         String artifactId,
         String version,
         List<ReportSetDTO> reportSets
-) {
+) implements Serializable {
 }

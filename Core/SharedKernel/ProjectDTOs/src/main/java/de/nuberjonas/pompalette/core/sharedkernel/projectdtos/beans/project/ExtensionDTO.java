@@ -2,6 +2,7 @@ package de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.project;
 
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.input.InputLocationDTO;
 
+import java.io.Serializable;
 import java.util.Map;
 
 public record ExtensionDTO(
@@ -13,5 +14,5 @@ public record ExtensionDTO(
         InputLocationDTO groupIdLocation,
         InputLocationDTO artifactIdLocation,
         InputLocationDTO versionLocation
-) {
+) implements Serializable {
 }

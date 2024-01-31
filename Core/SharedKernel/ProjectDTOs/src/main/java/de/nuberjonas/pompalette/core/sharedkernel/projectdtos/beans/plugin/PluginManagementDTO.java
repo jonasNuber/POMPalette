@@ -1,15 +1,10 @@
 package de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.plugin;
 
-import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.input.InputLocationDTO;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.build.PluginContainerDTO;
 
-import java.util.List;
-import java.util.Map;
+import java.io.Serializable;
 
 public record PluginManagementDTO(
-        //PluginContainer
-        List<PluginDTO> plugins,
-        Map<Object, InputLocationDTO> locations,
-        InputLocationDTO location,
-        InputLocationDTO pluginsLocation
-) {
+        PluginContainerDTO pluginContainer
+) implements Serializable {
 }

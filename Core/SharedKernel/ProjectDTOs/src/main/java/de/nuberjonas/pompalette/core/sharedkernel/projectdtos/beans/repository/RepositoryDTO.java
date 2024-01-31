@@ -1,24 +1,10 @@
 package de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.repository;
 
-import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.input.InputLocationDTO;
-
-import java.util.Map;
+import java.io.Serializable;
 
 public record RepositoryDTO(
-        // RepositoryBase
-        String id,
-        String name,
-        String url,
-        String layout,
-        Map<Object, InputLocationDTO> locations,
-        InputLocationDTO locationDTO,
-        InputLocationDTO idLocation,
-        InputLocationDTO nameLocation,
-        InputLocationDTO urlLocation,
-        InputLocationDTO layoutLocation,
-
-        //Repository
+        RepositoryBaseDTO repositoryBase,
         RepositoryPolicyDTO releases,
         RepositoryPolicyDTO snapshots
-) {
+) implements Serializable {
 }

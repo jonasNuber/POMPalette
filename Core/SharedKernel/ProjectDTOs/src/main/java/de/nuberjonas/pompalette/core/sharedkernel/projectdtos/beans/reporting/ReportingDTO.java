@@ -2,6 +2,7 @@ package de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.reporting;
 
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.input.InputLocationDTO;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -15,5 +16,5 @@ public record ReportingDTO(
         InputLocationDTO excludeDefaultsLocation,
         InputLocationDTO outputDirectoryLocation,
         InputLocationDTO pluginsLocation
-) {
+) implements Serializable {
 }

@@ -1,26 +1,48 @@
 package de.nuberjonas.pompalette.infrastructure.parsing.projectparsingmavenimpl.factory;
 
+import de.nuberjonas.pompalette.core.sharedkernel.exceptions.FactoryException;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.activation.ActivationDTO;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.activation.ActivationFileDTO;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.activation.ActivationOsDTO;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.activation.ActivationPropertyDTO;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.build.BuildBaseDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.build.BuildDTO;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.build.PluginConfigurationDTO;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.build.PluginContainerDTO;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.build.resource.FileSetDTO;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.build.resource.PatternSetDTO;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.build.resource.ResourceDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.contributing.*;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.dependency.DependencyDTO;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.dependency.DependencyManagementDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.dependency.ExclusionDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.input.InputLocationDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.input.InputSourceDTO;
-import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.management.CiManagementDTO;
-import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.management.IssueManagementDTO;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.management.*;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.plugin.ConfigurationContainerDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.plugin.PluginDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.plugin.PluginExecutionDTO;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.plugin.PluginManagementDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.project.*;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.reporting.ReportPluginDTO;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.reporting.ReportSetDTO;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.reporting.ReportingDTO;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.repository.DeploymentRepositoryDTO;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.repository.RepositoryBaseDTO;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.repository.RepositoryDTO;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.repository.RepositoryPolicyDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.factory.ProjectFactory;
 import org.apache.maven.model.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -38,349 +60,22 @@ class MavenProjectFactoryTest {
     public static void initialize(){
         factory = new MavenProjectFactory();
 
-        validProjectDTO = createValidProjectDTO();
-        validModel = createValidModel();
+        validProjectDTO = deserializeObject( "src/test/resources/factoryTest/validProjectDTO.ser", ProjectDTO.class);
+        validModel = deserializeObject( "src/test/resources/factoryTest/validModel.ser", Model.class);
 
-        generatedProjectDTO = (ProjectDTO) factory.createProjectDTO(validModel).get();
+        generatedProjectDTO = factory.createProjectDTO(validModel).get();
         //generatedModel = (Model) factory.createProject(validProjectDTO).get();
     }
 
-    private static Model createValidModel(){
-        Model model = new Model();
-
-        InputSource inputSource = new InputSource();
-        inputSource.setModelId("someModelID");
-        inputSource.setLocation("/some/location");
-
-        InputLocation location = new InputLocation(2,3, inputSource);
-        InputLocation location2 = new InputLocation(2,3, inputSource);
-        InputLocation location3 = new InputLocation(2,3, inputSource);
-        location.setLocation("", location3);
-        location2.setLocation("", location3);
-
-        Properties properties = new Properties();
-        properties.setProperty("Key", "Value");
-        properties.setProperty("org.bla", "15");
-
-        Parent parent = new Parent();
-        parent.setGroupId("com.example");
-        parent.setArtifactId("my-project");
-        parent.setVersion("1.0.0");
-        parent.setRelativePath("/relative/path");
-        parent.setLocation("", location);
-        parent.setLocation("groupId", location);
-        parent.setLocation("artifactId", location);
-        parent.setLocation("version", location);
-        parent.setLocation("relativePath", location);
-
-        Organization organization = new Organization();
-        organization.setName("Example Organization");
-        organization.setUrl("https://www.example.com");
-        organization.setLocation("", location2);
-        organization.setLocation("name", location2);
-        organization.setLocation("url", location2);
-
-        License license = new License();
-        license.setName("Apache License 2.0");
-        license.setUrl("https://www.apache.org/licenses/LICENSE-2.0");
-        license.setDistribution("repo");
-        license.setComments("some Comment");
-        license.setLocation("", location);
-        license.setLocation("name", location);
-        license.setLocation("url", location);
-        license.setLocation("distribution", location);
-        license.setLocation("comments", location);
-
-        Developer developer = new Developer();
-        developer.setId("john-doe");
-        developer.setName("John Doe");
-        developer.setEmail("john.doe@example.com");
-        developer.setUrl("https://github.com/johndoe");
-        developer.setOrganization("Example Organization");
-        developer.setOrganizationUrl("https://www.example.com");
-        developer.setRoles(List.of("Core Dev"));
-        developer.setTimezone("UTC+1:00");
-        developer.setProperties(properties);
-        developer.setLocation("", location2);
-        developer.setLocation("name", location2);
-        developer.setLocation("email", location2);
-        developer.setLocation("url", location2);
-        developer.setLocation("organization", location2);
-        developer.setLocation("organizationUrl", location2);
-        developer.setLocation("roles", location2);
-        developer.setLocation("timezone", location2);
-        developer.setLocation("configuration", location2);
-
-        MailingList mailingList = new MailingList();
-        mailingList.setName("User List");
-        mailingList.setSubscribe("user-subscribe@example.com");
-        mailingList.setUnsubscribe("user-unsubscribe@example.com");
-        mailingList.setPost("user-post@example.com");
-        mailingList.setArchive("https://example.com/mailing-list-archive");
-        mailingList.setOtherArchives(List.of("https://example.com/mailing-list-archive/other"));
-        mailingList.setLocation("", location);
-        mailingList.setLocation("name", location);
-        mailingList.setLocation("subscribe", location);
-        mailingList.setLocation("unsubscribe", location);
-        mailingList.setLocation("post", location);
-        mailingList.setLocation("archive", location);
-        mailingList.setLocation("otherArchives", location);
-
-        Prerequisites prerequisites = new Prerequisites();
-        prerequisites.setMaven("3.8.1");
-        prerequisites.setLocation("", location2);
-        prerequisites.setLocation("maven", location2);
-
-        Scm scm = new Scm();
-        scm.setConnection("scm:git:https://github.com/example/my-project.git");
-        scm.setUrl("https://github.com/example/my-project");
-        scm.setTag("RELEASE_1.0.0");
-        scm.setDeveloperConnection("scm:git:https://github.com/example/my-project.git");
-        scm.setChildScmConnectionInheritAppendPath(true);
-        scm.setChildScmDeveloperConnectionInheritAppendPath(true);
-        scm.setChildScmUrlInheritAppendPath(false);
-        scm.setOtherLocation("someStringKey", location);
-        scm.setLocation("", location);
-        scm.setLocation("connection", location);
-        scm.setLocation("developerConnection", location);
-        scm.setLocation("tag", location);
-        scm.setLocation("url", location);
-        scm.setLocation("childScmConnectionInheritAppendPath", location);
-        scm.setLocation("childScmDeveloperConnectionInheritAppendPath", location);
-        scm.setLocation("childScmUrlInheritAppendPath", location);
-
-        IssueManagement issueManagement = new IssueManagement();
-        issueManagement.setSystem("JIRA");
-        issueManagement.setUrl("https://example.com/jira");
-        issueManagement.setLocation("", location2);
-        issueManagement.setLocation("system", location2);
-        issueManagement.setLocation("url", location2);
-
-        Notifier notifier = new Notifier();
-        notifier.setAddress("mail@address");
-        notifier.setConfiguration(properties);
-        notifier.setLocation("", location2);
-        notifier.setLocation("type", location2);
-        notifier.setLocation("sendOnError", location2);
-        notifier.setLocation("sendOnFailure", location2);
-        notifier.setLocation("sendOnSuccess", location2);
-        notifier.setLocation("sendOnWarning", location2);
-        notifier.setLocation("address", location2);
-        notifier.setLocation("configuration", location2);
-
-        CiManagement ciManagement = new CiManagement();
-        ciManagement.setSystem("Jenkins");
-        ciManagement.setUrl("https://example.com/jenkins");
-        ciManagement.setNotifiers(List.of(notifier));
-        ciManagement.setLocation("", location);
-        ciManagement.setLocation("system", location);
-        ciManagement.setLocation("url", location);
-        ciManagement.setLocation("notifiers", location);
-
-        Extension extension = new Extension();
-        extension.setGroupId("com.example");
-        extension.setArtifactId("my-maven-extension");
-        extension.setVersion("1.0.0");
-        extension.setLocation("", location2);
-
-        Resource resource = new Resource();
-        resource.setTargetPath("some/target/Path");
-        resource.setMergeId("mergeID");
-        resource.setDirectory("src/main/resources");
-        resource.setIncludes(List.of("inclusion1", "inclusion2"));
-        resource.setExcludes(List.of("exclusion1", "exclusion2"));
-        resource.setLocation("", location);
-
-        PluginExecution pluginExecution = new PluginExecution();
-        pluginExecution.setPhase("compile");
-        pluginExecution.setGoals(List.of("install"));
-        pluginExecution.setLocation("", location);
-        pluginExecution.setLocation("inherited", location);
-        pluginExecution.setLocation("configuration", location);
-
-        Exclusion exclusion = new Exclusion();
-        exclusion.setGroupId("some.artifact.I.do.not.want");
-        exclusion.setArtifactId("bla");
-        exclusion.setLocation("", location2);
-        exclusion.setLocation("groupId", location2);
-        exclusion.setLocation("artifactId", location2);
-
-        Dependency dependency = new Dependency();
-        dependency.setGroupId("some.group");
-        dependency.setArtifactId("Artifact2");
-        dependency.setVersion("1.0");
-        dependency.setClassifier("classifier");
-        dependency.setScope("runtime");
-        dependency.setSystemPath("java.home");
-        dependency.setExclusions(List.of(exclusion));
-        dependency.setOptional(true);
-        dependency.setLocation("", location);
-        dependency.setLocation("groupId", location);
-        dependency.setLocation("artifactId", location);
-        dependency.setLocation("version", location);
-        dependency.setLocation("type", location);
-        dependency.setLocation("classifier", location);
-        dependency.setLocation("scope", location);
-        dependency.setLocation("systemPath", location);
-        dependency.setLocation("exclusions", location);
-        dependency.setLocation("optional", location);
-
-        Plugin plugin = new Plugin();
-        plugin.setGroupId("org.apache.maven.plugins");
-        plugin.setArtifactId("Artifact");
-        plugin.setVersion("1.0.0-SNAPSHOT");
-        plugin.setExecutions(List.of(pluginExecution));
-        plugin.setDependencies(List.of(dependency));
-        plugin.setInherited(false);
-        plugin.setLocation("", location2);
-        plugin.setLocation("inherited", location2);
-        plugin.setLocation("configuration", location2);
-
-        PluginManagement pluginManagement = new PluginManagement();
-        pluginManagement.setPlugins(List.of(plugin));
-        pluginManagement.setLocation("", location);
-
-        Build build = new Build();
-        build.setSourceDirectory("src/main/java");
-        build.setTestSourceDirectory("src/test/java");
-        build.setOutputDirectory("target/classes");
-        build.setTestOutputDirectory("target/test-classes");
-        build.setExtensions(List.of(extension));
-        build.setDefaultGoal("clean install");
-        build.setResources(List.of(resource));
-        build.setTestResources(List.of(resource));
-        build.setFilters(List.of("Filter1"));
-        build.setPluginManagement(pluginManagement);
-        build.setPlugins(List.of(plugin));
-        build.setLocation("", location2);
-        build.setLocation("plugins", location2);
-
-        ActivationOS activationOS = new ActivationOS();
-        activationOS.setName("Windows XP");
-        activationOS.setFamily("windows");
-        activationOS.setArch("AMD");
-        activationOS.setVersion("42");
-        activationOS.setLocation("", location);
-
-        ActivationProperty activationProperty = new ActivationProperty();
-        activationProperty.setName("some profile");
-        activationProperty.setValue("some value");
-        activationProperty.setLocation("", location2);
-
-        ActivationFile activationFile = new ActivationFile();
-        activationFile.setMissing("file.xml");
-        activationFile.setExists("file2.xml");
-        activationFile.setLocation("", location);
-
-        Activation activation = new Activation();
-        activation.setJdk("21");
-        activation.setOs(activationOS);
-        activation.setProperty(activationProperty);
-        activation.setFile(activationFile);
-        activation.setLocation("", location2);
-
-        BuildBase buildBase = new BuildBase();
-        buildBase.setDefaultGoal("clean install");
-        buildBase.setResources(List.of(resource));
-        buildBase.setTestResources(List.of(resource));
-        buildBase.setFilters(List.of("Filter1"));
-        buildBase.setPluginManagement(pluginManagement);
-        buildBase.setPlugins(List.of(plugin));
-        buildBase.setLocation("", location2);
-
-        Profile profile = new Profile();
-        profile.setActivation(activation);
-        profile.setBuild(buildBase);
-
-        RepositoryPolicy repositoryPolicy = new RepositoryPolicy();
-        repositoryPolicy.setEnabled(true);
-        repositoryPolicy.setUpdatePolicy("daily");
-        repositoryPolicy.setChecksumPolicy("ignore");
-        repositoryPolicy.setLocation("", location);
-
-        DeploymentRepository deploymentRepository = new DeploymentRepository();
-        deploymentRepository.setReleases(repositoryPolicy);
-        deploymentRepository.setSnapshots(repositoryPolicy);
-        deploymentRepository.setId("id");
-        deploymentRepository.setName("Name");
-        deploymentRepository.setUrl("protocol://hostname/path");
-        deploymentRepository.setLocation("", location2);
-
-        Site site = new Site();
-        site.setId("site");
-        site.setName("siteName");
-        site.setUrl("protocol://hostname/path");
-        site.setLocation("", location);
-
-        Relocation relocation = new Relocation();
-        relocation.setGroupId("some.group");
-        relocation.setArtifactId("Artifact123");
-        relocation.setVersion("1.0.1");
-        relocation.setMessage("reason");
-        relocation.setLocation("", location);
-
-        DistributionManagement distributionManagement = new DistributionManagement();
-        distributionManagement.setRepository(deploymentRepository);
-        distributionManagement.setSnapshotRepository(deploymentRepository);
-        distributionManagement.setSite(site);
-        distributionManagement.setDownloadUrl("someurl.com");
-        distributionManagement.setRelocation(relocation);
-        distributionManagement.setStatus("status");
-        distributionManagement.setLocation("", location2);
-
-        DependencyManagement dependencyManagement = new DependencyManagement();
-        dependencyManagement.setDependencies(List.of(dependency));
-
-        ReportSet reportSet = new ReportSet();
-        reportSet.setId("id");
-        reportSet.setReports(List.of("report1"));
-
-        ReportPlugin reportPlugin = new ReportPlugin();
-        reportPlugin.setGroupId("group.vl");
-        reportPlugin.setArtifactId("artifact");
-        reportPlugin.setVersion("1.0.0");
-        reportPlugin.setReportSets(List.of(reportSet));
-
-        Reporting reporting = new Reporting();
-        reporting.setExcludeDefaults(false);
-        reporting.setOutputDirectory("/site");
-        reporting.setPlugins(List.of(reportPlugin));
-
-        model.setModelVersion("4.0.0");
-        model.setParent(parent);
-        model.setGroupId("com.example");
-        model.setArtifactId("my-project");
-        model.setVersion("1.0.0");
-        model.setName("My Project");
-        model.setDescription("Description of my project");
-        model.setUrl("https://www.somewebsite.com");
-        model.setInceptionYear("2024");
-        model.setOrganization(organization);
-        model.setLicenses(List.of(license));
-        model.setDevelopers(List.of(developer));
-        model.setContributors(List.of(developer));
-        model.setMailingLists(List.of(mailingList));
-        model.setPrerequisites(prerequisites);
-        model.setScm(scm);
-        model.setIssueManagement(issueManagement);
-        model.setCiManagement(ciManagement);
-        model.setBuild(build);
-        model.setProfiles(List.of(profile));
-        model.setModules(List.of("TestModule", "Important-Module"));
-        model.setDistributionManagement(distributionManagement);
-        model.setProperties(properties);
-        model.setDependencyManagement(dependencyManagement);
-        model.setDependencies(List.of(dependency));
-        model.setRepositories(List.of(deploymentRepository));
-        model.setPluginRepositories(List.of(deploymentRepository));
-        model.setReporting(reporting);
-        model.setLocation("", location2);
-
-        return model;
-    }
-
-    private static ProjectDTO createValidProjectDTO(){
-        return null;
+    private static <T> T deserializeObject(String fileName, Class<T> clazz) {
+        T obj;
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fileName))) {
+            obj = clazz.cast(ois.readObject());
+            System.out.println("Object has been deserialized from " + fileName);
+        } catch (IOException | ClassNotFoundException e) {
+            throw new FactoryException("Could Not deserialize Test File");
+        }
+        return obj;
     }
 
     @Test
@@ -391,41 +86,94 @@ class MavenProjectFactoryTest {
     }
 
     @Test
-    void createProjectDTO_shouldMapModelVersionCorrectly(){
-        assertStringIsEqual(generatedProjectDTO.modelVersion(), validModel.getModelVersion());
+    void createProjectDTO_shouldMapModelBaseCorrectly() throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertEquals(generatedProjectDTO.modelBase(), validModel);
+    }
+    
+    private void assertEquals(ModelBaseDTO modelBaseDTO, ModelBase modelBase) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertThat(modelBaseDTO.modules()).isEqualTo(modelBase.getModules());
+        assertEquals(modelBaseDTO.distributionManagement(), modelBase.getDistributionManagement());
+        assertThat(modelBaseDTO.properties()).isEqualTo(modelBase.getProperties());
+        assertEquals(modelBaseDTO.dependencyManagement(), modelBase.getDependencyManagement());
+        assertListsAreEqual(modelBaseDTO.dependencies(), modelBase.getDependencies(), this::assertEquals);
+        assertListsAreEqual(modelBaseDTO.repositories(), modelBase.getRepositories(), this::assertEquals);
+        assertListsAreEqual(modelBaseDTO.pluginRepositories(), modelBase.getPluginRepositories(), this::assertEquals);
+        assertEquals(modelBaseDTO.reporting(), modelBase.getReporting());
+        assertLocationsAreEqual(modelBaseDTO, modelBase);
+
+        assertTrue(bothAreEmptyOrBothArePresent(modelBaseDTO.location(), modelBase.getLocation("")));
+        assertEquals(modelBaseDTO.location(), modelBase.getLocation(""));
+        assertTrue(bothAreEmptyOrBothArePresent(modelBaseDTO.modulesLocation(), modelBase.getLocation("modules")));
+        assertEquals(modelBaseDTO.modulesLocation(), modelBase.getLocation("modules"));
+        assertTrue(bothAreEmptyOrBothArePresent(modelBaseDTO.distributionManagementLocation(), modelBase.getLocation("distributionManagement")));
+        assertEquals(modelBaseDTO.distributionManagementLocation(), modelBase.getLocation("distributionManagement"));
+        assertTrue(bothAreEmptyOrBothArePresent(modelBaseDTO.propertiesLocation(), modelBase.getLocation("properties")));
+        assertEquals(modelBaseDTO.propertiesLocation(), modelBase.getLocation("properties"));
+        assertTrue(bothAreEmptyOrBothArePresent(modelBaseDTO.dependencyManagementLocation(), modelBase.getLocation("dependencyManagement")));
+        assertEquals(modelBaseDTO.dependencyManagementLocation(), modelBase.getLocation("dependencyManagement"));
+        assertTrue(bothAreEmptyOrBothArePresent(modelBaseDTO.dependenciesLocation(), modelBase.getLocation("dependencies")));
+        assertEquals(modelBaseDTO.dependenciesLocation(), modelBase.getLocation("dependencies"));
+        assertTrue(bothAreEmptyOrBothArePresent(modelBaseDTO.repositoriesLocation(), modelBase.getLocation("repositories")));
+        assertEquals(modelBaseDTO.repositoriesLocation(), modelBase.getLocation("repositories"));
+        assertTrue(bothAreEmptyOrBothArePresent(modelBaseDTO.pluginRepositoriesLocation(), modelBase.getLocation("pluginRepositories")));
+        assertEquals(modelBaseDTO.pluginRepositoriesLocation(), modelBase.getLocation("pluginRepositories"));
+        assertTrue(bothAreEmptyOrBothArePresent(modelBaseDTO.reportingLocation(), modelBase.getLocation("reporting")));
+        assertEquals(modelBaseDTO.reportingLocation(), modelBase.getLocation("reporting"));
     }
 
-    private void assertStringIsEqual(String first, String second){
-        assertThat(first).isEqualTo(second);
+    private void assertEquals(DistributionManagementDTO distributionManagementDTO, DistributionManagement distributionManagement) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertEquals(distributionManagementDTO.repository(), distributionManagement.getRepository());
+        assertEquals(distributionManagementDTO.snapshotRepository(), distributionManagement.getSnapshotRepository());
+        assertEquals(distributionManagementDTO.site(), distributionManagement.getSite());
+        assertThat(distributionManagementDTO.downloadUrl()).isEqualTo(distributionManagement.getDownloadUrl());
+        assertEquals(distributionManagementDTO.relocation(), distributionManagement.getRelocation());
+        assertThat(distributionManagementDTO.status()).isEqualTo(distributionManagement.getStatus());
+        assertLocationsAreEqual(distributionManagementDTO, distributionManagement);
+
+        assertTrue(bothAreEmptyOrBothArePresent(distributionManagementDTO.location(), distributionManagement.getLocation("")));
+        assertEquals(distributionManagementDTO.location(), distributionManagement.getLocation(""));
+        assertTrue(bothAreEmptyOrBothArePresent(distributionManagementDTO.repositoryLocation(), distributionManagement.getLocation("repository")));
+        assertEquals(distributionManagementDTO.repositoryLocation(), distributionManagement.getLocation("repository"));
+        assertTrue(bothAreEmptyOrBothArePresent(distributionManagementDTO.snapshotRepositoryLocation(), distributionManagement.getLocation("snapshotRepository")));
+        assertEquals(distributionManagementDTO.snapshotRepositoryLocation(), distributionManagement.getLocation("snapshotRepository"));
+        assertTrue(bothAreEmptyOrBothArePresent(distributionManagementDTO.siteLocation(), distributionManagement.getLocation("site")));
+        assertEquals(distributionManagementDTO.siteLocation(), distributionManagement.getLocation("site"));
+        assertTrue(bothAreEmptyOrBothArePresent(distributionManagementDTO.downloadUrlLocation(), distributionManagement.getLocation("downloadUrl")));
+        assertEquals(distributionManagementDTO.downloadUrlLocation(), distributionManagement.getLocation("downloadUrl"));
+        assertTrue(bothAreEmptyOrBothArePresent(distributionManagementDTO.relocationLocation(), distributionManagement.getLocation("relocation")));
+        assertEquals(distributionManagementDTO.relocationLocation(), distributionManagement.getLocation("relocation"));
+        assertTrue(bothAreEmptyOrBothArePresent(distributionManagementDTO.statusLocation(), distributionManagement.getLocation("status")));
+        assertEquals(distributionManagementDTO.statusLocation(), distributionManagement.getLocation("status"));
     }
 
-    @Test
-    void createProjectDTO_shouldMapParentCorrectly() throws NoSuchFieldException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        assertParentIsEqual(generatedProjectDTO.parent(), validModel.getParent());
+    private void assertEquals(DeploymentRepositoryDTO deploymentRepositoryDTO, DeploymentRepository deploymentRepository) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertEquals(deploymentRepositoryDTO.repository(), deploymentRepository);
+        assertThat(deploymentRepositoryDTO.uniqueVersion()).isEqualTo(deploymentRepository.isUniqueVersion());
     }
 
-    private void assertParentIsEqual(ParentDTO parentDTO, Parent parent) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        assertTrue(bothAreEmptyOrBothArePresent(parentDTO, parent));
-        assertThat(parentDTO.groupId()).isEqualTo(parent.getGroupId());
-        assertThat(parentDTO.artifactId()).isEqualTo(parent.getArtifactId());
-        assertThat(parentDTO.version()).isEqualTo(parent.getVersion());
-        assertThat(parentDTO.relativePath()).isEqualTo(parent.getRelativePath());
-
-        assertLocationsAreEqual(parentDTO, parent);
-        assertTrue(bothAreEmptyOrBothArePresent(parentDTO.location(), parent.getLocation("")));
-        assertEquals(parentDTO.location(), parent.getLocation(""));
-        assertTrue(bothAreEmptyOrBothArePresent(parentDTO.groupIdLocation(), parent.getLocation("groupId")));
-        assertEquals(parentDTO.groupIdLocation(), parent.getLocation("groupId"));
-        assertTrue(bothAreEmptyOrBothArePresent(parentDTO.artifactIdLocation(), parent.getLocation("artifactId")));
-        assertEquals(parentDTO.artifactIdLocation(), parent.getLocation("artifactId"));
-        assertTrue(bothAreEmptyOrBothArePresent(parentDTO.versionLocation(), parent.getLocation("version")));
-        assertEquals(parentDTO.versionLocation(), parent.getLocation("version"));
-        assertTrue(bothAreEmptyOrBothArePresent(parentDTO.relativePathLocation(), parent.getLocation("relativePath")));
-        assertEquals(parentDTO.relativePathLocation(), parent.getLocation("relativePath"));
+    private void assertEquals(RepositoryDTO repositoryDTO, Repository repository) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertEquals(repositoryDTO.repositoryBase(), repository);
+        assertEquals(repositoryDTO.releases(), repository.getReleases());
+        assertEquals(repositoryDTO.snapshots(), repository.getSnapshots());
     }
 
-    private <F,S> boolean bothAreEmptyOrBothArePresent(F first, S second){
-        return (first == null && second == null) || (first != null && second != null);
+    private void assertEquals(RepositoryBaseDTO repositoryBaseDTO, RepositoryBase repositoryBase) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertThat(repositoryBaseDTO.id()).isEqualTo(repositoryBase.getId());
+        assertThat(repositoryBaseDTO.name()).isEqualTo(repositoryBase.getName());
+        assertThat(repositoryBaseDTO.url()).isEqualTo(repositoryBase.getUrl());
+        assertThat(repositoryBaseDTO.layout()).isEqualTo(repositoryBase.getLayout());
+        assertLocationsAreEqual(repositoryBaseDTO, repositoryBase);
+
+        assertTrue(bothAreEmptyOrBothArePresent(repositoryBaseDTO.location(), repositoryBase.getLocation("")));
+        assertEquals(repositoryBaseDTO.location(), repositoryBase.getLocation(""));
+        assertTrue(bothAreEmptyOrBothArePresent(repositoryBaseDTO.idLocation(), repositoryBase.getLocation("id")));
+        assertEquals(repositoryBaseDTO.idLocation(), repositoryBase.getLocation("id"));
+        assertTrue(bothAreEmptyOrBothArePresent(repositoryBaseDTO.nameLocation(), repositoryBase.getLocation("name")));
+        assertEquals(repositoryBaseDTO.nameLocation(), repositoryBase.getLocation("name"));
+        assertTrue(bothAreEmptyOrBothArePresent(repositoryBaseDTO.urlLocation(), repositoryBase.getLocation("url")));
+        assertEquals(repositoryBaseDTO.urlLocation(), repositoryBase.getLocation("url"));
+        assertTrue(bothAreEmptyOrBothArePresent(repositoryBaseDTO.layoutLocation(), repositoryBase.getLocation("layout")));
+        assertEquals(repositoryBaseDTO.layoutLocation(), repositoryBase.getLocation("layout"));
     }
 
     private void assertLocationsAreEqual(Object projectMemberObject, Object modelMemberObject) throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
@@ -483,44 +231,177 @@ class MavenProjectFactoryTest {
         assertThat(inputSource.getLocation()).isEqualTo(inputSourceDTO.location());
     }
 
+    private void assertEquals(RepositoryPolicyDTO repositoryPolicyDTO, RepositoryPolicy repositoryPolicy) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertThat(repositoryPolicyDTO.enabled()).isEqualTo(repositoryPolicy.isEnabled());
+        assertThat(repositoryPolicyDTO.updatePolicy()).isEqualTo(repositoryPolicy.getUpdatePolicy());
+        assertThat(repositoryPolicyDTO.checksumPolicy()).isEqualTo(repositoryPolicy.getChecksumPolicy());
+        assertLocationsAreEqual(repositoryPolicyDTO, repositoryPolicy);
+
+        assertTrue(bothAreEmptyOrBothArePresent(repositoryPolicyDTO.location(), repositoryPolicy.getLocation("")));
+        assertEquals(repositoryPolicyDTO.location(), repositoryPolicy.getLocation(""));
+        assertTrue(bothAreEmptyOrBothArePresent(repositoryPolicyDTO.enabledLocation(), repositoryPolicy.getLocation("enabled")));
+        assertEquals(repositoryPolicyDTO.enabledLocation(), repositoryPolicy.getLocation("enabled"));
+        assertTrue(bothAreEmptyOrBothArePresent(repositoryPolicyDTO.updatePolicyLocation(), repositoryPolicy.getLocation("updatePolicy")));
+        assertEquals(repositoryPolicyDTO.updatePolicyLocation(), repositoryPolicy.getLocation("updatePolicy"));
+        assertTrue(bothAreEmptyOrBothArePresent(repositoryPolicyDTO.checksumPolicyLocation(), repositoryPolicy.getLocation("checksumPolicy")));
+        assertEquals(repositoryPolicyDTO.checksumPolicyLocation(), repositoryPolicy.getLocation("checksumPolicy"));
+    }
+
+    private void assertEquals(SiteDTO siteDTO, Site site) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertThat(siteDTO.id()).isEqualTo(site.getId());
+        assertThat(siteDTO.name()).isEqualTo(site.getName());
+        assertThat(siteDTO.url()).isEqualTo(site.getUrl());
+        assertThat(siteDTO.childSiteUrlInheritAppendPath()).isEqualTo(site.isChildSiteUrlInheritAppendPath());
+        assertLocationsAreEqual(siteDTO, site);
+
+        assertTrue(bothAreEmptyOrBothArePresent(siteDTO.location(), site.getLocation("")));
+        assertEquals(siteDTO.location(), site.getLocation(""));
+        assertTrue(bothAreEmptyOrBothArePresent(siteDTO.idLocation(), site.getLocation("id")));
+        assertEquals(siteDTO.idLocation(), site.getLocation("id"));
+        assertTrue(bothAreEmptyOrBothArePresent(siteDTO.nameLocation(), site.getLocation("name")));
+        assertEquals(siteDTO.nameLocation(), site.getLocation("name"));
+        assertTrue(bothAreEmptyOrBothArePresent(siteDTO.urlLocation(), site.getLocation("url")));
+        assertEquals(siteDTO.urlLocation(), site.getLocation("url"));
+        assertTrue(bothAreEmptyOrBothArePresent(siteDTO.childSiteUrlInheritAppendPathLocation(), site.getLocation("childSiteUrlInheritAppendPath")));
+        assertEquals(siteDTO.childSiteUrlInheritAppendPathLocation(), site.getLocation("childSiteUrlInheritAppendPath"));
+    }
+
+    private void assertEquals(RelocationDTO relocationDTO, Relocation relocation) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertThat(relocationDTO.groupId()).isEqualTo(relocation.getGroupId());
+        assertThat(relocationDTO.artifactId()).isEqualTo(relocation.getArtifactId());
+        assertThat(relocationDTO.version()).isEqualTo(relocation.getVersion());
+        assertThat(relocationDTO.message()).isEqualTo(relocation.getMessage());
+        assertLocationsAreEqual(relocationDTO, relocation);
+
+        assertTrue(bothAreEmptyOrBothArePresent(relocationDTO.location(), relocation.getLocation("")));
+        assertEquals(relocationDTO.location(), relocation.getLocation(""));
+        assertTrue(bothAreEmptyOrBothArePresent(relocationDTO.groupIdLocation(), relocation.getLocation("groupId")));
+        assertEquals(relocationDTO.groupIdLocation(), relocation.getLocation("groupId"));
+        assertTrue(bothAreEmptyOrBothArePresent(relocationDTO.artifactIdLocation(), relocation.getLocation("artifactId")));
+        assertEquals(relocationDTO.artifactIdLocation(), relocation.getLocation("artifactId"));
+        assertTrue(bothAreEmptyOrBothArePresent(relocationDTO.versionLocation(), relocation.getLocation("version")));
+        assertEquals(relocationDTO.versionLocation(), relocation.getLocation("version"));
+        assertTrue(bothAreEmptyOrBothArePresent(relocationDTO.messageLocation(), relocation.getLocation("message")));
+        assertEquals(relocationDTO.messageLocation(), relocation.getLocation("message"));
+    }
+
+    private <F,S> boolean bothAreEmptyOrBothArePresent(F first, S second){
+        return (first == null && second == null) || (first != null && second != null);
+    }
+
+    private void assertEquals(DependencyManagementDTO dependencyManagementDTO, DependencyManagement dependencyManagement) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertListsAreEqual(dependencyManagementDTO.dependencies(), dependencyManagement.getDependencies(), this::assertEquals);
+        assertLocationsAreEqual(dependencyManagementDTO, dependencyManagement);
+
+        assertTrue(bothAreEmptyOrBothArePresent(dependencyManagementDTO.location(), dependencyManagement.getLocation("")));
+        assertEquals(dependencyManagementDTO.location(), dependencyManagement.getLocation(""));
+        assertTrue(bothAreEmptyOrBothArePresent(dependencyManagementDTO.dependenciesLocation(), dependencyManagement.getLocation("dependencies")));
+        assertEquals(dependencyManagementDTO.dependenciesLocation(), dependencyManagement.getLocation("dependencies"));
+    }
+
+    private void assertEquals(ReportingDTO reportingDTO, Reporting reporting) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertThat(reportingDTO.excludeDefaults()).isEqualTo(reporting.isExcludeDefaults());
+        assertThat(reportingDTO.outputDirectory()).isEqualTo(reporting.getOutputDirectory());
+        assertListsAreEqual(reportingDTO.plugins(), reporting.getPlugins(), this::assertEquals);
+        assertLocationsAreEqual(reportingDTO, reporting);
+
+        assertTrue(bothAreEmptyOrBothArePresent(reportingDTO.location(), reporting.getLocation("")));
+        assertEquals(reportingDTO.location(), reporting.getLocation(""));
+        assertTrue(bothAreEmptyOrBothArePresent(reportingDTO.excludeDefaultsLocation(), reporting.getLocation("excludeDefaults")));
+        assertEquals(reportingDTO.excludeDefaultsLocation(), reporting.getLocation("excludeDefaults"));
+        assertTrue(bothAreEmptyOrBothArePresent(reportingDTO.outputDirectoryLocation(), reporting.getLocation("outputDirectory")));
+        assertEquals(reportingDTO.outputDirectoryLocation(), reporting.getLocation("outputDirectory"));
+        assertTrue(bothAreEmptyOrBothArePresent(reportingDTO.pluginsLocation(), reporting.getLocation("plugins")));
+        assertEquals(reportingDTO.pluginsLocation(), reporting.getLocation("plugins"));
+    }
+
+    private void assertEquals(ReportPluginDTO reportPluginDTO, ReportPlugin reportPlugin) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertEquals(reportPluginDTO.configurationContainer(), reportPlugin);
+        assertThat(reportPluginDTO.groupId()).isEqualTo(reportPlugin.getGroupId());
+        assertThat(reportPluginDTO.artifactId()).isEqualTo(reportPlugin.getArtifactId());
+        assertThat(reportPluginDTO.version()).isEqualTo(reportPlugin.getVersion());
+        assertListsAreEqual(reportPluginDTO.reportSets(), reportPlugin.getReportSets(), this::assertEquals);
+    }
+
+    private void assertEquals(ReportSetDTO reportSetDTO, ReportSet reportSet) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertEquals(reportSetDTO.configurationContainer(), reportSet);
+        assertThat(reportSetDTO.id()).isEqualTo(reportSet.getId());
+        assertThat(reportSetDTO.reports()).isEqualTo(reportSet.getReports());
+    }
+
+    @Test
+    void createProjectDTO_shouldMapModelVersionCorrectly(){
+        assertThat(generatedProjectDTO.modelVersion()).isEqualTo(validModel.getModelVersion());
+    }
+
+    @Test
+    void createProjectDTO_shouldMapParentCorrectly() throws NoSuchFieldException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        assertParentIsEqual(generatedProjectDTO.parent(), validModel.getParent());
+    }
+
+    private void assertParentIsEqual(ParentDTO parentDTO, Parent parent) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertTrue(bothAreEmptyOrBothArePresent(parentDTO, parent));
+        assertThat(parentDTO.groupId()).isEqualTo(parent.getGroupId());
+        assertThat(parentDTO.artifactId()).isEqualTo(parent.getArtifactId());
+        assertThat(parentDTO.version()).isEqualTo(parent.getVersion());
+        assertThat(parentDTO.relativePath()).isEqualTo(parent.getRelativePath());
+
+        assertLocationsAreEqual(parentDTO, parent);
+        assertTrue(bothAreEmptyOrBothArePresent(parentDTO.location(), parent.getLocation("")));
+        assertEquals(parentDTO.location(), parent.getLocation(""));
+        assertTrue(bothAreEmptyOrBothArePresent(parentDTO.groupIdLocation(), parent.getLocation("groupId")));
+        assertEquals(parentDTO.groupIdLocation(), parent.getLocation("groupId"));
+        assertTrue(bothAreEmptyOrBothArePresent(parentDTO.artifactIdLocation(), parent.getLocation("artifactId")));
+        assertEquals(parentDTO.artifactIdLocation(), parent.getLocation("artifactId"));
+        assertTrue(bothAreEmptyOrBothArePresent(parentDTO.versionLocation(), parent.getLocation("version")));
+        assertEquals(parentDTO.versionLocation(), parent.getLocation("version"));
+        assertTrue(bothAreEmptyOrBothArePresent(parentDTO.relativePathLocation(), parent.getLocation("relativePath")));
+        assertEquals(parentDTO.relativePathLocation(), parent.getLocation("relativePath"));
+    }
+
     @Test
     void createProjectDTO_shouldMapGroupIdCorrectly(){
-        assertStringIsEqual(generatedProjectDTO.groupId(), validModel.getGroupId());
+        assertThat(generatedProjectDTO.groupId()).isEqualTo(validModel.getGroupId());
     }
 
     @Test
     void createProjectDTO_shouldMapArtifactIdCorrectly(){
-        assertStringIsEqual(generatedProjectDTO.artifactId(), validModel.getArtifactId());
+        assertThat(generatedProjectDTO.artifactId()).isEqualTo(validModel.getArtifactId());
     }
 
     @Test
     void createProjectDTO_shouldMapVersionCorrectly(){
-        assertStringIsEqual(generatedProjectDTO.version(), validModel.getVersion());
+        assertThat(generatedProjectDTO.version()).isEqualTo(validModel.getVersion());
     }
 
     @Test
     void createProjectDTO_shouldMapPackagingCorrectly(){
-        assertStringIsEqual(generatedProjectDTO.packaging(), validModel.getPackaging());
+        assertThat(generatedProjectDTO.packaging()).isEqualTo(validModel.getPackaging());
     }
 
     @Test
     void createProjectDTO_shouldMapNameCorrectly(){
-        assertStringIsEqual(generatedProjectDTO.name(), validModel.getName());
+        assertThat(generatedProjectDTO.name()).isEqualTo(validModel.getName());
     }
 
     @Test
     void createProjectDTO_shouldMapDescriptionCorrectly(){
-        assertStringIsEqual(generatedProjectDTO.description(), validModel.getDescription());
+        assertThat(generatedProjectDTO.description()).isEqualTo(validModel.getDescription());
     }
 
     @Test
     void createProjectDTO_shouldMapUrlCorrectly(){
-        assertStringIsEqual(generatedProjectDTO.url(), validModel.getUrl());
+        assertThat(generatedProjectDTO.url()).isEqualTo(validModel.getUrl());
+    }
+
+    @Test
+    void createProjectDTO_shouldMapChildProjectUrlInheritAppendPathCorrectly(){
+        assertThat(generatedProjectDTO.childProjectUrlInheritAppendPath()).isEqualTo(validModel.isChildProjectUrlInheritAppendPath());
     }
 
     @Test
     void createProjectDTO_shouldMapInceptionYearCorrectly(){
-        assertStringIsEqual(generatedProjectDTO.inceptionYear(), validModel.getInceptionYear());
+        assertThat(generatedProjectDTO.inceptionYear()).isEqualTo(validModel.getInceptionYear());
     }
 
     @Test
@@ -588,77 +469,48 @@ class MavenProjectFactoryTest {
 
     private void assertEquals(DeveloperDTO developerDTO, Developer developer) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         assertThat(developerDTO.id()).isEqualTo(developer.getId());
-        assertThat(developerDTO.name()).isEqualTo(developer.getName());
-        assertThat(developerDTO.email()).isEqualTo(developer.getEmail());
-        assertThat(developerDTO.url()).isEqualTo(developer.getUrl());
-        assertThat(developerDTO.organization()).isEqualTo(developer.getOrganization());
-        assertThat(developerDTO.organizationUrl()).isEqualTo(developer.getOrganizationUrl());
-        assertThat(developerDTO.roles()).isEqualTo(developer.getRoles());
-        assertThat(developerDTO.timezone()).isEqualTo(developer.getTimezone());
-        assertThat(developerDTO.properties()).isEqualTo(developer.getProperties());
-        assertLocationsAreEqual(developerDTO, developer);
-
-        assertTrue(bothAreEmptyOrBothArePresent(developerDTO.location(), developer.getLocation("")));
-        assertEquals(developerDTO.location(), developer.getLocation(""));
-        assertTrue(bothAreEmptyOrBothArePresent(developerDTO.nameLocation(), developer.getLocation("name")));
-        assertEquals(developerDTO.nameLocation(), developer.getLocation("name"));
-        assertTrue(bothAreEmptyOrBothArePresent(developerDTO.emailLocation(), developer.getLocation("email")));
-        assertEquals(developerDTO.emailLocation(), developer.getLocation("email"));
-        assertTrue(bothAreEmptyOrBothArePresent(developerDTO.urlLocation(), developer.getLocation("url")));
-        assertEquals(developerDTO.urlLocation(), developer.getLocation("url"));
-        assertTrue(bothAreEmptyOrBothArePresent(developerDTO.urlLocation(), developer.getLocation("url")));
-        assertEquals(developerDTO.urlLocation(), developer.getLocation("url"));
-        assertTrue(bothAreEmptyOrBothArePresent(developerDTO.organizationLocation(), developer.getLocation("organization")));
-        assertEquals(developerDTO.organizationLocation(), developer.getLocation("organization"));
-        assertTrue(bothAreEmptyOrBothArePresent(developerDTO.organizationUrlLocation(), developer.getLocation("organizationUrl")));
-        assertEquals(developerDTO.organizationUrlLocation(), developer.getLocation("organizationUrl"));
-        assertTrue(bothAreEmptyOrBothArePresent(developerDTO.rolesLocation(), developer.getLocation("roles")));
-        assertEquals(developerDTO.rolesLocation(), developer.getLocation("roles"));
-        assertTrue(bothAreEmptyOrBothArePresent(developerDTO.timezoneLocation(), developer.getLocation("timezone")));
-        assertEquals(developerDTO.timezoneLocation(), developer.getLocation("timezone"));
-        assertTrue(bothAreEmptyOrBothArePresent(developerDTO.propertiesLocation(), developer.getLocation("configuration")));
-        assertEquals(developerDTO.propertiesLocation(), developer.getLocation("configuration"));
+        assertEquals(developerDTO.contributor(), developer);
     }
 
     @Test
-    void createProjectDTO_shouldMapContributersCorrectly() throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        var actualContributers = generatedProjectDTO.contributors();
-        var expectedContributers = validModel.getContributors();
+    void createProjectDTO_shouldMapContributorsCorrectly() throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        var actualContributors = generatedProjectDTO.contributors();
+        var expectedContributors = validModel.getContributors();
 
-        assertListsAreEqual(actualContributers, expectedContributers, this::assertEquals);
+        assertListsAreEqual(actualContributors, expectedContributors, this::assertEquals);
     }
 
-    private void assertEquals(ContributerDTO contributerDTO, Contributor contributor) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        assertThat(contributerDTO.name()).isEqualTo(contributor.getName());
-        assertThat(contributerDTO.email()).isEqualTo(contributor.getEmail());
-        assertThat(contributerDTO.url()).isEqualTo(contributor.getUrl());
-        assertThat(contributerDTO.organization()).isEqualTo(contributor.getOrganization());
-        assertThat(contributerDTO.organizationUrl()).isEqualTo(contributor.getOrganizationUrl());
-        assertThat(contributerDTO.roles()).isEqualTo(contributor.getRoles());
-        assertThat(contributerDTO.timezone()).isEqualTo(contributor.getTimezone());
-        assertThat(contributerDTO.properties()).isEqualTo(contributor.getProperties());
-        assertLocationsAreEqual(contributerDTO, contributor);
+    private void assertEquals(ContributorDTO contributorDTO, Contributor contributor) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertThat(contributorDTO.name()).isEqualTo(contributor.getName());
+        assertThat(contributorDTO.email()).isEqualTo(contributor.getEmail());
+        assertThat(contributorDTO.url()).isEqualTo(contributor.getUrl());
+        assertThat(contributorDTO.organization()).isEqualTo(contributor.getOrganization());
+        assertThat(contributorDTO.organizationUrl()).isEqualTo(contributor.getOrganizationUrl());
+        assertThat(contributorDTO.roles()).isEqualTo(contributor.getRoles());
+        assertThat(contributorDTO.timezone()).isEqualTo(contributor.getTimezone());
+        assertThat(contributorDTO.properties()).isEqualTo(contributor.getProperties());
+        assertLocationsAreEqual(contributorDTO, contributor);
 
-        assertTrue(bothAreEmptyOrBothArePresent(contributerDTO.location(), contributor.getLocation("")));
-        assertEquals(contributerDTO.location(), contributor.getLocation(""));
-        assertTrue(bothAreEmptyOrBothArePresent(contributerDTO.nameLocation(), contributor.getLocation("name")));
-        assertEquals(contributerDTO.nameLocation(), contributor.getLocation("name"));
-        assertTrue(bothAreEmptyOrBothArePresent(contributerDTO.emailLocation(), contributor.getLocation("email")));
-        assertEquals(contributerDTO.emailLocation(), contributor.getLocation("email"));
-        assertTrue(bothAreEmptyOrBothArePresent(contributerDTO.urlLocation(), contributor.getLocation("url")));
-        assertEquals(contributerDTO.urlLocation(), contributor.getLocation("url"));
-        assertTrue(bothAreEmptyOrBothArePresent(contributerDTO.urlLocation(), contributor.getLocation("url")));
-        assertEquals(contributerDTO.urlLocation(), contributor.getLocation("url"));
-        assertTrue(bothAreEmptyOrBothArePresent(contributerDTO.organizationLocation(), contributor.getLocation("organization")));
-        assertEquals(contributerDTO.organizationLocation(), contributor.getLocation("organization"));
-        assertTrue(bothAreEmptyOrBothArePresent(contributerDTO.organizationUrlLocation(), contributor.getLocation("organizationUrl")));
-        assertEquals(contributerDTO.organizationUrlLocation(), contributor.getLocation("organizationUrl"));
-        assertTrue(bothAreEmptyOrBothArePresent(contributerDTO.rolesLocation(), contributor.getLocation("roles")));
-        assertEquals(contributerDTO.rolesLocation(), contributor.getLocation("roles"));
-        assertTrue(bothAreEmptyOrBothArePresent(contributerDTO.timezoneLocation(), contributor.getLocation("timezone")));
-        assertEquals(contributerDTO.timezoneLocation(), contributor.getLocation("timezone"));
-        assertTrue(bothAreEmptyOrBothArePresent(contributerDTO.propertiesLocation(), contributor.getLocation("configuration")));
-        assertEquals(contributerDTO.propertiesLocation(), contributor.getLocation("configuration"));
+        assertTrue(bothAreEmptyOrBothArePresent(contributorDTO.location(), contributor.getLocation("")));
+        assertEquals(contributorDTO.location(), contributor.getLocation(""));
+        assertTrue(bothAreEmptyOrBothArePresent(contributorDTO.nameLocation(), contributor.getLocation("name")));
+        assertEquals(contributorDTO.nameLocation(), contributor.getLocation("name"));
+        assertTrue(bothAreEmptyOrBothArePresent(contributorDTO.emailLocation(), contributor.getLocation("email")));
+        assertEquals(contributorDTO.emailLocation(), contributor.getLocation("email"));
+        assertTrue(bothAreEmptyOrBothArePresent(contributorDTO.urlLocation(), contributor.getLocation("url")));
+        assertEquals(contributorDTO.urlLocation(), contributor.getLocation("url"));
+        assertTrue(bothAreEmptyOrBothArePresent(contributorDTO.urlLocation(), contributor.getLocation("url")));
+        assertEquals(contributorDTO.urlLocation(), contributor.getLocation("url"));
+        assertTrue(bothAreEmptyOrBothArePresent(contributorDTO.organizationLocation(), contributor.getLocation("organization")));
+        assertEquals(contributorDTO.organizationLocation(), contributor.getLocation("organization"));
+        assertTrue(bothAreEmptyOrBothArePresent(contributorDTO.organizationUrlLocation(), contributor.getLocation("organizationUrl")));
+        assertEquals(contributorDTO.organizationUrlLocation(), contributor.getLocation("organizationUrl"));
+        assertTrue(bothAreEmptyOrBothArePresent(contributorDTO.rolesLocation(), contributor.getLocation("roles")));
+        assertEquals(contributorDTO.rolesLocation(), contributor.getLocation("roles"));
+        assertTrue(bothAreEmptyOrBothArePresent(contributorDTO.timezoneLocation(), contributor.getLocation("timezone")));
+        assertEquals(contributorDTO.timezoneLocation(), contributor.getLocation("timezone"));
+        assertTrue(bothAreEmptyOrBothArePresent(contributorDTO.propertiesLocation(), contributor.getLocation("configuration")));
+        assertEquals(contributorDTO.propertiesLocation(), contributor.getLocation("configuration"));
     }
 
     @Test
@@ -676,7 +528,7 @@ class MavenProjectFactoryTest {
         assertThat(mailingListDTO.post()).isEqualTo(mailingList.getPost());
         assertThat(mailingListDTO.archive()).isEqualTo(mailingList.getArchive());
         assertListsAreEqual(mailingListDTO.otherArchives(), mailingList.getOtherArchives(),
-                (actual, expected) -> { assertThat(actual).isEqualTo(expected); });
+                (actual, expected) -> assertThat(actual).isEqualTo(expected));
         assertLocationsAreEqual(mailingListDTO, mailingList);
 
         assertTrue(bothAreEmptyOrBothArePresent(mailingListDTO.location(), mailingList.getLocation("")));
@@ -814,28 +666,42 @@ class MavenProjectFactoryTest {
     }
 
     private void assertEquals(BuildDTO buildDTO, Build build) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        assertListsAreEqual(buildDTO.plugins(), build.getPlugins(), this::assertEquals);
-        assertLocationsAreEqual(buildDTO, build);
+        assertEquals(buildDTO.buildBase(), build);
+        assertThat(buildDTO.sourceDirectory()).isEqualTo(build.getSourceDirectory());
+        assertThat(buildDTO.scriptSourceDirectory()).isEqualTo(build.getScriptSourceDirectory());
+        assertThat(buildDTO.testSourceDirectory()).isEqualTo(build.getTestSourceDirectory());
+        assertThat(buildDTO.outputDirectory()).isEqualTo(build.getOutputDirectory());
+        assertThat(buildDTO.testOutputDirectory()).isEqualTo(build.getTestOutputDirectory());
+        assertListsAreEqual(buildDTO.extensions(), build.getExtensions(), this::assertEquals);
+    }
 
-        assertTrue(bothAreEmptyOrBothArePresent(buildDTO.location(), build.getLocation("")));
-        assertEquals(buildDTO.location(), build.getLocation(""));
-        assertTrue(bothAreEmptyOrBothArePresent(buildDTO.pluginsLocation(), build.getLocation("plugins")));
-        assertEquals(buildDTO.pluginsLocation(), build.getLocation("plugins"));
+    private void assertEquals(BuildBaseDTO buildBaseDTO, BuildBase buildBase) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertEquals(buildBaseDTO.pluginConfiguration(), buildBase);
+        assertThat(buildBaseDTO.defaultGoal()).isEqualTo(buildBase.getDefaultGoal());
+        assertListsAreEqual(buildBaseDTO.resources(), buildBase.getResources(), this::assertEquals);
+        assertListsAreEqual(buildBaseDTO.testResources(), buildBase.getTestResources(), this::assertEquals);
+        assertThat(buildBaseDTO.directory()).isEqualTo(buildBase.getDirectory());
+        assertThat(buildBaseDTO.finalName()).isEqualTo(buildBase.getFinalName());
+        assertThat(buildBaseDTO.filters()).isEqualTo(buildBase.getFilters());
+    }
+
+    private void assertEquals(PluginConfigurationDTO pluginConfigurationDTO, PluginConfiguration pluginConfiguration) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertEquals(pluginConfigurationDTO.pluginContainer(), pluginConfiguration);
+        assertEquals(pluginConfigurationDTO.pluginManagement(), pluginConfiguration.getPluginManagement());
+    }
+
+    private void assertEquals(PluginContainerDTO pluginContainerDTO, PluginContainer pluginContainer) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertListsAreEqual(pluginContainerDTO.plugins(), pluginContainer.getPlugins(), this::assertEquals);
+        assertLocationsAreEqual(pluginContainerDTO, pluginContainer);
+
+        assertTrue(bothAreEmptyOrBothArePresent(pluginContainerDTO.location(), pluginContainer.getLocation("")));
+        assertEquals(pluginContainerDTO.location(), pluginContainer.getLocation(""));
+        assertTrue(bothAreEmptyOrBothArePresent(pluginContainerDTO.pluginsLocation(), pluginContainer.getLocation("plugins")));
+        assertEquals(pluginContainerDTO.pluginsLocation(), pluginContainer.getLocation("plugins"));
     }
 
     private void assertEquals(PluginDTO pluginDTO, Plugin plugin) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        assertThat(pluginDTO.inherited()).isEqualTo(plugin.isInherited());
-        assertThat(pluginDTO.configuration()).isEqualTo(plugin.getConfiguration());
-        assertLocationsAreEqual(pluginDTO, plugin);
-
-        assertTrue(bothAreEmptyOrBothArePresent(pluginDTO.location(), plugin.getLocation("")));
-        assertEquals(pluginDTO.location(), plugin.getLocation(""));
-        assertTrue(bothAreEmptyOrBothArePresent(pluginDTO.inheritedLocation(), plugin.getLocation("inherited")));
-        assertEquals(pluginDTO.inheritedLocation(), plugin.getLocation("inherited"));
-        assertTrue(bothAreEmptyOrBothArePresent(pluginDTO.configurationLocation(), plugin.getLocation("configuration")));
-        assertEquals(pluginDTO.configurationLocation(), plugin.getLocation("configuration"));
-
-        assertThat(pluginDTO.inheritanceApplied()).isEqualTo(plugin.isInheritanceApplied());
+        assertEquals(pluginDTO.configurationContainer(), plugin);
         assertThat(pluginDTO.groupId()).isEqualTo(plugin.getGroupId());
         assertThat(pluginDTO.artifactId()).isEqualTo(plugin.getArtifactId());
         assertThat(pluginDTO.version()).isEqualTo(plugin.getVersion());
@@ -844,19 +710,23 @@ class MavenProjectFactoryTest {
         assertListsAreEqual(pluginDTO.dependencies(), plugin.getDependencies(), this::assertEquals);
     }
 
+    private void assertEquals(ConfigurationContainerDTO configurationContainerDTO, ConfigurationContainer configurationContainer) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertThat(configurationContainerDTO.inherited()).isEqualTo(configurationContainer.isInherited());
+        assertThat(configurationContainerDTO.configuration()).isEqualTo(configurationContainer.getConfiguration());
+        assertLocationsAreEqual(configurationContainerDTO, configurationContainer);
+
+        assertTrue(bothAreEmptyOrBothArePresent(configurationContainerDTO.location(), configurationContainer.getLocation("")));
+        assertEquals(configurationContainerDTO.location(), configurationContainer.getLocation(""));
+        assertTrue(bothAreEmptyOrBothArePresent(configurationContainerDTO.inheritedLocation(), configurationContainer.getLocation("inherited")));
+        assertEquals(configurationContainerDTO.inheritedLocation(), configurationContainer.getLocation("inherited"));
+        assertTrue(bothAreEmptyOrBothArePresent(configurationContainerDTO.configurationLocation(), configurationContainer.getLocation("configuration")));
+        assertEquals(configurationContainerDTO.configurationLocation(), configurationContainer.getLocation("configuration"));
+
+        assertThat(configurationContainerDTO.inheritanceApplied()).isEqualTo(configurationContainer.isInheritanceApplied());
+    }
+
     private void assertEquals(PluginExecutionDTO pluginExecutionDTO, PluginExecution pluginExecution) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-        assertThat(pluginExecutionDTO.inherited()).isEqualTo(pluginExecution.isInherited());
-        assertThat(pluginExecutionDTO.configuration()).isEqualTo(pluginExecution.getConfiguration());
-        assertLocationsAreEqual(pluginExecutionDTO, pluginExecution);
-
-        assertTrue(bothAreEmptyOrBothArePresent(pluginExecutionDTO.location(), pluginExecution.getLocation("")));
-        assertEquals(pluginExecutionDTO.location(), pluginExecution.getLocation(""));
-        assertTrue(bothAreEmptyOrBothArePresent(pluginExecutionDTO.inheritedLocation(), pluginExecution.getLocation("inherited")));
-        assertEquals(pluginExecutionDTO.inheritedLocation(), pluginExecution.getLocation("inherited"));
-        assertTrue(bothAreEmptyOrBothArePresent(pluginExecutionDTO.configurationLocation(), pluginExecution.getLocation("configuration")));
-        assertEquals(pluginExecutionDTO.configurationLocation(), pluginExecution.getLocation("configuration"));
-
-        assertThat(pluginExecutionDTO.inheritanceApplied()).isEqualTo(pluginExecution.isInheritanceApplied());
+        assertEquals(pluginExecutionDTO.configurationContainer(), pluginExecution);
         assertThat(pluginExecutionDTO.id()).isEqualTo(pluginExecution.getId());
         assertThat(pluginExecutionDTO.phase()).isEqualTo(pluginExecution.getPhase());
         assertThat(pluginExecutionDTO.goals()).isEqualTo(pluginExecution.getGoals());
@@ -903,9 +773,138 @@ class MavenProjectFactoryTest {
 
         assertTrue(bothAreEmptyOrBothArePresent(exclusionDTO.location(), exclusion.getLocation("")));
         assertEquals(exclusionDTO.location(), exclusion.getLocation(""));
-        assertTrue(bothAreEmptyOrBothArePresent(exclusionDTO.artifactIdLocation(), exclusion.getLocation("artifactId")));
-        assertEquals(exclusionDTO.artifactIdLocation(), exclusion.getLocation("artifactId"));
         assertTrue(bothAreEmptyOrBothArePresent(exclusionDTO.groupIdLocation(), exclusion.getLocation("groupId")));
         assertEquals(exclusionDTO.groupIdLocation(), exclusion.getLocation("groupId"));
+        assertTrue(bothAreEmptyOrBothArePresent(exclusionDTO.artifactIdLocation(), exclusion.getLocation("artifactId")));
+        assertEquals(exclusionDTO.artifactIdLocation(), exclusion.getLocation("artifactId"));
+    }
+
+    private void assertEquals(PluginManagementDTO pluginManagementDTO, PluginManagement pluginManagement) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertEquals(pluginManagementDTO.pluginContainer(), pluginManagement);
+    }
+
+    private void assertEquals(ResourceDTO resourceDTO, Resource resource) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertEquals(resourceDTO.fileSet(), resource);
+        assertThat(resourceDTO.targetPath()).isEqualTo(resource.getTargetPath());
+        assertThat(resourceDTO.filtering()).isEqualTo(resource.isFiltering());
+        assertThat(resourceDTO.mergeId()).isEqualTo(resource.getMergeId());
+    }
+
+    private void assertEquals(FileSetDTO fileSetDTO, FileSet fileSet) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertEquals(fileSetDTO.patternSet(), fileSet);
+        assertThat(fileSetDTO.directory()).isEqualTo(fileSet.getDirectory());
+    }
+
+    private void assertEquals(PatternSetDTO patternSetDTO, PatternSet patternSet) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertThat(patternSetDTO.includes()).isEqualTo(patternSet.getIncludes());
+        assertThat(patternSetDTO.excludes()).isEqualTo(patternSet.getExcludes());
+        assertLocationsAreEqual(patternSetDTO, patternSet);
+
+        assertTrue(bothAreEmptyOrBothArePresent(patternSetDTO.location(), patternSet.getLocation("")));
+        assertEquals(patternSetDTO.location(), patternSet.getLocation(""));
+        assertTrue(bothAreEmptyOrBothArePresent(patternSetDTO.includesLocation(), patternSet.getLocation("includes")));
+        assertEquals(patternSetDTO.includesLocation(), patternSet.getLocation("includes"));
+        assertTrue(bothAreEmptyOrBothArePresent(patternSetDTO.excludesLocation(), patternSet.getLocation("excludes")));
+        assertEquals(patternSetDTO.excludesLocation(), patternSet.getLocation("excludes"));
+    }
+
+    private void assertEquals(ExtensionDTO extensionDTO, Extension extension) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertThat(extensionDTO.groupId()).isEqualTo(extension.getGroupId());
+        assertThat(extensionDTO.artifactId()).isEqualTo(extension.getArtifactId());
+        assertThat(extensionDTO.version()).isEqualTo(extension.getVersion());
+        assertLocationsAreEqual(extensionDTO, extension);
+
+        assertTrue(bothAreEmptyOrBothArePresent(extensionDTO.location(), extension.getLocation("")));
+        assertEquals(extensionDTO.location(), extension.getLocation(""));
+        assertTrue(bothAreEmptyOrBothArePresent(extensionDTO.groupIdLocation(), extension.getLocation("groupId")));
+        assertEquals(extensionDTO.groupIdLocation(), extension.getLocation("groupId"));
+        assertTrue(bothAreEmptyOrBothArePresent(extensionDTO.artifactIdLocation(), extension.getLocation("artifactId")));
+        assertEquals(extensionDTO.artifactIdLocation(), extension.getLocation("artifactId"));
+        assertTrue(bothAreEmptyOrBothArePresent(extensionDTO.versionLocation(), extension.getLocation("version")));
+        assertEquals(extensionDTO.versionLocation(), extension.getLocation("version"));
+    }
+
+    @Test
+    void createProjectDTO_shouldMapProfilesCorrectly() throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertListsAreEqual(generatedProjectDTO.profiles(), validModel.getProfiles(), this::assertEquals);
+    }
+
+    private void assertEquals(ProfileDTO profileDTO, Profile profile) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertEquals(profileDTO.modelBase(), profile);
+        assertThat(profileDTO.id()).isEqualTo(profile.getId());
+        assertEquals(profileDTO.activation(), profile.getActivation());
+        assertEquals(profileDTO.build(), profile.getBuild());
+    }
+
+    private void assertEquals(ActivationDTO activationDTO, Activation activation) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertThat(activationDTO.activeByDefault()).isEqualTo(activation.isActiveByDefault());
+        assertThat(activationDTO.jdk()).isEqualTo(activation.getJdk());
+        assertEquals(activationDTO.os(), activation.getOs());
+        assertEquals(activationDTO.property(), activation.getProperty());
+        assertEquals(activationDTO.file(), activation.getFile());
+        assertLocationsAreEqual(activationDTO, activation);
+
+        assertTrue(bothAreEmptyOrBothArePresent(activationDTO.location(), activation.getLocation("")));
+        assertEquals(activationDTO.location(), activation.getLocation(""));
+        assertTrue(bothAreEmptyOrBothArePresent(activationDTO.activeByDefaultLocation(), activation.getLocation("activeByDefault")));
+        assertEquals(activationDTO.activeByDefaultLocation(), activation.getLocation("activeByDefault"));
+        assertTrue(bothAreEmptyOrBothArePresent(activationDTO.jdkLocation(), activation.getLocation("jdk")));
+        assertEquals(activationDTO.jdkLocation(), activation.getLocation("jdk"));
+        assertTrue(bothAreEmptyOrBothArePresent(activationDTO.osLocation(), activation.getLocation("os")));
+        assertEquals(activationDTO.osLocation(), activation.getLocation("os"));
+        assertTrue(bothAreEmptyOrBothArePresent(activationDTO.propertyLocation(), activation.getLocation("property")));
+        assertEquals(activationDTO.propertyLocation(), activation.getLocation("property"));
+        assertTrue(bothAreEmptyOrBothArePresent(activationDTO.fileLocation(), activation.getLocation("file")));
+        assertEquals(activationDTO.fileLocation(), activation.getLocation("file"));
+    }
+
+    private void assertEquals(ActivationOsDTO activationOsDTO, ActivationOS activationOS) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertThat(activationOsDTO.name()).isEqualTo(activationOS.getName());
+        assertThat(activationOsDTO.family()).isEqualTo(activationOS.getFamily());
+        assertThat(activationOsDTO.arch()).isEqualTo(activationOS.getArch());
+        assertThat(activationOsDTO.version()).isEqualTo(activationOS.getVersion());
+        assertLocationsAreEqual(activationOsDTO, activationOS);
+
+        assertTrue(bothAreEmptyOrBothArePresent(activationOsDTO.location(), activationOS.getLocation("")));
+        assertEquals(activationOsDTO.location(), activationOS.getLocation(""));
+        assertTrue(bothAreEmptyOrBothArePresent(activationOsDTO.nameLocation(), activationOS.getLocation("name")));
+        assertEquals(activationOsDTO.nameLocation(), activationOS.getLocation("name"));
+        assertTrue(bothAreEmptyOrBothArePresent(activationOsDTO.familyLocation(), activationOS.getLocation("family")));
+        assertEquals(activationOsDTO.familyLocation(), activationOS.getLocation("family"));
+        assertTrue(bothAreEmptyOrBothArePresent(activationOsDTO.archLocation(), activationOS.getLocation("arch")));
+        assertEquals(activationOsDTO.archLocation(), activationOS.getLocation("arch"));
+        assertTrue(bothAreEmptyOrBothArePresent(activationOsDTO.versionLocation(), activationOS.getLocation("version")));
+        assertEquals(activationOsDTO.versionLocation(), activationOS.getLocation("version"));
+    }
+
+    private void assertEquals(ActivationPropertyDTO activationPropertyDTO, ActivationProperty activationProperty) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertThat(activationPropertyDTO.name()).isEqualTo(activationProperty.getName());
+        assertThat(activationPropertyDTO.value()).isEqualTo(activationProperty.getValue());
+        assertLocationsAreEqual(activationPropertyDTO, activationProperty);
+
+        assertTrue(bothAreEmptyOrBothArePresent(activationPropertyDTO.location(), activationProperty.getLocation("")));
+        assertEquals(activationPropertyDTO.location(), activationProperty.getLocation(""));
+        assertTrue(bothAreEmptyOrBothArePresent(activationPropertyDTO.nameLocation(), activationProperty.getLocation("name")));
+        assertEquals(activationPropertyDTO.nameLocation(), activationProperty.getLocation("name"));
+        assertTrue(bothAreEmptyOrBothArePresent(activationPropertyDTO.valueLocation(), activationProperty.getLocation("value")));
+        assertEquals(activationPropertyDTO.valueLocation(), activationProperty.getLocation("value"));
+    }
+
+    private void assertEquals(ActivationFileDTO activationFileDTO, ActivationFile activationFile) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertThat(activationFileDTO.missing()).isEqualTo(activationFile.getMissing());
+        assertThat(activationFileDTO.exists()).isEqualTo(activationFile.getExists());
+        assertLocationsAreEqual(activationFileDTO, activationFile);
+
+        assertTrue(bothAreEmptyOrBothArePresent(activationFileDTO.location(), activationFile.getLocation("")));
+        assertEquals(activationFileDTO.location(), activationFile.getLocation(""));
+        assertTrue(bothAreEmptyOrBothArePresent(activationFileDTO.location(), activationFile.getLocation("missing")));
+        assertEquals(activationFileDTO.location(), activationFile.getLocation("missing"));
+        assertTrue(bothAreEmptyOrBothArePresent(activationFileDTO.location(), activationFile.getLocation("exists")));
+        assertEquals(activationFileDTO.location(), activationFile.getLocation("exists"));
+    }
+
+    @Test
+    void createProjectDTO_shouldMapModelEncodingCorrectly() {
+        assertThat(generatedProjectDTO.modelEncodings()).isEqualTo(validModel.getModelEncoding());
     }
 }

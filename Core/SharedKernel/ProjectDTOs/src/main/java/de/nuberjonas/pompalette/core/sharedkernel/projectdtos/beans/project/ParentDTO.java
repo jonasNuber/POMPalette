@@ -2,6 +2,7 @@ package de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.project;
 
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.input.InputLocationDTO;
 
+import java.io.Serializable;
 import java.util.Map;
 
 public record ParentDTO(
@@ -15,5 +16,5 @@ public record ParentDTO(
         InputLocationDTO artifactIdLocation,
         InputLocationDTO versionLocation,
         InputLocationDTO relativePathLocation
-) {
+) implements Serializable {
 }

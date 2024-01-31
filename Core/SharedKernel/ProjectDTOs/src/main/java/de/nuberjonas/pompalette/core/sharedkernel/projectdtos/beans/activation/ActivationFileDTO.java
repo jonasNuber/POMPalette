@@ -2,6 +2,7 @@ package de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.activation;
 
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.input.InputLocationDTO;
 
+import java.io.Serializable;
 import java.util.Map;
 
 public record ActivationFileDTO(
@@ -11,5 +12,5 @@ public record ActivationFileDTO(
         InputLocationDTO location,
         InputLocationDTO missingLocation,
         InputLocationDTO existsLocation
-) {
+) implements Serializable {
 }

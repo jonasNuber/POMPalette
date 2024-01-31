@@ -1,5 +1,6 @@
 package de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.input;
 
+import java.io.Serializable;
 import java.util.Map;
 
 public record InputLocationDTO(
@@ -9,5 +10,5 @@ public record InputLocationDTO(
         Map<Object, InputLocationDTO> locations,
         InputLocationDTO location
 
-) {
+) implements Serializable {
 }

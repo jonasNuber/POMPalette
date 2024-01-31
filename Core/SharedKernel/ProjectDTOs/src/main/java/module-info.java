@@ -11,4 +11,5 @@ module de.nuberjonas.pompalette.core.sharedkernel.projectdtos {
     exports de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.project;
 
     exports de.nuberjonas.pompalette.core.sharedkernel.projectdtos.factory;
+    exports de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.build.resource;
 }

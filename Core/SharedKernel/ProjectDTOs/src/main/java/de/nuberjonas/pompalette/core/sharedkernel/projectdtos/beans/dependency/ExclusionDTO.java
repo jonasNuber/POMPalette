@@ -2,6 +2,7 @@ package de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.dependency;
 
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.input.InputLocationDTO;
 
+import java.io.Serializable;
 import java.util.Map;
 
 public record ExclusionDTO(
@@ -11,5 +12,5 @@ public record ExclusionDTO(
         InputLocationDTO location,
         InputLocationDTO groupIdLocation,
         InputLocationDTO artifactIdLocation
-) {
+) implements Serializable {
 }

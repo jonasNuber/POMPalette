@@ -2,6 +2,7 @@ package de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.contributin
 
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.input.InputLocationDTO;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -20,5 +21,5 @@ public record MailingListDTO(
         InputLocationDTO postLocation,
         InputLocationDTO archiveLocation,
         InputLocationDTO otherArchivesLocation
-) {
+) implements Serializable {
 }

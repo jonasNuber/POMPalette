@@ -2,11 +2,12 @@ package de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.contributin
 
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.input.InputLocationDTO;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-public record ContributerDTO(
+public record ContributorDTO(
         String name,
         String email,
         String url,
@@ -25,5 +26,5 @@ public record ContributerDTO(
         InputLocationDTO rolesLocation,
         InputLocationDTO timezoneLocation,
         InputLocationDTO propertiesLocation
-) {
+) implements Serializable {
 }

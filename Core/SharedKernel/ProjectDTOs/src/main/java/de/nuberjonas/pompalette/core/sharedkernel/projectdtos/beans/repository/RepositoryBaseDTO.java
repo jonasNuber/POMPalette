@@ -5,14 +5,16 @@ import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.input.InputL
 import java.io.Serializable;
 import java.util.Map;
 
-public record RepositoryPolicyDTO(
-        boolean enabled,
-        String updatePolicy,
-        String checksumPolicy,
+public record RepositoryBaseDTO(
+        String id,
+        String name,
+        String url,
+        String layout,
         Map<Object, InputLocationDTO> locations,
         InputLocationDTO location,
-        InputLocationDTO enabledLocation,
-        InputLocationDTO updatePolicyLocation,
-        InputLocationDTO checksumPolicyLocation
+        InputLocationDTO idLocation,
+        InputLocationDTO nameLocation,
+        InputLocationDTO urlLocation,
+        InputLocationDTO layoutLocation
 ) implements Serializable {
 }

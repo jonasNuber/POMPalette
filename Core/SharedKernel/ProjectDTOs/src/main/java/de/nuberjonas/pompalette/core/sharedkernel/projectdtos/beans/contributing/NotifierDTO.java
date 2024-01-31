@@ -2,6 +2,7 @@ package de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.contributin
 
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.input.InputLocationDTO;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Properties;
 
@@ -21,5 +22,5 @@ public record NotifierDTO(
         InputLocationDTO sendOnWarningLocation,
         InputLocationDTO addressLocation,
         InputLocationDTO configurationLocation
-) {
+) implements Serializable {
 }
