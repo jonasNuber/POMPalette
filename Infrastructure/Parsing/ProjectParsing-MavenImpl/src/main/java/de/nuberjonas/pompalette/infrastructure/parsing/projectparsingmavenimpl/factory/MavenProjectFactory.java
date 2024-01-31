@@ -1,8 +1,10 @@
 package de.nuberjonas.pompalette.infrastructure.parsing.projectparsingmavenimpl.factory;
 
+import de.nuberjonas.pompalette.core.sharedkernel.exceptions.FactoryException;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.build.BuildDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.contributing.*;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.dependency.DependencyDTO;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.dependency.ExclusionDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.input.InputLocationDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.input.InputSourceDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.management.CiManagementDTO;
@@ -56,10 +58,10 @@ public class MavenProjectFactory implements ProjectFactory<Model> {
                        false,
                        project.getInceptionYear(),
                        createOrganizationDTO(project.getOrganization()),
-                       createList(project.getLicenses(), (license) -> createLicenseDTO(license)),
-                       createList(project.getDevelopers(), (developer) -> createContributorDTO(developer)),
-                       createList(project.getContributors(), (contributor) -> createContributorDTO(contributor)),
-                       createList(project.getMailingLists(), (mailingList) -> createMailingListDTO(mailingList)),
+                       createList(project.getLicenses(), this::createLicenseDTO),
+                       createList(project.getDevelopers(), this::createContributorDTO),
+                       createList(project.getContributors(), this::createContributorDTO),
+                       createList(project.getMailingLists(), this::createMailingListDTO),
                        createPrerequisitesDTO(project.getPrerequisites()),
                        createScmDTO(project.getScm()),
                        createIssueManagementDTO(project.getIssueManagement()),
@@ -106,26 +108,26 @@ public class MavenProjectFactory implements ProjectFactory<Model> {
     @SuppressWarnings("unchecked")
     private Map<Object, InputLocationDTO> createInputLocationDTOMap(Object object) {
         try {
-            Field field = getFieldIncludingSuperclass(object.getClass(), "locations");
+            Field field = getLocationsField(object.getClass());
             field.setAccessible(true);
 
             return createInputLocationDTOMap((Map<Object, InputLocation>)field.get(object));
 
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            throw new FactoryException("Could not map locations for DTO generation", e);
         }
     }
 
-    private Field getFieldIncludingSuperclass(Class<?> clazz, String fieldName) throws NoSuchFieldException {
+    private Field getLocationsField(Class<?> clazz) throws NoSuchFieldException {
         while (clazz != null) {
             try {
-                return clazz.getDeclaredField(fieldName);
+                return clazz.getDeclaredField("locations");
             } catch (NoSuchFieldException e) {
                 clazz = clazz.getSuperclass();
             }
         }
 
-        throw new NoSuchFieldException(fieldName);
+        throw new NoSuchFieldException("locations");
     }
 
     private Map<Object, InputLocationDTO> createInputLocationDTOMap(Map<Object, InputLocation> inputLocationMap) {
@@ -298,9 +300,9 @@ public class MavenProjectFactory implements ProjectFactory<Model> {
     private BuildDTO createBuildDTO(Build build){
         return new BuildDTO(
                 createList(build.getPlugins(), this::createPluginDTO),
-                null,
-                null,
-                null,
+                createInputLocationDTOMap(build),
+                createInputLocationDTO(build.getLocation("")),
+                createInputLocationDTO(build.getLocation("plugins   ")),
                 null,
                 null,
                 null,
@@ -349,27 +351,37 @@ public class MavenProjectFactory implements ProjectFactory<Model> {
 
     private DependencyDTO createDependencyDTO(Dependency dependency){
         return new DependencyDTO(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                false,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
+                dependency.getGroupId(),
+                dependency.getArtifactId(),
+                dependency.getVersion(),
+                dependency.getType(),
+                dependency.getClassifier(),
+                dependency.getScope(),
+                dependency.getSystemPath(),
+                createList(dependency.getExclusions(), this::createExclusionDTO),
+                dependency.isOptional(),
+                createInputLocationDTOMap(dependency),
+                createInputLocationDTO(dependency.getLocation("")),
+                createInputLocationDTO(dependency.getLocation("groupId")),
+                createInputLocationDTO(dependency.getLocation("artifactId")),
+                createInputLocationDTO(dependency.getLocation("version")),
+                createInputLocationDTO(dependency.getLocation("type")),
+                createInputLocationDTO(dependency.getLocation("classifier")),
+                createInputLocationDTO(dependency.getLocation("scope")),
+                createInputLocationDTO(dependency.getLocation("systemPath")),
+                createInputLocationDTO(dependency.getLocation("exclusions")),
+                createInputLocationDTO(dependency.getLocation("optional"))
         );
+    }
+
+    private ExclusionDTO createExclusionDTO(Exclusion exclusion){
+        return new ExclusionDTO(
+                exclusion.getGroupId(),
+                exclusion.getArtifactId(),
+                createInputLocationDTOMap(exclusion),
+                createInputLocationDTO(exclusion.getLocation("")),
+                createInputLocationDTO(exclusion.getLocation("groupId")),
+                createInputLocationDTO(exclusion.getLocation("artifactId")));
     }
 
     @Override
