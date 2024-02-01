@@ -5,19 +5,14 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>de.nuberjonas.pompalette</groupId>
-        <artifactId>core</artifactId>
+        <artifactId>mapping</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>de.nuberjonas.pompalette.core</groupId>
-    <artifactId>sharedkernel</artifactId>
+    <groupId>de.nuberjonas.pompalette.mapping</groupId>
+    <artifactId>de.nuberjonas.pompalette.mapping.mapping-api</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
 
-    <name>SharedKernel</name>
-
-    <modules>
-        <module>ProjectDTOs</module>
-        <module>ServiceLoading</module>
-    </modules>
+    <name>Mapping-API</name>
 </project>

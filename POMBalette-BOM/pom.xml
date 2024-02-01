@@ -143,18 +143,13 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>de.nuberjonas.pompalette.core.model-api</groupId>
-                <artifactId>de.nuberjonas.pompalette.core.model-api.project-model</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>de.nuberjonas.pompalette.core.sharedkernel</groupId>
                 <artifactId>de.nuberjonas.pompalette.core.sharedkernel.project-dtos</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>de.nuberjonas.pompalette.core.sharedkernel</groupId>
-                <artifactId>de.nuberjonas.pompalette.core.sharedkernel.exceptions</artifactId>
+                <artifactId>de.nuberjonas.pompalette.core.sharedkernel.serviceloading</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -163,8 +158,8 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>de.nuberjonas.pompalette.infrastructure.parsing</groupId>
-                <artifactId>de.nuberjonas.pompalette.infrastructure.parsing.project-parsing-maven-impl</artifactId>
+                <groupId>de.nuberjonas.pompalette.mapping</groupId>
+                <artifactId>de.nuberjonas.pompalette.mapping.mapping-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

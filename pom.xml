@@ -17,6 +17,7 @@
         <module>UserInterface</module>
         <module>Application</module>
         <module>Tests</module>
+        <module>Mapping</module>
     </modules>
 
     <properties>

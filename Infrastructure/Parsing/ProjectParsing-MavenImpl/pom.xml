@@ -60,8 +60,8 @@
             <artifactId>de.nuberjonas.pompalette.infrastructure.parsing.project-parsing-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>de.nuberjonas.pompalette.core.sharedkernel</groupId>
-            <artifactId>de.nuberjonas.pompalette.core.sharedkernel.exceptions</artifactId>
+            <groupId>de.nuberjonas.pompalette.mapping</groupId>
+            <artifactId>de.nuberjonas.pompalette.mapping.mapping-api</artifactId>
         </dependency>
     </dependencies>
 </project>

@@ -1,6 +1,5 @@
 package de.nuberjonas.pompalette.infrastructure.parsing.projectparsingmavenimpl.factory;
 
-import de.nuberjonas.pompalette.core.sharedkernel.exceptions.FactoryException;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.activation.ActivationDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.activation.ActivationFileDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.activation.ActivationOsDTO;
@@ -31,7 +30,8 @@ import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.repository.D
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.repository.RepositoryBaseDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.repository.RepositoryDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.repository.RepositoryPolicyDTO;
-import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.factory.ProjectFactory;
+import de.nuberjonas.pompalette.mapping.mappingapi.exceptions.MappingException;
+import de.nuberjonas.pompalette.mapping.mappingapi.mapper.MapperService;
 import org.apache.maven.model.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -54,7 +54,7 @@ class MavenProjectFactoryTest {
     private static ProjectDTO validProjectDTO;
     private static ProjectDTO generatedProjectDTO;
 
-    private static ProjectFactory<Model> factory;
+    private static MapperService<Model, ProjectDTO> factory;
 
     @BeforeAll
     public static void initialize(){
@@ -63,7 +63,7 @@ class MavenProjectFactoryTest {
         validProjectDTO = deserializeObject( "src/test/resources/factoryTest/validProjectDTO.ser", ProjectDTO.class);
         validModel = deserializeObject( "src/test/resources/factoryTest/validModel.ser", Model.class);
 
-        generatedProjectDTO = factory.createProjectDTO(validModel).get();
+        generatedProjectDTO = factory.mapToDestination(validModel);
         //generatedModel = (Model) factory.createProject(validProjectDTO).get();
     }
 
@@ -73,17 +73,17 @@ class MavenProjectFactoryTest {
             obj = clazz.cast(ois.readObject());
             System.out.println("Object has been deserialized from " + fileName);
         } catch (IOException | ClassNotFoundException e) {
-            throw new FactoryException("Could Not deserialize Test File");
+            throw new MappingException("Could Not deserialize Test File");
         }
         return obj;
     }
 
-    @Test
-    void createProjectDTOWithEmptyModel_shouldReturnEmptyOptional(){
-        var projectDTO = factory.createProjectDTO(null);
-
-        assertThat(projectDTO).isEmpty();
-    }
+//    @Test
+//    void createProjectDTOWithEmptyModel_shouldReturnEmptyOptional(){
+//        var projectDTO = factory.createProjectDTO(null);
+//
+//        assertThat(projectDTO).isEmpty();
+//    }
 
     @Test
     void createProjectDTO_shouldMapModelBaseCorrectly() throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {

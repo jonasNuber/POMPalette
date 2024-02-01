@@ -1,6 +1,5 @@
 package de.nuberjonas.pompalette.infrastructure.parsing.projectparsingmavenimpl.factory;
 
-import de.nuberjonas.pompalette.core.sharedkernel.exceptions.FactoryException;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.activation.ActivationDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.activation.ActivationFileDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.activation.ActivationOsDTO;
@@ -31,7 +30,9 @@ import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.repository.D
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.repository.RepositoryBaseDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.repository.RepositoryDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.repository.RepositoryPolicyDTO;
-import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.factory.ProjectFactory;
+import de.nuberjonas.pompalette.mapping.mappingapi.exceptions.MappingException;
+import de.nuberjonas.pompalette.mapping.mappingapi.mapper.ListMapper;
+import de.nuberjonas.pompalette.mapping.mappingapi.mapper.MapperService;
 import org.apache.maven.model.*;
 
 import java.lang.reflect.Field;
@@ -40,7 +41,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class MavenProjectFactory implements ProjectFactory<Model> {
+public class MavenProjectFactory implements MapperService<Model, ProjectDTO> {
 
     private static final String GROUP_ID = "groupId";
     private static final String ARTIFACT_ID = "artifactId";
@@ -48,35 +49,33 @@ public class MavenProjectFactory implements ProjectFactory<Model> {
     private static final String CONFIGURATION = "configuration";
 
     @Override
-    public Optional<ProjectDTO> createProjectDTO(Model project) {
-       return project == null ? Optional.empty() : Optional.of(
-               new ProjectDTO(
-                       createModelBaseDTO(project),
-                       project.getModelVersion(),
-                       createParentDTO(project.getParent()),
-                       project.getGroupId(),
-                       project.getArtifactId(),
-                       project.getVersion(),
-                       project.getPackaging(),
-                       project.getName(),
-                       project.getDescription(),
-                       project.getUrl(),
-                       project.isChildProjectUrlInheritAppendPath(),
-                       project.getInceptionYear(),
-                       createOrganizationDTO(project.getOrganization()),
-                       createList(project.getLicenses(), this::createLicenseDTO),
-                       createList(project.getDevelopers(), this::createDeveloperDTO),
-                       createList(project.getContributors(), this::createContributorDTO),
-                       createList(project.getMailingLists(), this::createMailingListDTO),
-                       createPrerequisitesDTO(project.getPrerequisites()),
-                       createScmDTO(project.getScm()),
-                       createIssueManagementDTO(project.getIssueManagement()),
-                       createCiManagementDTO(project.getCiManagement()),
-                       createBuildDTO(project.getBuild()),
-                       createList(project.getProfiles(), this::createProfileDTO),
-                       project.getModelEncoding()
-               )
-       );
+    public ProjectDTO mapToDestination(Model toMap) {
+        return new ProjectDTO(
+                createModelBaseDTO(toMap),
+                toMap.getModelVersion(),
+                createParentDTO(toMap.getParent()),
+                toMap.getGroupId(),
+                toMap.getArtifactId(),
+                toMap.getVersion(),
+                toMap.getPackaging(),
+                toMap.getName(),
+                toMap.getDescription(),
+                toMap.getUrl(),
+                toMap.isChildProjectUrlInheritAppendPath(),
+                toMap.getInceptionYear(),
+                createOrganizationDTO(toMap.getOrganization()),
+                ListMapper.mapList(toMap.getLicenses(), this::createLicenseDTO),
+                ListMapper.mapList(toMap.getDevelopers(), this::createDeveloperDTO),
+                ListMapper.mapList(toMap.getContributors(), this::createContributorDTO),
+                ListMapper.mapList(toMap.getMailingLists(), this::createMailingListDTO),
+                createPrerequisitesDTO(toMap.getPrerequisites()),
+                createScmDTO(toMap.getScm()),
+                createIssueManagementDTO(toMap.getIssueManagement()),
+                createCiManagementDTO(toMap.getCiManagement()),
+                createBuildDTO(toMap.getBuild()),
+                ListMapper.mapList(toMap.getProfiles(), this::createProfileDTO),
+                toMap.getModelEncoding()
+        );
     }
 
     private ModelBaseDTO createModelBaseDTO(ModelBase modelBase){
@@ -85,9 +84,9 @@ public class MavenProjectFactory implements ProjectFactory<Model> {
                 createDistributionManagementDTO(modelBase.getDistributionManagement()),
                 modelBase.getProperties(),
                 createDependencyManagementDTO(modelBase.getDependencyManagement()),
-                createList(modelBase.getDependencies(), this::createDependencyDTO),
-                createList(modelBase.getRepositories(), this::createRepositoryDTO),
-                createList(modelBase.getPluginRepositories(), this::createRepositoryDTO),
+                ListMapper.mapList(modelBase.getDependencies(), this::createDependencyDTO),
+                ListMapper.mapList(modelBase.getRepositories(), this::createRepositoryDTO),
+                ListMapper.mapList(modelBase.getPluginRepositories(), this::createRepositoryDTO),
                 createReportingDTO(modelBase.getReporting()),
                 createInputLocationDTOMap(modelBase),
                 createInputLocationDTO(modelBase.getLocation("")),
@@ -159,7 +158,7 @@ public class MavenProjectFactory implements ProjectFactory<Model> {
             return createInputLocationDTOMap((Map<Object, InputLocation>)field.get(object));
 
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new FactoryException("Could not map locations for DTO generation", e);
+            throw new MappingException("Could not map locations for DTO generation", e);
         }
     }
 
@@ -248,7 +247,7 @@ public class MavenProjectFactory implements ProjectFactory<Model> {
 
     private DependencyManagementDTO createDependencyManagementDTO(DependencyManagement dependencyManagement){
         return new DependencyManagementDTO(
-                createList(dependencyManagement.getDependencies(), this::createDependencyDTO),
+                ListMapper.mapList(dependencyManagement.getDependencies(), this::createDependencyDTO),
                 createInputLocationDTOMap(dependencyManagement),
                 createInputLocationDTO(dependencyManagement.getLocation("")),
                 createInputLocationDTO(dependencyManagement.getLocation("dependencies"))
@@ -259,7 +258,7 @@ public class MavenProjectFactory implements ProjectFactory<Model> {
         return new ReportingDTO(
                 reporting.isExcludeDefaults(),
                 reporting.getOutputDirectory(),
-                createList(reporting.getPlugins(), this::createReportPluginDTO),
+                ListMapper.mapList(reporting.getPlugins(), this::createReportPluginDTO),
                 createInputLocationDTOMap(reporting),
                 createInputLocationDTO(reporting.getLocation("")),
                 createInputLocationDTO(reporting.getLocation("excludeDefaults")),
@@ -274,7 +273,7 @@ public class MavenProjectFactory implements ProjectFactory<Model> {
                 reportPlugin.getGroupId(),
                 reportPlugin.getArtifactId(),
                 reportPlugin.getVersion(),
-                createList(reportPlugin.getReportSets(), this::createReportSetDTO)
+                ListMapper.mapList(reportPlugin.getReportSets(), this::createReportSetDTO)
         );
     }
 
@@ -413,7 +412,7 @@ public class MavenProjectFactory implements ProjectFactory<Model> {
         return new CiManagementDTO(
                 ciManagement.getSystem(),
                 ciManagement.getUrl(),
-                createList(ciManagement.getNotifiers(), this::createNotifierDTO),
+                ListMapper.mapList(ciManagement.getNotifiers(), this::createNotifierDTO),
                 createInputLocationDTOMap(ciManagement),
                 createInputLocationDTO(ciManagement.getLocation("")),
                 createInputLocationDTO(ciManagement.getLocation("system")),
@@ -448,7 +447,7 @@ public class MavenProjectFactory implements ProjectFactory<Model> {
                 build.getTestSourceDirectory(),
                 build.getOutputDirectory(),
                 build.getTestOutputDirectory(),
-                createList(build.getExtensions(), this::createExtensionDTO)
+                ListMapper.mapList(build.getExtensions(), this::createExtensionDTO)
         );
     }
 
@@ -456,8 +455,8 @@ public class MavenProjectFactory implements ProjectFactory<Model> {
         return new BuildBaseDTO(
                 createPluginConfigurationDTO(buildBase),
                 buildBase.getDefaultGoal(),
-                createList(buildBase.getResources(), this::createResourceDTO),
-                createList(buildBase.getTestResources(), this::createResourceDTO),
+                ListMapper.mapList(buildBase.getResources(), this::createResourceDTO),
+                ListMapper.mapList(buildBase.getTestResources(), this::createResourceDTO),
                 buildBase.getDirectory(),
                 buildBase.getFinalName(),
                 buildBase.getFilters()
@@ -474,7 +473,7 @@ public class MavenProjectFactory implements ProjectFactory<Model> {
 
     private PluginContainerDTO createPluginContainerDTO(PluginContainer pluginContainer){
         return new PluginContainerDTO(
-                createList(pluginContainer.getPlugins(), this::createPluginDTO),
+                ListMapper.mapList(pluginContainer.getPlugins(), this::createPluginDTO),
                 createInputLocationDTOMap(pluginContainer),
                 createInputLocationDTO(pluginContainer.getLocation("")),
                 createInputLocationDTO(pluginContainer.getLocation("plugins"))
@@ -488,8 +487,8 @@ public class MavenProjectFactory implements ProjectFactory<Model> {
                 plugin.getArtifactId(),
                 plugin.getVersion(),
                 plugin.getExtensions(),
-                createList(plugin.getExecutions(), this::createPluginExecutionDTO),
-                createList(plugin.getDependencies(), this::createDependencyDTO));
+                ListMapper.mapList(plugin.getExecutions(), this::createPluginExecutionDTO),
+                ListMapper.mapList(plugin.getDependencies(), this::createDependencyDTO));
     }
 
     private ConfigurationContainerDTO createConfigurationContainerDTO(ConfigurationContainer configurationContainer){
@@ -521,7 +520,7 @@ public class MavenProjectFactory implements ProjectFactory<Model> {
                 dependency.getClassifier(),
                 dependency.getScope(),
                 dependency.getSystemPath(),
-                createList(dependency.getExclusions(), this::createExclusionDTO),
+                ListMapper.mapList(dependency.getExclusions(), this::createExclusionDTO),
                 dependency.isOptional(),
                 createInputLocationDTOMap(dependency),
                 createInputLocationDTO(dependency.getLocation("")),
@@ -657,7 +656,7 @@ public class MavenProjectFactory implements ProjectFactory<Model> {
     }
 
     @Override
-    public Optional<Model> createProject(ProjectDTO projectDTO) {
-        return Optional.empty();
+    public Model mapToSource(ProjectDTO toMap) {
+        return null;
     }
 }
