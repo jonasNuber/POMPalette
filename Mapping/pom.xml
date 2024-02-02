@@ -18,5 +18,6 @@
 
     <modules>
         <module>Mapping-API</module>
+        <module>Maven-Mapping</module>
     </modules>
 </project>
