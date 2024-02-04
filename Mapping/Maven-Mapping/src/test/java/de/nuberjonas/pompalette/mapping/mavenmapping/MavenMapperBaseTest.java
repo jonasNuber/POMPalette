@@ -2,6 +2,7 @@ package de.nuberjonas.pompalette.mapping.mavenmapping;
 
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.contributing.ContributorDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.contributing.DeveloperDTO;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.contributing.OrganizationDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.dependency.DependencyDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.dependency.DependencyManagementDTO;
 import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.dependency.ExclusionDTO;
@@ -479,5 +480,41 @@ public abstract class MavenMapperBaseTest {
        }
        
        assertThat(developerDTO.id()).isEqualTo(developer.getId());
+    }
+
+    protected Organization validOrganization(){
+        var organization = new Organization();
+        organization.setName("Example Organization");
+        organization.setUrl("https://www.example.com");
+        organization.setLocation("", validInputLocation());
+        organization.setLocation("name", validInputLocation());
+        organization.setLocation("url", validInputLocation());
+
+        return organization;
+    }
+
+    protected OrganizationDTO validOrganizationDTO(){
+        return new OrganizationDTO(
+                "Example Organization",
+                "https://www.example.com",
+                null,
+                validInputLocationDTO(),
+                validInputLocationDTO(),
+                validInputLocationDTO()
+        );
+    }
+
+    protected void assertEquals(OrganizationDTO organizationDTO, Organization organization) throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+        assertTrue(bothAreEmptyOrBothArePresent(organizationDTO, organization));
+        assertThat(organizationDTO.name()).isEqualTo(organization.getName());
+        assertThat(organizationDTO.url()).isEqualTo(organization.getUrl());
+        assertLocationsAreEqual(organizationDTO, organization);
+
+        assertTrue(bothAreEmptyOrBothArePresent(organizationDTO.location(), organization.getLocation("")));
+        assertEquals(organizationDTO.location(), organization.getLocation(""));
+        assertTrue(bothAreEmptyOrBothArePresent(organizationDTO.nameLocation(), organization.getLocation("name")));
+        assertEquals(organizationDTO.nameLocation(), organization.getLocation("name"));
+        assertTrue(bothAreEmptyOrBothArePresent(organizationDTO.urlLocation(), organization.getLocation("url")));
+        assertEquals(organizationDTO.urlLocation(), organization.getLocation("url"));
     }
 }

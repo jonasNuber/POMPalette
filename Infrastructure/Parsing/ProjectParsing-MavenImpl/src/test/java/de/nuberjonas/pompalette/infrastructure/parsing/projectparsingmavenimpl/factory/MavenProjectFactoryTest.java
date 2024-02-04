@@ -78,13 +78,6 @@ class MavenProjectFactoryTest {
         return obj;
     }
 
-//    @Test
-//    void createProjectDTOWithEmptyModel_shouldReturnEmptyOptional(){
-//        var projectDTO = factory.createProjectDTO(null);
-//
-//        assertThat(projectDTO).isEmpty();
-//    }
-
     @Test
     void createProjectDTO_shouldMapModelBaseCorrectly() throws NoSuchFieldException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
         assertEquals(generatedProjectDTO.modelBase(), validModel);
