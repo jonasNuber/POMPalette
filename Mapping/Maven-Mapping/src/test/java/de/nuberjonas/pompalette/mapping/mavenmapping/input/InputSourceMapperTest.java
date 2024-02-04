@@ -17,10 +17,17 @@ class InputSourceMapperTest extends MavenMapperBaseTest {
     }
 
     @Test
-    void mapToDTO_ShouldMapModelCorrectly(){
+    void mapToDTO_ShouldMapInputSourceCorrectlyForValidInput(){
+        var expected = validInputSource();
+
+        var actual = InputSourceMapper.mapToDTO(expected);
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void mapToDTO_ShouldMapInputSourceCorrectlyForEmptyInput(){
         var expected = new InputSource();
-        expected.setModelId("someModelID");
-        expected.setLocation("/some/location");
 
         var actual = InputSourceMapper.mapToDTO(expected);
 
@@ -35,11 +42,16 @@ class InputSourceMapperTest extends MavenMapperBaseTest {
     }
 
     @Test
-    void mapToModel_ShouldMapDtoCorrectly(){
-        var expected = new InputSourceDTO(
-                "someModelID",
-                "/some/location"
-        );
+    void mapToModel_ShouldMapInputSourceDtoCorrectlyForValidInput(){
+        var expected = validInputSourceDTO();
+
+        var actual = InputSourceMapper.mapToModel(expected);
+
+        assertEquals(actual, expected);
+    }
+    @Test
+    void mapToModel_ShouldMapInputSourceDtoCorrectlyForEmptyInput(){
+        var expected = new InputSourceDTO(null, null);
 
         var actual = InputSourceMapper.mapToModel(expected);
 

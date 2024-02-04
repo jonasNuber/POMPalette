@@ -7,7 +7,9 @@ import java.util.Optional;
 
 public class InputSourceMapper{
 
-    private InputSourceMapper(){}
+    private InputSourceMapper(){
+        throw new AssertionError("Utility class, cannot be instantiated");
+    }
 
     public static InputSourceDTO mapToDTO(InputSource inputSource) {
         return Optional.ofNullable(inputSource)

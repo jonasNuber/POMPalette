@@ -1,15 +1,22 @@
 package de.nuberjonas.pompalette.mapping.mappingapi.mapper;
 
+import de.nuberjonas.pompalette.mapping.mappingapi.exceptions.MappingException;
+
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ListMapper {
 
-    private ListMapper(){}
+    private ListMapper(){
+        throw new AssertionError("Utility class, cannot be instantiated");
+    }
 
     public static <I, O> List<O> mapList(List<I> items, FunctionalMapper<I, O> functionalMapper) {
-        return items.stream()
+        if(functionalMapper == null){
+            throw new MappingException("No mapping function specified");
+        }
+
+        return (items != null) ? items.stream()
                 .map(functionalMapper::map)
-                .collect(Collectors.toList());
+                .toList() : null;
     }
 }

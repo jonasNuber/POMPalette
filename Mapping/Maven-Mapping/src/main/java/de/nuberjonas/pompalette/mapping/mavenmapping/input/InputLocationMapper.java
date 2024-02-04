@@ -13,28 +13,44 @@ import java.util.stream.Collectors;
 
 public class InputLocationMapper {
 
+    private InputLocationMapper(){
+        throw new AssertionError("Utility class, cannot be instantiated");
+    }
+
     public static InputLocationDTO mapToDTO(InputLocation inputLocation){
          return Optional.ofNullable(inputLocation)
                 .map(src -> new InputLocationDTO(
                         src.getLineNumber(),
                         src.getColumnNumber(),
                         InputSourceMapper.mapToDTO(src.getSource()),
-                        mapInputLocationDTOMap(src.getLocations()),
+                        mapToInputLocationDTOMap(src.getLocations()),
                         mapToDTO(src.getLocation(""))))
                 .orElse(null);
     }
 
     @SuppressWarnings("unchecked")
-    public static Map<Object, InputLocationDTO> mapInputLocationDTOMap(Object object) {
+    public static Map<Object, InputLocationDTO> mapToInputLocationDTOMap(Object objectContainingMap) {
+        if(objectContainingMap == null){
+            return null;
+        }
+
+        if(classIsNotInModelPackage(objectContainingMap)){
+            throw new MappingException("Object is not part of the Maven model package or the model definition. The Locations can not be extracted");
+        }
+
         try {
-            Field field = getLocationsField(object.getClass());
+            Field field = getLocationsField(objectContainingMap.getClass());
             field.setAccessible(true);
 
-            return mapInputLocationDTOMap((Map<Object, InputLocation>)field.get(object));
+            return mapToInputLocationDTOMap((Map<Object, InputLocation>)field.get(objectContainingMap));
 
         } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new MappingException("Could not map locations for DTO generation", e);
         }
+    }
+
+    private static boolean classIsNotInModelPackage(Object object){
+        return !"org.apache.maven.model".equals(object.getClass().getPackageName());
     }
 
     private static Field getLocationsField(Class<?> clazz) throws NoSuchFieldException {
@@ -49,7 +65,7 @@ public class InputLocationMapper {
         throw new NoSuchFieldException("The locations field does not exist!");
     }
 
-    private static Map<Object, InputLocationDTO> mapInputLocationDTOMap(Map<Object, InputLocation> inputLocationMap) {
+    private static Map<Object, InputLocationDTO> mapToInputLocationDTOMap(Map<Object, InputLocation> inputLocationMap) {
         return convertMap(inputLocationMap, InputLocationMapper::mapToDTO);
     }
 
@@ -76,13 +92,13 @@ public class InputLocationMapper {
                 InputSourceMapper.mapToModel(inputLocationDTO.source())
         );
 
-        inputLocation.setLocations(mapInputLocationMap(inputLocationDTO.locations()));
+        inputLocation.setLocations(mapToInputLocationMap(inputLocationDTO.locations()));
         inputLocation.setLocation("", mapToModel(inputLocationDTO.location()));
 
         return inputLocation;
     }
 
-    public static Map<Object, InputLocation> mapInputLocationMap(Map<Object, InputLocationDTO> inputLocationMap) {
+    public static Map<Object, InputLocation> mapToInputLocationMap(Map<Object, InputLocationDTO> inputLocationMap) {
         return convertMap(inputLocationMap, InputLocationMapper::mapToModel);
     }
 }
