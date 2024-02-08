@@ -1,7 +1,5 @@
 package de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.build;
 
-import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.project.ExtensionDTO;
-
 import java.io.Serializable;
 import java.util.List;
 

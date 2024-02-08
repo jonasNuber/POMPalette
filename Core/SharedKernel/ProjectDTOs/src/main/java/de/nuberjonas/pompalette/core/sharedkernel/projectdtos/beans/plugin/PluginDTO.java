@@ -10,7 +10,7 @@ public record PluginDTO(
         String groupId,
         String artifactId,
         String version,
-        String extensions,
+        boolean extensions,
         List<PluginExecutionDTO> executions,
         List<DependencyDTO> dependencies
 ) implements Serializable {

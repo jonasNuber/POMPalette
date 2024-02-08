@@ -29,9 +29,9 @@ public class DeveloperMapper {
         var developer = new Developer();
 
         if(developerDTO.contributor() != null){
-            developer = SuperClassMapper.copyFields(ContributorMapper.mapToModel(developerDTO.contributor()), Developer.class);
+            developer = SuperClassMapper.mapFields(ContributorMapper.mapToModel(developerDTO.contributor()), Developer.class);
         }
-        
+
         developer.setId(developerDTO.id());
 
         return developer;

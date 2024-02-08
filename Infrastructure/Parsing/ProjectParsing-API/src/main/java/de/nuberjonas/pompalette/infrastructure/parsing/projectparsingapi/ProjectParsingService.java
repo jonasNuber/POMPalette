@@ -1,7 +1,7 @@
 package de.nuberjonas.pompalette.infrastructure.parsing.projectparsingapi;
 
-import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.project.MultiModuleProjectDTO;
-import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.project.ProjectDTO;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.MultiModuleProjectDTO;
+import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.ProjectDTO;
 
 import java.nio.file.Path;
 
