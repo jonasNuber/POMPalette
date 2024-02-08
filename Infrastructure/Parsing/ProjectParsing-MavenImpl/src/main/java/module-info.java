@@ -1,11 +1,11 @@
-module de.nuberjonas.pompalette.infrastructure.parsing.projectparsingmavenimpl {
-    requires de.nuberjonas.pompalette.infrastructure.parsing.projectparsingapi;
-    requires transitive de.nuberjonas.pompalette.core.sharedkernel.projectdtos;
+module org.nuberjonas.pompalette.infrastructure.parsing.projectparsingmavenimpl {
+    requires org.nuberjonas.pompalette.infrastructure.parsing.projectparsingapi;
+    requires transitive org.nuberjonas.pompalette.core.sharedkernel.projectdtos;
     requires de.nuberjonas.pompalette.mapping.mappingapi;
     requires maven.model;
 
-    exports de.nuberjonas.pompalette.infrastructure.parsing.projectparsingmavenimpl;
+    exports org.nuberjonas.pompalette.infrastructure.parsing.projectparsingmavenimpl;
 
-    provides de.nuberjonas.pompalette.infrastructure.parsing.projectparsingapi.ProjectParsingService
-            with de.nuberjonas.pompalette.infrastructure.parsing.projectparsingmavenimpl.MavenProjectParsingService;
+    provides org.nuberjonas.pompalette.infrastructure.parsing.projectparsingapi.ProjectParsingService
+            with org.nuberjonas.pompalette.infrastructure.parsing.projectparsingmavenimpl.MavenProjectParsingService;
 }

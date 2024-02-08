@@ -1,4 +1,4 @@
-module de.nuberjonas.pompalette.mapping.mappingapi {
-    exports de.nuberjonas.pompalette.mapping.mappingapi.mapper;
-    exports de.nuberjonas.pompalette.mapping.mappingapi.exceptions;
+module org.nuberjonas.pompalette.mapping.mappingapi {
+    exports org.nuberjonas.pompalette.mapping.mappingapi.mapper;
+    exports org.nuberjonas.pompalette.mapping.mappingapi.exceptions;
 }

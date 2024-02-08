@@ -1,2 +1,2 @@
-module de.nuberjonas.pompalette.core.model.api.projectmodel {
+module org.nuberjonas.pompalette.core.model.api.projectmodel {
 }

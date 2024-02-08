@@ -3,14 +3,15 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
-        <groupId>de.nuberjonas.pompalette.infrastructure</groupId>
+        <groupId>org.nuberjonas.pompalette.infrastructure</groupId>
         <artifactId>parsing</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>de.nuberjonas.pompalette.infrastructure.parsing</groupId>
-    <artifactId>de.nuberjonas.pompalette.infrastructure.parsing.project-parsing-maven-impl</artifactId>
+    <groupId>org.nuberjonas.pompalette.infrastructure.parsing</groupId>
+    <artifactId>org.nuberjonas.pompalette.infrastructure.parsing.project-parsing-maven-impl</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
@@ -56,12 +57,12 @@
         </dependency>
 
         <dependency>
-            <groupId>de.nuberjonas.pompalette.infrastructure.parsing</groupId>
-            <artifactId>de.nuberjonas.pompalette.infrastructure.parsing.project-parsing-api</artifactId>
+            <groupId>org.nuberjonas.pompalette.infrastructure.parsing</groupId>
+            <artifactId>org.nuberjonas.pompalette.infrastructure.parsing.project-parsing-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>de.nuberjonas.pompalette.mapping</groupId>
-            <artifactId>de.nuberjonas.pompalette.mapping.mapping-api</artifactId>
+            <groupId>org.nuberjonas.pompalette.mapping</groupId>
+            <artifactId>org.nuberjonas.pompalette.mapping.mapping-api</artifactId>
         </dependency>
     </dependencies>
 </project>

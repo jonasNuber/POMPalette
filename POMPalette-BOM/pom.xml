@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.nuberjonas.pompalette</groupId>
+    <artifactId>pompalette-bom</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>POMPalette-BOM</name>
+
+    <properties>
+        <junit.version>5.10.1</junit.version>
+        <maven.version>3.9.6</maven.version>
+        <javafx.version>22-ea+16</javafx.version>
+        <mapstruct.version>1.5.5.Final</mapstruct.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- ++++++++++++++++++++++TESTING++++++++++++++++++++++ -->
+            <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine -->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.assertj/assertj-core -->
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>3.25.2</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.mockito/mockito-junit-jupiter -->
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-junit-jupiter</artifactId>
+                <version>5.10.0</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/io.cucumber/cucumber-java -->
+            <dependency>
+                <groupId>io.cucumber</groupId>
+                <artifactId>cucumber-java</artifactId>
+                <version>7.15.0</version>
+            </dependency>
+
+            <!-- ++++++++++++++++++++++MAVEN++++++++++++++++++++++ -->
+            <!-- https://mvnrepository.com/artifact/org.apache.maven/maven-core -->
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-core</artifactId>
+                <version>${maven.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.apache.maven/maven-model -->
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-model</artifactId>
+                <version>${maven.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.codehaus.plexus/plexus-xml -->
+            <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-xml</artifactId>
+                <version>4.0.3</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.codehaus.plexus/plexus-utils -->
+            <dependency>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-utils</artifactId>
+                <version>4.0.0</version>
+            </dependency>
+
+            <!-- ++++++++++++++++++++++JAVAFX++++++++++++++++++++++ -->
+            <!-- https://mvnrepository.com/artifact/org.openjfx/javafx-controls -->
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-controls</artifactId>
+                <version>${javafx.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.openjfx/javafx-fxml -->
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-fxml</artifactId>
+                <version>${javafx.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.openjfx/javafx-web -->
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-web</artifactId>
+                <version>${javafx.version}</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.controlsfx/controlsfx -->
+            <dependency>
+                <groupId>org.controlsfx</groupId>
+                <artifactId>controlsfx</artifactId>
+                <version>11.2.0</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/com.dlsc.formsfx/formsfx-core -->
+            <dependency>
+                <groupId>com.dlsc.formsfx</groupId>
+                <artifactId>formsfx-core</artifactId>
+                <version>11.6.0</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.openjfx</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.kordamp.ikonli/ikonli-javafx -->
+            <dependency>
+                <groupId>org.kordamp.ikonli</groupId>
+                <artifactId>ikonli-javafx</artifactId>
+                <version>12.3.1</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.kordamp.bootstrapfx/bootstrapfx-core -->
+            <dependency>
+                <groupId>org.kordamp.bootstrapfx</groupId>
+                <artifactId>bootstrapfx-core</artifactId>
+                <version>0.4.0</version>
+            </dependency>
+
+            <!-- ++++++++++++++++++++++OTHER++++++++++++++++++++++ -->
+            <!-- https://mvnrepository.com/artifact/org.mapstruct/mapstruct -->
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+
+            <!-- ++++++++++++++++++++++POM_PALETTE++++++++++++++++++++++ -->
+            <dependency>
+                <groupId>org.nuberjonas.pompalette.application</groupId>
+                <artifactId>javafx-application</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.nuberjonas.pompalette.core.sharedkernel</groupId>
+                <artifactId>org.nuberjonas.pompalette.core.sharedkernel.project-dtos</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.nuberjonas.pompalette.core.sharedkernel</groupId>
+                <artifactId>org.nuberjonas.pompalette.core.sharedkernel.serviceloading</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.nuberjonas.pompalette.infrastructure.parsing</groupId>
+                <artifactId>org.nuberjonas.pompalette.infrastructure.parsing.project-parsing-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.nuberjonas.pompalette.mapping</groupId>
+                <artifactId>org.nuberjonas.pompalette.mapping.mapping-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>

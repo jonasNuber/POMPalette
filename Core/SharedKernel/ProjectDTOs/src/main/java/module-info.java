@@ -1,15 +1,15 @@
-module de.nuberjonas.pompalette.core.sharedkernel.projectdtos {
-    exports de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.activation;
-    exports de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.build;
-    exports de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.plugin;
-    exports de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.reporting;
-    exports de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.repository;
-    exports de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.contributing;
-    exports de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.input;
-    exports de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.dependency;
-    exports de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.management;
-    exports de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.model;
+module org.nuberjonas.pompalette.core.sharedkernel.projectdtos {
+    exports org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.activation;
+    exports org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.build;
+    exports org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.plugin;
+    exports org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.reporting;
+    exports org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.repository;
+    exports org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.contributing;
+    exports org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.input;
+    exports org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.dependency;
+    exports org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.management;
+    exports org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.model;
 
-    exports de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.build.resource;
-    exports de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans;
+    exports org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.build.resource;
+    exports org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans;
 }

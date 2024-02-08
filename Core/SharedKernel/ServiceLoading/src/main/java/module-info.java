@@ -1,3 +1,3 @@
-module de.nuberjonas.pompalette.core.sharedkernel.serviceloading {
-    exports de.nuberjonas.pompalette.core.sharedkernel.serviceloading;
+module org.nuberjonas.pompalette.core.sharedkernel.serviceloading {
+    exports org.nuberjonas.pompalette.core.sharedkernel.serviceloading;
 }
