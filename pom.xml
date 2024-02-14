@@ -32,7 +32,7 @@
 
     <profiles>
         <profile>
-            <id>build-JavaFXApplication</id>
+            <id>JavaFX</id>
 
             <modules>
                 <module>Mapping/Maven-Mapping</module>
@@ -61,7 +61,18 @@
                     </plugin>
                 </plugins>
             </build>
-
+        </profile>
+        <profile>
+            <id>acceptance-tests</id>
+            <modules>
+                <module>Tests/AcceptanceTests</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>integration-tests</id>
+            <modules>
+                <module>Tests/IntegrationTests</module>
+            </modules>
         </profile>
         <profile>
             <id>default</id>

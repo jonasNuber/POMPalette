@@ -1,4 +1,4 @@
-package org.nuberjonas.pompalette.core.sharedkernel.serviceloading.exceptions;
+package org.nuberjonas.pompalette.infrastructure.serviceloading.exceptions;
 
 public class ServiceNotFoundException extends RuntimeException{
     public ServiceNotFoundException() {

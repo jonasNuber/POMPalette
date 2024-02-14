@@ -1,6 +1,6 @@
-package org.nuberjonas.pompalette.core.sharedkernel.serviceloading;
+package org.nuberjonas.pompalette.infrastructure.serviceloading;
 
-import org.nuberjonas.pompalette.core.sharedkernel.serviceloading.exceptions.ServiceNotFoundException;
+import org.nuberjonas.pompalette.infrastructure.serviceloading.exceptions.ServiceNotFoundException;
 
 import java.util.Iterator;
 import java.util.Optional;

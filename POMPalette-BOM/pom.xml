@@ -139,13 +139,13 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.nuberjonas.pompalette.core.sharedkernel</groupId>
-                <artifactId>org.nuberjonas.pompalette.core.sharedkernel.serviceloading</artifactId>
+                <groupId>org.nuberjonas.pompalette.infrastructure.parsing</groupId>
+                <artifactId>org.nuberjonas.pompalette.infrastructure.parsing.project-parsing-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.nuberjonas.pompalette.infrastructure.parsing</groupId>
-                <artifactId>org.nuberjonas.pompalette.infrastructure.parsing.project-parsing-api</artifactId>
+                <groupId>org.nuberjonas.pompalette.infrastructure</groupId>
+                <artifactId>org.nuberjonas.pompalette.infrastructure.serviceloading</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

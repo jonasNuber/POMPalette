@@ -19,6 +19,5 @@
 
     <modules>
         <module>ProjectDTOs</module>
-        <module>ServiceLoading</module>
     </modules>
 </project>

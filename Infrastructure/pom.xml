@@ -17,5 +17,6 @@
 
     <modules>
         <module>Parsing</module>
+        <module>ServiceLoading</module>
     </modules>
 </project>

@@ -5,8 +5,8 @@ import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.MultiModuleProjectDTO;
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.ProjectDTO;
-import org.nuberjonas.pompalette.core.sharedkernel.serviceloading.ServiceDiscovery;
 import org.nuberjonas.pompalette.infrastructure.parsing.projectparsingapi.ProjectParsingService;
+import org.nuberjonas.pompalette.infrastructure.serviceloading.ServiceDiscovery;
 import org.nuberjonas.pompalette.mapping.mappingapi.mapper.MapperService;
 
 import java.nio.file.Path;
