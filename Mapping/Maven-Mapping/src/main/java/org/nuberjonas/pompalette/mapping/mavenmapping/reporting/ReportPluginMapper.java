@@ -2,8 +2,8 @@ package org.nuberjonas.pompalette.mapping.mavenmapping.reporting;
 
 import org.apache.maven.model.ReportPlugin;
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.reporting.ReportPluginDTO;
-import org.nuberjonas.pompalette.mapping.mappingapi.mapper.ListMapper;
-import org.nuberjonas.pompalette.mapping.mappingapi.mapper.SuperClassMapper;
+import org.nuberjonas.pompalette.mapping.mappingapi.mapper.utilities.ListMapper;
+import org.nuberjonas.pompalette.mapping.mappingapi.mapper.utilities.SuperClassMapper;
 import org.nuberjonas.pompalette.mapping.mavenmapping.plugin.ConfigurationContainerMapper;
 
 import java.util.Optional;

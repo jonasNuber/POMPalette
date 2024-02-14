@@ -1,4 +1,4 @@
-package org.nuberjonas.pompalette.mapping.mappingapi.mapper;
+package org.nuberjonas.pompalette.mapping.mappingapi.mapper.utilities;
 
 import org.junit.jupiter.api.Test;
 import org.nuberjonas.pompalette.mapping.mappingapi.exceptions.MappingException;

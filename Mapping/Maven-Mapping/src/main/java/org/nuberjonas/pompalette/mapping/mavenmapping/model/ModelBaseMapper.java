@@ -2,7 +2,7 @@ package org.nuberjonas.pompalette.mapping.mavenmapping.model;
 
 import org.apache.maven.model.ModelBase;
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.model.ModelBaseDTO;
-import org.nuberjonas.pompalette.mapping.mappingapi.mapper.ListMapper;
+import org.nuberjonas.pompalette.mapping.mappingapi.mapper.utilities.ListMapper;
 import org.nuberjonas.pompalette.mapping.mavenmapping.dependency.DependencyManagementMapper;
 import org.nuberjonas.pompalette.mapping.mavenmapping.dependency.DependencyMapper;
 import org.nuberjonas.pompalette.mapping.mavenmapping.input.InputLocationMapper;

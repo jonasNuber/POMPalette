@@ -31,7 +31,7 @@ import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.repository.
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.repository.RepositoryBaseDTO;
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.repository.RepositoryDTO;
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.repository.RepositoryPolicyDTO;
-import org.nuberjonas.pompalette.mapping.mappingapi.mapper.SuperClassMapper;
+import org.nuberjonas.pompalette.mapping.mappingapi.mapper.utilities.SuperClassMapper;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;

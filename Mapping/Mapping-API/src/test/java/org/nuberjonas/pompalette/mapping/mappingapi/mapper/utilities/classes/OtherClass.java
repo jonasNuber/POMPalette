@@ -1,4 +1,4 @@
-package org.nuberjonas.pompalette.mapping.mappingapi.mapper.classes;
+package org.nuberjonas.pompalette.mapping.mappingapi.mapper.utilities.classes;
 
 public class OtherClass {
 

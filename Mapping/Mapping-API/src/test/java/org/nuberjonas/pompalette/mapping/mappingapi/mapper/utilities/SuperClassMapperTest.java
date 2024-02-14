@@ -1,10 +1,10 @@
-package org.nuberjonas.pompalette.mapping.mappingapi.mapper;
+package org.nuberjonas.pompalette.mapping.mappingapi.mapper.utilities;
 
 import org.junit.jupiter.api.Test;
 import org.nuberjonas.pompalette.mapping.mappingapi.exceptions.MappingException;
-import org.nuberjonas.pompalette.mapping.mappingapi.mapper.classes.OtherClass;
-import org.nuberjonas.pompalette.mapping.mappingapi.mapper.classes.SubClass;
-import org.nuberjonas.pompalette.mapping.mappingapi.mapper.classes.SuperClass;
+import org.nuberjonas.pompalette.mapping.mappingapi.mapper.utilities.classes.OtherClass;
+import org.nuberjonas.pompalette.mapping.mappingapi.mapper.utilities.classes.SubClass;
+import org.nuberjonas.pompalette.mapping.mappingapi.mapper.utilities.classes.SuperClass;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

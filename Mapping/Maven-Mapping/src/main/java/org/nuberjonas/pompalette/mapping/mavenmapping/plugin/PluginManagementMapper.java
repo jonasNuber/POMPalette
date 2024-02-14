@@ -3,7 +3,7 @@ package org.nuberjonas.pompalette.mapping.mavenmapping.plugin;
 import org.apache.maven.model.PluginManagement;
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.plugin.PluginContainerDTO;
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.plugin.PluginManagementDTO;
-import org.nuberjonas.pompalette.mapping.mappingapi.mapper.ListMapper;
+import org.nuberjonas.pompalette.mapping.mappingapi.mapper.utilities.ListMapper;
 import org.nuberjonas.pompalette.mapping.mavenmapping.input.InputLocationMapper;
 
 import java.util.Optional;

@@ -7,7 +7,6 @@ import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.contributin
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.contributing.OrganizationDTO;
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.management.CiManagementDTO;
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.management.IssueManagementDTO;
-import de.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.model.*;
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.model.*;
 
 import java.io.Serializable;

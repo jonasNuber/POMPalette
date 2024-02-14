@@ -2,7 +2,7 @@ package org.nuberjonas.pompalette.mapping.mavenmapping.plugin;
 
 import org.apache.maven.model.PluginConfiguration;
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.plugin.PluginConfigurationDTO;
-import org.nuberjonas.pompalette.mapping.mappingapi.mapper.SuperClassMapper;
+import org.nuberjonas.pompalette.mapping.mappingapi.mapper.utilities.SuperClassMapper;
 
 import java.util.Optional;
 

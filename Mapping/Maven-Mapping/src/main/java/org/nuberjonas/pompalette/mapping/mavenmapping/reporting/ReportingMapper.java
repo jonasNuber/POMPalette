@@ -2,7 +2,7 @@ package org.nuberjonas.pompalette.mapping.mavenmapping.reporting;
 
 import org.apache.maven.model.Reporting;
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.reporting.ReportingDTO;
-import org.nuberjonas.pompalette.mapping.mappingapi.mapper.ListMapper;
+import org.nuberjonas.pompalette.mapping.mappingapi.mapper.utilities.ListMapper;
 import org.nuberjonas.pompalette.mapping.mavenmapping.input.InputLocationMapper;
 
 import java.util.Optional;

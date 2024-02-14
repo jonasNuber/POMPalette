@@ -2,7 +2,7 @@ package org.nuberjonas.pompalette.mapping.mavenmapping.management;
 
 import org.apache.maven.model.CiManagement;
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.management.CiManagementDTO;
-import org.nuberjonas.pompalette.mapping.mappingapi.mapper.ListMapper;
+import org.nuberjonas.pompalette.mapping.mappingapi.mapper.utilities.ListMapper;
 import org.nuberjonas.pompalette.mapping.mavenmapping.input.InputLocationMapper;
 
 import java.util.Optional;

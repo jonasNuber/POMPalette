@@ -64,5 +64,9 @@
             <groupId>org.nuberjonas.pompalette.mapping</groupId>
             <artifactId>org.nuberjonas.pompalette.mapping.mapping-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.nuberjonas.pompalette.core.sharedkernel</groupId>
+            <artifactId>org.nuberjonas.pompalette.core.sharedkernel.serviceloading</artifactId>
+        </dependency>
     </dependencies>
 </project>

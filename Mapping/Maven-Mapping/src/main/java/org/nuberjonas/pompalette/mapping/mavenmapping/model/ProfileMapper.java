@@ -2,7 +2,7 @@ package org.nuberjonas.pompalette.mapping.mavenmapping.model;
 
 import org.apache.maven.model.Profile;
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.model.ProfileDTO;
-import org.nuberjonas.pompalette.mapping.mappingapi.mapper.SuperClassMapper;
+import org.nuberjonas.pompalette.mapping.mappingapi.mapper.utilities.SuperClassMapper;
 import org.nuberjonas.pompalette.mapping.mavenmapping.activation.ActivationMapper;
 import org.nuberjonas.pompalette.mapping.mavenmapping.build.BuildBaseMapper;
 

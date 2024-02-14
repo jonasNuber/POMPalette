@@ -2,9 +2,9 @@ package org.nuberjonas.pompalette.mapping.mavenmapping;
 
 import org.apache.maven.model.Model;
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.ProjectDTO;
-import org.nuberjonas.pompalette.mapping.mappingapi.mapper.ListMapper;
 import org.nuberjonas.pompalette.mapping.mappingapi.mapper.MapperService;
-import org.nuberjonas.pompalette.mapping.mappingapi.mapper.SuperClassMapper;
+import org.nuberjonas.pompalette.mapping.mappingapi.mapper.utilities.ListMapper;
+import org.nuberjonas.pompalette.mapping.mappingapi.mapper.utilities.SuperClassMapper;
 import org.nuberjonas.pompalette.mapping.mavenmapping.build.BuildMapper;
 import org.nuberjonas.pompalette.mapping.mavenmapping.contributing.ContributorMapper;
 import org.nuberjonas.pompalette.mapping.mavenmapping.contributing.DeveloperMapper;

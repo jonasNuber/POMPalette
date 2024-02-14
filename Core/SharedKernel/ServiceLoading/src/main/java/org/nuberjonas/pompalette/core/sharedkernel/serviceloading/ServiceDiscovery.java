@@ -9,7 +9,7 @@ import java.util.function.Predicate;
 
 public class ServiceDiscovery {
 
-    private ServiceDiscovery(){}
+    private ServiceDiscovery(){ throw new AssertionError("Utility class, cannot be instantiated"); }
 
     @SuppressWarnings("unchecked")
     public static <T> T loadService(Class<T> serviceType) {
