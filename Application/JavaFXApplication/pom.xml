@@ -35,6 +35,17 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>false</addClasspath>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.6.0</version>
                 <executions>
@@ -45,7 +56,7 @@
                             <finalName>POMPalette</finalName>
                             <appendAssemblyId>false</appendAssemblyId>
                             <descriptors>
-                                <descriptor>src/main/resources/assembly/createApplicationStructure.xml</descriptor>
+                                <descriptor>src/main/build/assembly/createApplicationStructure.xml</descriptor>
                             </descriptors>
                         </configuration>
                         <phase>package</phase>
@@ -60,7 +71,7 @@
                             <finalName>POMPalette-${project.version}</finalName>
                             <appendAssemblyId>false</appendAssemblyId>
                             <descriptors>
-                                <descriptor>src/main/resources/assembly/packageApplication.xml</descriptor>
+                                <descriptor>src/main/build/assembly/packageApplication.xml</descriptor>
                             </descriptors>
                         </configuration>
                         <phase>package</phase>

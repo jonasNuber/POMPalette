@@ -21,4 +21,20 @@
             </excludes>
         </dependencySet>
     </dependencySets>
+    <fileSets>
+        <fileSet>
+            <directory>${project.basedir}/src/main/build/licenseInformation</directory>
+            <outputDirectory>libs/third-party</outputDirectory>
+            <includes>
+                <include>LICENSES.*</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/src/main/build/licenseInformation</directory>
+            <outputDirectory>libs/third-party/licenses</outputDirectory>
+            <excludes>
+                <exclude>LICENSES.*</exclude>
+            </excludes>
+        </fileSet>
+    </fileSets>
 </assembly>
