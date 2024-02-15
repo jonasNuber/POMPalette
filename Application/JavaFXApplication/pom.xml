@@ -16,4 +16,60 @@
     <packaging>jar</packaging>
 
     <name>JavaFXApplication</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.nuberjonas.pompalette.infrastructure</groupId>
+            <artifactId>org.nuberjonas.pompalette.infrastructure.serviceloading</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.nuberjonas.pompalette.mapping</groupId>
+            <artifactId>org.nuberjonas.pompalette.mapping.maven-mapping</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.nuberjonas.pompalette.infrastructure.parsing</groupId>
+            <artifactId>org.nuberjonas.pompalette.infrastructure.parsing.project-parsing-maven-impl</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.6.0</version>
+                <executions>
+                    <execution>
+                        <id>create-application-structure</id>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                            <finalName>POMPalette</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <descriptors>
+                                <descriptor>src/main/resources/assembly/createApplicationStructure.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>package-application</id>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                            <finalName>POMPalette-${project.version}</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <descriptors>
+                                <descriptor>src/main/resources/assembly/packageApplication.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
