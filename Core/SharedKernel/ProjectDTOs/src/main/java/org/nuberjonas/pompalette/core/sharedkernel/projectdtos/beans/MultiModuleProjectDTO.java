@@ -4,13 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MultiModuleProjectDTO {
+
+    private ProjectDTO project;
     private List<ProjectDTO> modules;
 
-    public MultiModuleProjectDTO(List<ProjectDTO> modules) {
-        this.modules = modules;
-    }
-
-    public MultiModuleProjectDTO() {
+    public MultiModuleProjectDTO(ProjectDTO project){
+        this.project = project;
         modules = new ArrayList<>();
     }
 
@@ -20,5 +19,9 @@ public class MultiModuleProjectDTO {
 
     public List<ProjectDTO> getModules() {
         return modules;
+    }
+
+    public ProjectDTO get(){
+        return project;
     }
 }

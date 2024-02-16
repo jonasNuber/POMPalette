@@ -10,11 +10,13 @@ public interface MapperService<S, D> {
 
     @SuppressWarnings("unchecked")
     default Class<S> sourceType() {
-        return (Class<S>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+        ParameterizedType superClass = (ParameterizedType) getClass().getGenericInterfaces()[0];
+        return (Class<S>) superClass.getActualTypeArguments()[0];
     }
 
     @SuppressWarnings("unchecked")
     default Class<D> destinationType() {
-        return (Class<D>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1];
+        ParameterizedType superClass = (ParameterizedType) getClass().getGenericInterfaces()[0];
+        return (Class<D>) superClass.getActualTypeArguments()[1];
     }
 }
