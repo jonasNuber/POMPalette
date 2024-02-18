@@ -24,7 +24,7 @@
         </dependency>
         <dependency>
             <groupId>org.nuberjonas.pompalette.mapping</groupId>
-            <artifactId>org.nuberjonas.pompalette.mapping.maven-mapping</artifactId>
+            <artifactId>org.nuberjonas.pompalette.mapping.project-mapping</artifactId>
         </dependency>
         <dependency>
             <groupId>org.nuberjonas.pompalette.infrastructure.parsing</groupId>

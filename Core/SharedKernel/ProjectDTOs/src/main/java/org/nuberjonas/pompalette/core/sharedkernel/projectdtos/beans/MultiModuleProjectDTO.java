@@ -6,18 +6,20 @@ import java.util.List;
 public class MultiModuleProjectDTO {
 
     private ProjectDTO project;
-    private List<ProjectDTO> modules;
+    private List<MultiModuleProjectDTO> modules;
 
     public MultiModuleProjectDTO(ProjectDTO project){
         this.project = project;
         modules = new ArrayList<>();
     }
 
-    public void addModule(ProjectDTO projectDTO){
-        modules.add(projectDTO);
+    public void addModule(MultiModuleProjectDTO module) { modules.add(module);}
+
+    public void addModule(ProjectDTO module){
+        modules.add(new MultiModuleProjectDTO(module));
     }
 
-    public List<ProjectDTO> getModules() {
+    public List<MultiModuleProjectDTO> getModules() {
         return modules;
     }
 

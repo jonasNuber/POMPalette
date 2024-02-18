@@ -44,6 +44,12 @@
                 <artifactId>mockito-junit-jupiter</artifactId>
                 <version>5.10.0</version>
             </dependency>
+            <!-- https://mvnrepository.com/artifact/org.mockito/mockito-inline -->
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-inline</artifactId>
+                <version>5.2.0</version>
+            </dependency>
             <!-- https://mvnrepository.com/artifact/io.cucumber/cucumber-java -->
             <dependency>
                 <groupId>io.cucumber</groupId>
@@ -160,7 +166,7 @@
             </dependency>
             <dependency>
                 <groupId>org.nuberjonas.pompalette.mapping</groupId>
-                <artifactId>org.nuberjonas.pompalette.mapping.maven-mapping</artifactId>
+                <artifactId>org.nuberjonas.pompalette.mapping.project-mapping</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

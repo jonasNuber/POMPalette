@@ -14,7 +14,9 @@ import org.nuberjonas.pompalette.mapping.mappingapi.mapper.MapperService;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class MavenProjectParsingService implements ProjectParsingService {
     private final MavenXpp3Reader reader;
@@ -38,6 +40,8 @@ public class MavenProjectParsingService implements ProjectParsingService {
 
     @Override
     public ProjectDTO loadProject(Path projectPath) {
+        projectPath = createValidPomPath(projectPath);
+
         try(var fis = new FileInputStream(projectPath.toFile())){
             var model = reader.read(fis);
             return mapperService.mapToDestination(model);
@@ -48,9 +52,41 @@ public class MavenProjectParsingService implements ProjectParsingService {
         }
     }
 
+    private Path createValidPomPath(Path projectPath){
+        var projectPathLastSegment = projectPath.getFileName().toString();
+
+        if(!"pom.xml".equals(projectPathLastSegment)){
+            if(Files.isRegularFile(projectPath)){
+                return projectPath.resolveSibling("pom.xml");
+            }
+            return projectPath.resolve("pom.xml");
+        }
+        return projectPath;
+    }
+
     @Override
     public MultiModuleProjectDTO loadMultiModuleProject(Path projectPath) {
-        return null;
+        projectPath = createValidPomPath(projectPath);
+        var project = loadProject(projectPath);
+        var multiModuleProject = new MultiModuleProjectDTO(project);
+
+        for(var moduleName : project.modelBase().modules()){
+            var modulePath = createModulePath(projectPath, moduleName);
+            var module = loadMultiModuleProject(modulePath);
+            multiModuleProject.addModule(module);
+        }
+
+        return multiModuleProject;
+    }
+
+    private Path createModulePath(Path parentPath, String moduleName) {
+        var parentPathString = parentPath.toString();
+        var lastSeparatorIndex = parentPathString.lastIndexOf("/");
+        var modulePathString = parentPathString.substring(0, lastSeparatorIndex) +
+                "/" + moduleName +
+                parentPathString.substring(lastSeparatorIndex);
+
+        return Paths.get(modulePathString);
     }
 
     @Override
