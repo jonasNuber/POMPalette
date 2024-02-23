@@ -10,5 +10,5 @@ public interface ProjectParsingService {
     ProjectDTO loadProject(Path projectPath);
     MultiModuleProjectDTO loadMultiModuleProject(Path projectPath);
     void writeProject(ProjectDTO project, Path projectPath);
-    void writeMultiModuleProject(MultiModuleProjectDTO multiModuleProject);
+    void writeMultiModuleProject(MultiModuleProjectDTO multiModuleProject, Path projectPath);
 }
