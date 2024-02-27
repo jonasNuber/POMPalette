@@ -17,7 +17,6 @@
 
     <modules>
         <module>Model</module>
-        <module>Model-API</module>
         <module>SharedKernel</module>
     </modules>
 </project>
