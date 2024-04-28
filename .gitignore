@@ -85,6 +85,9 @@ local.properties
 .idea/modules
 .idea/encodings.xml
 .idea/misc.xml
+.idea/vcs.xml
+.idea/saveactions_settings.xml
+.idea/codeStyles/codeStyleConfig.xml
 *.iml
 *.ipr
 
@@ -123,3 +126,7 @@ fabric.properties
 
 # Android studio 3.1+ serialized cache file
 .idea/caches/build_file_checksums.ser
+
+# POMPalette specific
+Application/JavaFXApplication/src/main/build/licenseInformation/*
+.idea/jpa-buddy.xml
