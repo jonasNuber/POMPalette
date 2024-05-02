@@ -1,4 +1,4 @@
-package org.nuberjonas.pompalette.application.javafx_application.views;
+package org.nuberjonas.pompalette.application.javafx_application.views.main;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;

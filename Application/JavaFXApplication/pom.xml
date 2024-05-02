@@ -17,6 +17,12 @@
 
     <name>JavaFXApplication</name>
 
+    <properties>
+        <javafx.version>22-ea+16</javafx.version>
+        <smartgraph.version>2.0.0</smartgraph.version>
+        <third-party.location>third-party</third-party.location>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.openjfx</groupId>
@@ -35,6 +41,11 @@
             <groupId>com.brunomnsilva</groupId>
             <artifactId>smartgraph</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.nuberjonas.pompalette.core</groupId>
+            <artifactId>org.nuberjonas.pompalette.core.model</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -49,7 +60,7 @@
                             <mainClass>org.nuberjonas.pompalette.application.javafx_application.StartPomPaletteApp</mainClass>
                         </manifest>
                         <manifestEntries>
-                            <Class-Path>third-party/javafx-controls-22-ea+16.jar third-party/javafx-controls-22-ea+16-win.jar third-party/javafx-graphics-22-ea+16.jar third-party/javafx-graphics-22-ea+16-win.jar third-party/javafx-base-22-ea+16.jar third-party/javafx-base-22-ea+16-win.jar third-party/javafx-fxml-22-ea+16.jar third-party/javafx-fxml-22-ea+16-win.jar</Class-Path>
+                            <Class-Path>${third-party.location}/javafx-controls-${javafx.version}.jar ${third-party.location}/javafx-controls-${javafx.version}-win.jar ${third-party.location}/javafx-graphics-${javafx.version}.jar ${third-party.location}/javafx-graphics-${javafx.version}-win.jar ${third-party.location}/javafx-base-${javafx.version}.jar ${third-party.location}/javafx-base-${javafx.version}-win.jar ${third-party.location}/javafx-fxml-${javafx.version}.jar ${third-party.location}/javafx-fxml-${javafx.version}-win.jar ${third-party.location}/smartgraph-${smartgraph.version}.jar</Class-Path>
                         </manifestEntries>
                     </archive>
                 </configuration>
