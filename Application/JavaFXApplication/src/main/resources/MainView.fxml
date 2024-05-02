@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.layout.*?>
-<BorderPane prefHeight="720.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nuberjonas.pompalette.application.javafx_application.main.view.MainViewController">
+<BorderPane prefHeight="720.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/20" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nuberjonas.pompalette.application.javafx_application.main.view.MainViewController">
    <right>
        <StackPane prefHeight="720.0" prefWidth="220.0" styleClass="panel-default" BorderPane.alignment="CENTER">
            <GridPane fx:id="controls">

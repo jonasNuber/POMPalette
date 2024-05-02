@@ -47,7 +47,7 @@ public class ViewHandler {
         mainViewController.init(this);
 
         var scene = new Scene((Parent) root, 1080, 720);
-        scene.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
+        scene.getStylesheets().addAll(BootstrapFX.bootstrapFXStylesheet(), "smartgraph.css ");
         primaryStage.setScene(scene);
         primaryStage.setTitle("PomPalette");
         primaryStage.setMinWidth(1080);
@@ -68,11 +68,11 @@ public class ViewHandler {
         var loader = getFXMLLoaderFor(Views.PROJECT_GRAPH);
         Parent projectGraphView = loader.load();
         ProjectGraphViewController projectGraphViewController = loader.getController();
-        projectGraphViewController.init(contentPane);
+        projectGraphViewController.init();
 
-        //contentPane.getChildren().add(projectGraphView);
+        contentPane.layout();
+        contentPane.getChildren().add(projectGraphView);
         projectGraphViewController.initGraph();
-        projectGraphViewController.update();
     }
 
     private FXMLLoader getFXMLLoaderFor(Views view){

@@ -3,15 +3,19 @@ package org.nuberjonas.pompalette.application.javafx_application.projectgraph.vi
 import com.brunomnsilva.smartgraph.graph.Graph;
 import com.brunomnsilva.smartgraph.graph.GraphEdgeList;
 import com.brunomnsilva.smartgraph.graphview.SmartGraphPanel;
-import javafx.scene.layout.StackPane;
+import javafx.fxml.FXML;
+import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.AnchorPane;
 
 public class ProjectGraphViewController {
-//    @FXML
-//    private StackPane projectGraphPane;
+    @FXML
+    private AnchorPane projectGraphPane;
 
     private SmartGraphPanel<String, String> graphView;
 
-    public void init(StackPane projectGraphPane){
+    private double lastX, lastY;
+
+    public void init(){
         Graph<String, String> g = new GraphEdgeList<>();
         graphView = new SmartGraphPanel<>(g);
         g.insertVertex("A");
@@ -53,9 +57,17 @@ public class ProjectGraphViewController {
 
     public void initGraph(){
         graphView.init();
+        graphView.update();
     }
 
-    public void update(){
-        graphView.update();
+    @FXML
+    public void onScroll(ScrollEvent event) {
+        double zoomFactor = event.getDeltaY() > 0 ? 1.1 : 0.9;
+        projectGraphPane.setScaleX(projectGraphPane.getScaleX() * zoomFactor);
+        projectGraphPane.setScaleY(projectGraphPane.getScaleY() * zoomFactor);
+
+        projectGraphPane.setPrefWidth(projectGraphPane.getPrefWidth() * zoomFactor);
+        projectGraphPane.setPrefHeight(projectGraphPane.getPrefHeight() * zoomFactor);
+
     }
 }
