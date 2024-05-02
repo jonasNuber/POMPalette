@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.kordamp.bootstrapfx.BootstrapFX;
 import org.nuberjonas.pompalette.application.javafx_application.viewmodels.ViewModelFactory;
+import org.nuberjonas.pompalette.application.javafx_application.views.loadproject.LoadProjectViewController;
 import org.nuberjonas.pompalette.application.javafx_application.views.main.MainViewController;
 
 import java.io.IOException;
@@ -43,8 +44,11 @@ public class ViewHandler {
 
         try {
             root = mainLoader.load();
-            MainViewController controller = mainLoader.getController();
-            controller.addControlsView(loadProjectViewLoader.load());
+            MainViewController mainViewController = mainLoader.getController();
+            mainViewController.addControlsView(loadProjectViewLoader.load());
+
+            LoadProjectViewController loadProjectViewController = loadProjectViewLoader.getController();
+            loadProjectViewController.setPrimaryStage(primaryStage);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

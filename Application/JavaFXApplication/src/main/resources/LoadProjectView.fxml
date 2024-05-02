@@ -5,7 +5,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.StackPane?>
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="360.0" prefWidth="220.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nuberjonas.pompalette.application.javafx_application.views.loadProject.LoadProjectViewController">
+
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="360.0" prefWidth="220.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nuberjonas.pompalette.application.javafx_application.views.loadproject.LoadProjectViewController">
    <Label styleClass="h4" text="Path to Project">
       <StackPane.margin>
          <Insets bottom="180.0" />
@@ -13,12 +14,17 @@
    </Label>
    <TextField fx:id="projectPathTextfield">
       <StackPane.margin>
-         <Insets bottom="100.0" left="12.0" right="12.0" />
+         <Insets bottom="100.0" left="12.0" right="40.0" />
       </StackPane.margin>
    </TextField>
    <Button fx:id="loadButton" mnemonicParsing="false" onAction="#onLoadButtonPress" styleClass="btn-default" text="Load">
       <StackPane.margin>
          <Insets bottom="40.0" />
+      </StackPane.margin>
+   </Button>
+   <Button mnemonicParsing="false" onAction="#openFileChooser" text="🗎">
+      <StackPane.margin>
+         <Insets bottom="100.0" left="170.0" />
       </StackPane.margin>
    </Button>
 </StackPane>
