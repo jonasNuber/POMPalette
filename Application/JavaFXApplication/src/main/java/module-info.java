@@ -4,6 +4,7 @@ module javafx.application {
     requires javafx.fxml;
     requires javafx.graphics;
     requires smartgraph;
+    requires org.kordamp.bootstrapfx.core;
 
     requires org.nuberjonas.pompalette.core.model;
 

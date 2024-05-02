@@ -4,7 +4,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.kordamp.bootstrapfx.BootstrapFX;
 import org.nuberjonas.pompalette.application.javafx_application.viewmodels.ViewModelFactory;
+import org.nuberjonas.pompalette.application.javafx_application.views.main.MainViewController;
 
 import java.io.IOException;
 
@@ -34,19 +36,29 @@ public class ViewHandler {
     }
 
     public void start(){
-        Parent root = loadView(Views.MAIN);
-        primaryStage.setScene(new Scene(root));
+        var mainLoader = getFXMLLoaderFor(Views.MAIN);
+        var loadProjectViewLoader = getFXMLLoaderFor(Views.LOAD_PROJECT);
+
+        Parent root = null;
+
+        try {
+            root = mainLoader.load();
+            MainViewController controller = mainLoader.getController();
+            controller.addControlsView(loadProjectViewLoader.load());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        var scene = new Scene(root);
+        scene.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
+        primaryStage.setScene(scene);
         primaryStage.setTitle("PomPalette");
         primaryStage.setMinWidth(1080);
         primaryStage.setMinHeight(720);
         primaryStage.show();
     }
 
-    private Parent loadView(Views view){
-        try {
-            return FXMLLoader.load(getClass().getClassLoader().getResource(view.path));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    private FXMLLoader getFXMLLoaderFor(Views view){
+        return new FXMLLoader(getClass().getClassLoader().getResource(view.path));
     }
 }

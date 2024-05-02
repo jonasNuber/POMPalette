@@ -38,6 +38,10 @@
             <artifactId>javafx-fxml</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.kordamp.bootstrapfx</groupId>
+            <artifactId>bootstrapfx-core</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.brunomnsilva</groupId>
             <artifactId>smartgraph</artifactId>
         </dependency>
