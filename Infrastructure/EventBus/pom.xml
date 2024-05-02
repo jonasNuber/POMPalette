@@ -5,14 +5,14 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.nuberjonas.pompalette</groupId>
-        <artifactId>core</artifactId>
+        <artifactId>infrastructure</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.nuberjonas.pompalette.core</groupId>
-    <artifactId>org.nuberjonas.pompalette.core.model</artifactId>
+    <groupId>org.nuberjonas.pompalette.infrastructure</groupId>
+    <artifactId>org.nuberjonas.pompalette.infrastructure.eventbus</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>Model</name>
+    <name>EventBus</name>
 </project>

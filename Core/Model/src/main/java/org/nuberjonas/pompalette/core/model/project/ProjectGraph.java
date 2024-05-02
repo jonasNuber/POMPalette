@@ -5,14 +5,14 @@ import java.util.Map;
 
 public class ProjectGraph {
 
-    private final Map<ProjectCoordinates, MavenProject> vertecies;
+    private final Map<ProjectCoordinates, MavenProject> vertices;
 
     public ProjectGraph(){
-        vertecies = new HashMap<>();
+        vertices = new HashMap<>();
     }
 
     public void addVertex(MavenProject project){
-        vertecies.put(project.getCoordinates(), project);
+        vertices.put(project.getCoordinates(), project);
     }
 
     public void addEdge(MavenProject source, MavenProject destination){
@@ -23,13 +23,13 @@ public class ProjectGraph {
 
     public void addEdge(ProjectCoordinates source, ProjectCoordinates destination){
         if(projectsAreInGraph(source, destination)){
-            defineEdge(vertecies.get(source), vertecies.get(destination));
+            defineEdge(vertices.get(source), vertices.get(destination));
         }
     }
 
     private boolean projectsAreInGraph(ProjectCoordinates... coordinates){
         for(var coordinate : coordinates){
-            if(!vertecies.containsKey(coordinate)){
+            if(!vertices.containsKey(coordinate)){
                 throw new IllegalArgumentException(String.format("The Project with the Coordinate: %s does not exist in the ProjectGraph", coordinate));
             }
         }

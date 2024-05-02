@@ -45,10 +45,18 @@
             <groupId>com.brunomnsilva</groupId>
             <artifactId>smartgraph</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.nuberjonas.pompalette.core</groupId>
             <artifactId>org.nuberjonas.pompalette.core.model</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.nuberjonas.pompalette.infrastructure</groupId>
+            <artifactId>org.nuberjonas.pompalette.infrastructure.eventbus</artifactId>
         </dependency>
     </dependencies>
 

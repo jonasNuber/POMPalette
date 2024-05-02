@@ -18,5 +18,6 @@
     <modules>
         <module>Parsing</module>
         <module>ServiceLoading</module>
+        <module>EventBus</module>
     </modules>
 </project>

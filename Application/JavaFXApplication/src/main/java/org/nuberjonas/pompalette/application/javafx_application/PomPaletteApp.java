@@ -2,8 +2,8 @@ package org.nuberjonas.pompalette.application.javafx_application;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
-import org.nuberjonas.pompalette.application.javafx_application.viewmodels.ViewModelFactory;
-import org.nuberjonas.pompalette.application.javafx_application.views.ViewHandler;
+import org.nuberjonas.pompalette.application.javafx_application.main.ViewHandler;
+import org.nuberjonas.pompalette.application.javafx_application.main.ViewModelFactory;
 import org.nuberjonas.pompalette.core.model.ModelFactory;
 
 public class PomPaletteApp extends Application {

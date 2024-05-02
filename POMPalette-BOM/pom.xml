@@ -145,6 +145,22 @@
                 <version>2.0.0</version>
             </dependency>
 
+            <!-- ++++++++++++++++++++++UTILS++++++++++++++++++++++ -->
+            <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.14.0</version>
+            </dependency>
+
+            <!-- ++++++++++++++++++++++LOGGING++++++++++++++++++++++ -->
+            <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>2.0.12</version>
+            </dependency>
+
             <!-- ++++++++++++++++++++++POM_PALETTE++++++++++++++++++++++ -->
             <dependency>
                 <groupId>org.nuberjonas.pompalette.application</groupId>
@@ -154,6 +170,11 @@
             <dependency>
                 <groupId>org.nuberjonas.pompalette.core.sharedkernel</groupId>
                 <artifactId>org.nuberjonas.pompalette.core.sharedkernel.project-dtos</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.nuberjonas.pompalette.infrastructure</groupId>
+                <artifactId>org.nuberjonas.pompalette.infrastructure.eventbus</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

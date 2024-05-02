@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.StackPane?>
-
-<BorderPane prefHeight="720.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nuberjonas.pompalette.application.javafx_application.views.main.MainViewController">
+<?import javafx.scene.layout.*?>
+<BorderPane prefHeight="720.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nuberjonas.pompalette.application.javafx_application.main.view.MainViewController">
    <right>
        <StackPane prefHeight="720.0" prefWidth="220.0" styleClass="panel-default" BorderPane.alignment="CENTER">
            <GridPane fx:id="controls">
@@ -21,6 +16,6 @@
        </StackPane>
    </right>
    <center>
-      <StackPane prefHeight="720.0" prefWidth="1080.0" styleClass="panel-primary" BorderPane.alignment="CENTER" />
+      <StackPane fx:id="contentPane" prefHeight="720.0" prefWidth="1080.0" styleClass="panel-primary" BorderPane.alignment="CENTER" />
    </center>
 </BorderPane>
