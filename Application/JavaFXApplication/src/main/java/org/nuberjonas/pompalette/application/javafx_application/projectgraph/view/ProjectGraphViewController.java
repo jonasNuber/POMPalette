@@ -3,12 +3,11 @@ package org.nuberjonas.pompalette.application.javafx_application.projectgraph.vi
 import com.brunomnsilva.smartgraph.graph.Graph;
 import com.brunomnsilva.smartgraph.graph.GraphEdgeList;
 import com.brunomnsilva.smartgraph.graphview.SmartGraphPanel;
-import javafx.fxml.FXML;
 import javafx.scene.layout.StackPane;
 
 public class ProjectGraphViewController {
-    @FXML
-    private StackPane projectGraphPane;
+//    @FXML
+//    private StackPane projectGraphPane;
 
     private SmartGraphPanel<String, String> graphView;
 
@@ -46,12 +45,17 @@ public class ProjectGraphViewController {
         g.insertEdge("H", "N", "12");
 
         g.insertEdge("A", "H", "0");
+        graphView.setAutomaticLayout(true);
 
         projectGraphPane.getChildren().add(graphView);
-        graphView.setAutomaticLayout(true);
+        projectGraphPane.layout();
     }
 
     public void initGraph(){
         graphView.init();
+    }
+
+    public void update(){
+        graphView.update();
     }
 }

@@ -46,7 +46,7 @@ public class ViewHandler {
         MainViewController mainViewController = mainLoader.getController();
         mainViewController.init(this);
 
-        var scene = new Scene((Parent) root);
+        var scene = new Scene((Parent) root, 1080, 720);
         scene.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
         primaryStage.setScene(scene);
         primaryStage.setTitle("PomPalette");
@@ -72,6 +72,7 @@ public class ViewHandler {
 
         //contentPane.getChildren().add(projectGraphView);
         projectGraphViewController.initGraph();
+        projectGraphViewController.update();
     }
 
     private FXMLLoader getFXMLLoaderFor(Views view){
