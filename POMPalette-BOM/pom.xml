@@ -84,6 +84,13 @@
             </dependency>
 
             <!-- ++++++++++++++++++++++JAVAFX++++++++++++++++++++++ -->
+            <!-- https://mvnrepository.com/artifact/org.openjfx/javafx -->
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx</artifactId>
+                <version>${javafx.version}</version>
+                <type>pom</type>
+            </dependency>
             <!-- https://mvnrepository.com/artifact/org.openjfx/javafx-controls -->
             <dependency>
                 <groupId>org.openjfx</groupId>
@@ -132,6 +139,11 @@
                 <artifactId>bootstrapfx-core</artifactId>
                 <version>0.4.0</version>
             </dependency>
+            <dependency>
+                <groupId>com.brunomnsilva</groupId>
+                <artifactId>smartgraph</artifactId>
+                <version>2.0.0</version>
+            </dependency>
 
             <!-- ++++++++++++++++++++++POM_PALETTE++++++++++++++++++++++ -->
             <dependency>
@@ -167,6 +179,11 @@
             <dependency>
                 <groupId>org.nuberjonas.pompalette.mapping</groupId>
                 <artifactId>org.nuberjonas.pompalette.mapping.project-mapping</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.nuberjonas.pompalette.core</groupId>
+                <artifactId>org.nuberjonas.pompalette.core.model</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

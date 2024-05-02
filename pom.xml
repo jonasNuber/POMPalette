@@ -83,7 +83,6 @@
                 <module>Core</module>
                 <module>Infrastructure</module>
                 <module>Mapping</module>
-                <module>UserInterface</module>
                 <module>Application/JavaFXApplication</module>
             </modules>
 
@@ -155,7 +154,6 @@
             <modules>
                 <module>Core</module>
                 <module>Infrastructure</module>
-                <module>UserInterface</module>
                 <module>Application</module>
                 <module>Tests</module>
                 <module>Mapping</module>
