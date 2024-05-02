@@ -19,16 +19,21 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.nuberjonas.pompalette.infrastructure</groupId>
-            <artifactId>org.nuberjonas.pompalette.infrastructure.serviceloading</artifactId>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx</artifactId>
+            <type>pom</type>
         </dependency>
         <dependency>
-            <groupId>org.nuberjonas.pompalette.mapping</groupId>
-            <artifactId>org.nuberjonas.pompalette.mapping.project-mapping</artifactId>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.nuberjonas.pompalette.infrastructure.parsing</groupId>
-            <artifactId>org.nuberjonas.pompalette.infrastructure.parsing.project-parsing-maven-impl</artifactId>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.brunomnsilva</groupId>
+            <artifactId>smartgraph</artifactId>
         </dependency>
     </dependencies>
 
@@ -41,7 +46,11 @@
                     <archive>
                         <manifest>
                             <addClasspath>false</addClasspath>
+                            <mainClass>org.nuberjonas.pompalette.application.javafx_application.StartPomPaletteApp</mainClass>
                         </manifest>
+                        <manifestEntries>
+                            <Class-Path>third-party/javafx-controls-22-ea+16.jar third-party/javafx-controls-22-ea+16-win.jar third-party/javafx-graphics-22-ea+16.jar third-party/javafx-graphics-22-ea+16-win.jar third-party/javafx-base-22-ea+16.jar third-party/javafx-base-22-ea+16-win.jar third-party/javafx-fxml-22-ea+16.jar third-party/javafx-fxml-22-ea+16-win.jar</Class-Path>
+                        </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
