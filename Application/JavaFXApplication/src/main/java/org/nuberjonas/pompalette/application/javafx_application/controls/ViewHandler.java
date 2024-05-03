@@ -1,4 +1,4 @@
-package org.nuberjonas.pompalette.application.javafx_application.main;
+package org.nuberjonas.pompalette.application.javafx_application.controls;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -7,9 +7,9 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.kordamp.bootstrapfx.BootstrapFX;
-import org.nuberjonas.pompalette.application.javafx_application.loadproject.view.LoadProjectViewController;
-import org.nuberjonas.pompalette.application.javafx_application.main.view.MainViewController;
-import org.nuberjonas.pompalette.application.javafx_application.projectgraph.view.ProjectGraphViewController;
+import org.nuberjonas.pompalette.application.javafx_application.gui.loadproject.view.LoadProjectViewController;
+import org.nuberjonas.pompalette.application.javafx_application.gui.main.view.MainViewController;
+import org.nuberjonas.pompalette.application.javafx_application.gui.projectgraph.view.ProjectGraphViewController;
 
 import java.io.IOException;
 
@@ -44,10 +44,12 @@ public class ViewHandler {
         var root = mainLoader.load();
 
         MainViewController mainViewController = mainLoader.getController();
-        mainViewController.init(this);
+        mainViewController.init();
+        addLoadProjectViewToControls(mainViewController.getControls());
+        addProjectGraphViewToMainContentPane(mainViewController.getMainContent());
 
         var scene = new Scene((Parent) root, 1080, 720);
-        scene.getStylesheets().addAll(BootstrapFX.bootstrapFXStylesheet(), "smartgraph.css ");
+        scene.getStylesheets().addAll(BootstrapFX.bootstrapFXStylesheet(), "smartgraph.css");
         primaryStage.setScene(scene);
         primaryStage.setTitle("PomPalette");
         primaryStage.setMinWidth(1080);
@@ -55,24 +57,23 @@ public class ViewHandler {
         primaryStage.show();
     }
 
-    public void addLoadProjectViewToControls(GridPane pane) throws IOException {
+    private void addLoadProjectViewToControls(GridPane pane) throws IOException {
         var loader = getFXMLLoaderFor(Views.LOAD_PROJECT);
         Parent loadProjectView = loader.load();
-        LoadProjectViewController loadProjectViewController = loader.getController();
-        loadProjectViewController.init(viewModelFactory.getLoadProjectViewModel(), primaryStage);
+        LoadProjectViewController controller = loader.getController();
+        controller.init(viewModelFactory.getLoadProjectViewModel(), primaryStage);
 
         pane.add(loadProjectView, 0,0);
     }
 
-    public void addProjectGraphViewToContentPane(StackPane contentPane) throws IOException {
+    public void addProjectGraphViewToMainContentPane(StackPane contentPane) throws IOException {
         var loader = getFXMLLoaderFor(Views.PROJECT_GRAPH);
         Parent projectGraphView = loader.load();
-        ProjectGraphViewController projectGraphViewController = loader.getController();
-        projectGraphViewController.init();
+        ProjectGraphViewController controller = loader.getController();
+        controller.init();
 
         contentPane.layout();
         contentPane.getChildren().add(projectGraphView);
-        projectGraphViewController.initGraph();
     }
 
     private FXMLLoader getFXMLLoaderFor(Views view){

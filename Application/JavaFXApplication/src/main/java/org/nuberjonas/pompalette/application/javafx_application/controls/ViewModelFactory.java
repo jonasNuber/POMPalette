@@ -1,6 +1,6 @@
-package org.nuberjonas.pompalette.application.javafx_application.main;
+package org.nuberjonas.pompalette.application.javafx_application.controls;
 
-import org.nuberjonas.pompalette.application.javafx_application.loadproject.viewmodel.LoadProjectViewModel;
+import org.nuberjonas.pompalette.application.javafx_application.gui.loadproject.viewmodel.LoadProjectViewModel;
 import org.nuberjonas.pompalette.core.model.ModelFactory;
 
 public class ViewModelFactory {

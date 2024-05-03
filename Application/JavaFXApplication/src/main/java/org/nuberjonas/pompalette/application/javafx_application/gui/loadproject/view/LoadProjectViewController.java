@@ -1,4 +1,4 @@
-package org.nuberjonas.pompalette.application.javafx_application.loadproject.view;
+package org.nuberjonas.pompalette.application.javafx_application.gui.loadproject.view;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -7,7 +7,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
-import org.nuberjonas.pompalette.application.javafx_application.loadproject.viewmodel.LoadProjectViewModel;
+import org.nuberjonas.pompalette.application.javafx_application.gui.loadproject.viewmodel.LoadProjectViewModel;
 
 import java.io.File;
 import java.nio.file.Files;

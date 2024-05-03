@@ -11,7 +11,7 @@ module javafx.application {
     requires org.nuberjonas.pompalette.infrastructure.eventbus;
 
     exports org.nuberjonas.pompalette.application.javafx_application;
-    opens org.nuberjonas.pompalette.application.javafx_application.loadproject.view to javafx.fxml;
-    opens org.nuberjonas.pompalette.application.javafx_application.main.view to javafx.fxml;
-    opens org.nuberjonas.pompalette.application.javafx_application.projectgraph.view to javafx.fxml;
+    opens org.nuberjonas.pompalette.application.javafx_application.gui.loadproject.view to javafx.fxml;
+    opens org.nuberjonas.pompalette.application.javafx_application.gui.main.view to javafx.fxml;
+    opens org.nuberjonas.pompalette.application.javafx_application.gui.projectgraph.view to javafx.fxml;
 }

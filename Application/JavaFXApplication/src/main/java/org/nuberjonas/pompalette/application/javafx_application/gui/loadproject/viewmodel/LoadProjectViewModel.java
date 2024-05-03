@@ -1,9 +1,9 @@
-package org.nuberjonas.pompalette.application.javafx_application.loadproject.viewmodel;
+package org.nuberjonas.pompalette.application.javafx_application.gui.loadproject.viewmodel;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import org.nuberjonas.pompalette.application.javafx_application.events.LoadProjectInitializationEvent;
 import org.nuberjonas.pompalette.infrastructure.eventbus.EventBus;
-import org.nuberjonas.pompalette.infrastructure.eventbus.events.LoadProjectInitializationEvent;
 
 public class LoadProjectViewModel {
 
