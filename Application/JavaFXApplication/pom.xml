@@ -18,7 +18,7 @@
     <name>JavaFXApplication</name>
 
     <properties>
-        <javafx.version>22-ea+16</javafx.version>
+        <javafx.version>20</javafx.version>
         <smartgraph.version>2.0.0</smartgraph.version>
         <third-party.location>third-party</third-party.location>
     </properties>
@@ -26,8 +26,7 @@
     <dependencies>
         <dependency>
             <groupId>org.openjfx</groupId>
-            <artifactId>javafx</artifactId>
-            <type>pom</type>
+            <artifactId>javafx-base</artifactId>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
@@ -45,6 +44,7 @@
             <groupId>com.brunomnsilva</groupId>
             <artifactId>smartgraph</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
@@ -72,14 +72,14 @@
                             <mainClass>org.nuberjonas.pompalette.application.javafx_application.StartPomPaletteApp</mainClass>
                         </manifest>
                         <manifestEntries>
-                            <Class-Path>${third-party.location}/javafx-controls-${javafx.version}.jar ${third-party.location}/javafx-controls-${javafx.version}-win.jar ${third-party.location}/javafx-graphics-${javafx.version}.jar ${third-party.location}/javafx-graphics-${javafx.version}-win.jar ${third-party.location}/javafx-base-${javafx.version}.jar ${third-party.location}/javafx-base-${javafx.version}-win.jar ${third-party.location}/javafx-fxml-${javafx.version}.jar ${third-party.location}/javafx-fxml-${javafx.version}-win.jar ${third-party.location}/smartgraph-${smartgraph.version}.jar</Class-Path>
+                            <Class-Path>${third-party.location}/javafx-base-${javafx.version}.jar ${third-party.location}/javafx-base-${javafx.version}-win.jar ${third-party.location}/javafx-controls-${javafx.version}.jar ${third-party.location}/javafx-controls-${javafx.version}-win.jar ${third-party.location}/javafx-graphics-${javafx.version}.jar ${third-party.location}/javafx-graphics-${javafx.version}-win.jar ${third-party.location}/javafx-fxml-${javafx.version}.jar ${third-party.location}/javafx-fxml-${javafx.version}-win.jar ${third-party.location}/smartgraph-${smartgraph.version}.jar ${third-party.location}/bootstrapfx-core-0.4.0.jar ${third-party.location}/commons-lang3-3.14.0.jar org.nuberjonas.pompalette.core.model-${project.version}.jar org.nuberjonas.pompalette.infrastructure.eventbus-${project.version}.jar</Class-Path>
                         </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>3.6.0</version>
                 <executions>
                     <execution>
                         <id>create-application-structure</id>
