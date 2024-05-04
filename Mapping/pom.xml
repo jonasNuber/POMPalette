@@ -20,5 +20,6 @@
     <modules>
         <module>Mapping-API</module>
         <module>Project-Mapping</module>
+        <module>ProjectGraph-Mapping</module>
     </modules>
 </project>

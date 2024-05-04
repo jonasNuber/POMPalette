@@ -65,6 +65,10 @@
             <artifactId>org.nuberjonas.pompalette.mapping.mapping-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.nuberjonas.pompalette.mapping</groupId>
+            <artifactId>org.nuberjonas.pompalette.mapping.project-mapping</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.nuberjonas.pompalette.infrastructure</groupId>
             <artifactId>org.nuberjonas.pompalette.infrastructure.serviceloading</artifactId>
         </dependency>

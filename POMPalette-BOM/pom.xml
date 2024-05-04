@@ -132,11 +132,11 @@
                 <artifactId>ikonli-javafx</artifactId>
                 <version>12.3.1</version>
             </dependency>
-            <!-- https://mvnrepository.com/artifact/org.kordamp.bootstrapfx/bootstrapfx-core -->
+            <!-- https://mvnrepository.com/artifact/io.github.mkpaz/atlantafx-base -->
             <dependency>
-                <groupId>org.kordamp.bootstrapfx</groupId>
-                <artifactId>bootstrapfx-core</artifactId>
-                <version>0.4.0</version>
+                <groupId>io.github.mkpaz</groupId>
+                <artifactId>atlantafx-base</artifactId>
+                <version>2.0.1</version>
             </dependency>
             <!-- https://mvnrepository.com/artifact/com.brunomnsilva/smartgraph -->
             <dependency>
@@ -200,6 +200,11 @@
             <dependency>
                 <groupId>org.nuberjonas.pompalette.mapping</groupId>
                 <artifactId>org.nuberjonas.pompalette.mapping.project-mapping</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.nuberjonas.pompalette.mapping</groupId>
+                <artifactId>org.nuberjonas.pompalette.mapping.projectgraph-mapping</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

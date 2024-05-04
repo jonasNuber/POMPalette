@@ -7,15 +7,18 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.MultiModuleProjectDTO;
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.ProjectDTO;
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.model.ModelBaseDTO;
+import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.model.ProfileDTO;
 import org.nuberjonas.pompalette.infrastructure.parsing.projectparsingapi.ProjectParsingService;
 import org.nuberjonas.pompalette.infrastructure.parsing.projectparsingapi.exceptions.ProjectParsingException;
-import org.nuberjonas.pompalette.infrastructure.serviceloading.ServiceDiscovery;
 import org.nuberjonas.pompalette.mapping.mappingapi.mapper.MapperService;
+import org.nuberjonas.pompalette.mapping.projectmapping.ProjectMapperService;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static java.nio.file.Files.isDirectory;
@@ -27,11 +30,12 @@ public class MavenProjectParsingService implements ProjectParsingService {
 
     @SuppressWarnings("unchecked")
     public MavenProjectParsingService(){
-        this(ServiceDiscovery.loadService(MapperService.class,
-                service -> (
-                        (service.get().sourceType().equals(Model.class)) &&
-                        (service.get().destinationType().equals(ProjectDTO.class)))
-                ));
+//        this(ServiceDiscovery.loadService(MapperService.class,
+//                service -> (
+//                        (service.get().sourceType().equals(Model.class)) &&
+//                        (service.get().destinationType().equals(ProjectDTO.class)))
+//                ));
+        this(new ProjectMapperService());
     }
 
     protected MavenProjectParsingService(MapperService<Model, ProjectDTO> mapperService) {
@@ -64,12 +68,24 @@ public class MavenProjectParsingService implements ProjectParsingService {
         var project = loadProject(projectPath);
         var multiModuleProject = new MultiModuleProjectDTO(project);
 
-        Optional.ofNullable(project.modelBase())
+
+        List<String> modules = Optional.ofNullable(project.modelBase())
                 .map(ModelBaseDTO::modules)
-                .ifPresent(moduleNames -> moduleNames.forEach(moduleName -> {
-                    var modulePath = resolveModulePath(finalProjectPath, moduleName);
-                    multiModuleProject.addModule(loadMultiModuleProject(modulePath));
-                }));
+                .orElse(Collections.emptyList());
+
+        List<String> defaultModules = project.profiles().stream()
+                .filter(p -> p.id().equals("default"))
+                .findFirst()
+                .map(ProfileDTO::modelBase)
+                .map(ModelBaseDTO::modules)
+                .orElse(Collections.emptyList());
+
+        List<String> selectedModules = modules.isEmpty() ? defaultModules : modules;
+
+        selectedModules.forEach(moduleName -> {
+            var modulePath = resolveModulePath(finalProjectPath, moduleName);
+            multiModuleProject.addModule(loadMultiModuleProject(modulePath));
+        });
 
         return multiModuleProject;
     }

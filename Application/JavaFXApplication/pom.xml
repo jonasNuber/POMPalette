@@ -37,8 +37,8 @@
             <artifactId>javafx-fxml</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.kordamp.bootstrapfx</groupId>
-            <artifactId>bootstrapfx-core</artifactId>
+            <groupId>io.github.mkpaz</groupId>
+            <artifactId>atlantafx-base</artifactId>
         </dependency>
         <dependency>
             <groupId>com.brunomnsilva</groupId>
@@ -72,7 +72,7 @@
                             <mainClass>org.nuberjonas.pompalette.application.javafx_application.StartPomPaletteApp</mainClass>
                         </manifest>
                         <manifestEntries>
-                            <Class-Path>${third-party.location}/javafx-base-${javafx.version}.jar ${third-party.location}/javafx-base-${javafx.version}-win.jar ${third-party.location}/javafx-controls-${javafx.version}.jar ${third-party.location}/javafx-controls-${javafx.version}-win.jar ${third-party.location}/javafx-graphics-${javafx.version}.jar ${third-party.location}/javafx-graphics-${javafx.version}-win.jar ${third-party.location}/javafx-fxml-${javafx.version}.jar ${third-party.location}/javafx-fxml-${javafx.version}-win.jar ${third-party.location}/smartgraph-${smartgraph.version}.jar ${third-party.location}/bootstrapfx-core-0.4.0.jar ${third-party.location}/commons-lang3-3.14.0.jar org.nuberjonas.pompalette.core.model-${project.version}.jar org.nuberjonas.pompalette.infrastructure.eventbus-${project.version}.jar</Class-Path>
+                            <Class-Path>${third-party.location}/javafx-base-${javafx.version}.jar ${third-party.location}/javafx-base-${javafx.version}-win.jar ${third-party.location}/javafx-controls-${javafx.version}.jar ${third-party.location}/javafx-controls-${javafx.version}-win.jar ${third-party.location}/javafx-graphics-${javafx.version}.jar ${third-party.location}/javafx-graphics-${javafx.version}-win.jar ${third-party.location}/javafx-fxml-${javafx.version}.jar ${third-party.location}/javafx-fxml-${javafx.version}-win.jar ${third-party.location}/smartgraph-${smartgraph.version}.jar ${third-party.location}/atlantafx-base-2.0.1.jar ${third-party.location}/commons-lang3-3.14.0.jar org.nuberjonas.pompalette.core.model-${project.version}.jar org.nuberjonas.pompalette.infrastructure.eventbus-${project.version}.jar</Class-Path>
                         </manifestEntries>
                     </archive>
                 </configuration>

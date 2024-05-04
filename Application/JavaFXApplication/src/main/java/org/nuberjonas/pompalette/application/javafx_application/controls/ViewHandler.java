@@ -1,12 +1,13 @@
 package org.nuberjonas.pompalette.application.javafx_application.controls;
 
+import atlantafx.base.theme.PrimerLight;
+import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import org.kordamp.bootstrapfx.BootstrapFX;
 import org.nuberjonas.pompalette.application.javafx_application.gui.loadproject.view.LoadProjectViewController;
 import org.nuberjonas.pompalette.application.javafx_application.gui.main.view.MainViewController;
 import org.nuberjonas.pompalette.application.javafx_application.gui.projectgraph.view.ProjectGraphViewController;
@@ -49,7 +50,8 @@ public class ViewHandler {
         addProjectGraphViewToMainContentPane(mainViewController.getMainContent());
 
         var scene = new Scene((Parent) root, 1080, 720);
-        scene.getStylesheets().addAll(BootstrapFX.bootstrapFXStylesheet(), "smartgraph.css");
+        scene.getStylesheets().addAll("smartgraph.css");
+        Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
         primaryStage.setScene(scene);
         primaryStage.setTitle("PomPalette");
         primaryStage.setMinWidth(1080);

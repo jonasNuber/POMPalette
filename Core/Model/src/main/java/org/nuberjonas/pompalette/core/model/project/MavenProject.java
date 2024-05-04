@@ -1,19 +1,15 @@
 package org.nuberjonas.pompalette.core.model.project;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 
 public class MavenProject {
 
     private ProjectCoordinates coordinates;
     private String name;
-    private MavenProject parent;
-    private List<MavenProject> modules;
 
     public MavenProject(ProjectCoordinates coordinates, String name){
         this.coordinates = coordinates;
         this.name = name;
-        modules = new ArrayList<>();
     }
 
     public ProjectCoordinates getCoordinates() {
@@ -24,23 +20,21 @@ public class MavenProject {
         return name;
     }
 
-    public MavenProject getParent() {
-        return parent;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MavenProject that = (MavenProject) o;
+        return Objects.equals(coordinates, that.coordinates);
     }
 
-    public void setParent(MavenProject parent) {
-        this.parent = parent;
+    @Override
+    public int hashCode() {
+        return Objects.hash(coordinates);
     }
 
-    public List<MavenProject> getModules() {
-        return modules;
-    }
-
-    public void setModules(List<MavenProject> modules) {
-        this.modules = modules;
-    }
-
-    public void addModule(MavenProject module){
-        modules.add(module);
+    @Override
+    public String toString() {
+        return name;
     }
 }
