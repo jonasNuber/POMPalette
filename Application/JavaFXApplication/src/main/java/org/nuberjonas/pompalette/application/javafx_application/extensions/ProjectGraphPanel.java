@@ -21,6 +21,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import org.nuberjonas.pompalette.core.model.domain.graph.EdgeType;
+import org.nuberjonas.pompalette.core.model.domain.project.MavenDependency;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -750,6 +751,10 @@ public class ProjectGraphPanel<V, E> extends Pane {
 
                     if(theGraph.incidentEdges(vertex).stream().filter(e -> e.element().equals(EdgeType.BOM)).findAny().isPresent()){
                         newVertex.addStyleClass("root");
+                    }
+
+                    if(vertex.element() instanceof MavenDependency){
+                        newVertex.addStyleClass("dependency");
                     }
                 }
             }

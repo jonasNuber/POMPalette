@@ -1,10 +1,10 @@
 package org.nuberjonas.pompalette.core.model.domain.graph;
 
 import com.brunomnsilva.smartgraph.graph.Edge;
-import org.nuberjonas.pompalette.core.model.domain.project.MavenProject;
+import org.nuberjonas.pompalette.core.model.domain.project.Project;
 import org.nuberjonas.pompalette.core.model.domain.project.ProjectCoordinates;
 
-public class ProjectRelationship implements Edge<org.nuberjonas.pompalette.core.model.domain.graph.EdgeType, MavenProject> {
+public class ProjectRelationship implements Edge<org.nuberjonas.pompalette.core.model.domain.graph.EdgeType, Project> {
 
     private org.nuberjonas.pompalette.core.model.domain.graph.EdgeType edge;
     private ProjectVertex projectOutbound;
@@ -38,7 +38,7 @@ public class ProjectRelationship implements Edge<org.nuberjonas.pompalette.core.
         return project.equals(projectOutbound) || project.equals(projectInbound);
     }
 
-    public boolean contains(MavenProject project){
+    public boolean contains(Project project){
         return project.equals(projectOutbound.element()) || project.equals(projectInbound.element());
     }
 

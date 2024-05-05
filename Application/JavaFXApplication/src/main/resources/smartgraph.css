@@ -9,6 +9,11 @@
     -fx-fill: #AFE1AF;
 }
 
+.dependency {
+    -fx-stroke: #E4D00A;
+    -fx-fill: #DFFF00;
+}
+
 .root {
      -fx-stroke: #61B5F1;
      -fx-fill: #B1DFF7;

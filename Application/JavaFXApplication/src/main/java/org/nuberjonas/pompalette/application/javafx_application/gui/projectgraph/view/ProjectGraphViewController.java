@@ -7,7 +7,7 @@ import org.nuberjonas.pompalette.application.javafx_application.extensions.Proje
 import org.nuberjonas.pompalette.application.javafx_application.extensions.ProjectGraphZoomAndScrollPane;
 import org.nuberjonas.pompalette.application.javafx_application.gui.projectgraph.viewmodel.ProjectGraphViewModel;
 import org.nuberjonas.pompalette.core.model.domain.graph.EdgeType;
-import org.nuberjonas.pompalette.core.model.domain.project.MavenProject;
+import org.nuberjonas.pompalette.core.model.domain.project.Project;
 import org.nuberjonas.pompalette.infrastructure.eventbus.EventBus;
 import org.nuberjonas.pompalette.infrastructure.eventbus.Subscribable;
 import org.nuberjonas.pompalette.infrastructure.eventbus.events.Event;
@@ -20,7 +20,7 @@ public class ProjectGraphViewController implements Subscribable {
     @FXML
     private StackPane projectBasePane;
 
-    private ProjectGraphPanel<MavenProject, EdgeType> graphView;
+    private ProjectGraphPanel<Project, EdgeType> graphView;
 
     private ProjectGraphViewModel viewModel;
 

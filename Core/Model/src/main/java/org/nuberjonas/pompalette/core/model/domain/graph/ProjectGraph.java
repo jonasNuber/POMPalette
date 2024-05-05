@@ -1,14 +1,14 @@
 package org.nuberjonas.pompalette.core.model.domain.graph;
 
 import com.brunomnsilva.smartgraph.graph.*;
-import org.nuberjonas.pompalette.core.model.domain.project.MavenProject;
+import org.nuberjonas.pompalette.core.model.domain.project.Project;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ProjectGraph implements Digraph<MavenProject, org.nuberjonas.pompalette.core.model.domain.graph.EdgeType> {
+public class ProjectGraph implements Digraph<Project, org.nuberjonas.pompalette.core.model.domain.graph.EdgeType> {
 
-    private final Map<MavenProject, ProjectVertex> vertices = new HashMap();
+    private final Map<Project, ProjectVertex> vertices = new HashMap();
     private final Set<ProjectRelationship> edges = new HashSet();
 
     @Override
@@ -22,17 +22,17 @@ public class ProjectGraph implements Digraph<MavenProject, org.nuberjonas.pompal
     }
 
     @Override
-    public List<Vertex<MavenProject>> vertices() {
+    public List<Vertex<Project>> vertices() {
         return new ArrayList<>(vertices.values());
     }
 
     @Override
-    public List<Edge<EdgeType, MavenProject>> edges() {
+    public List<Edge<EdgeType, Project>> edges() {
         return new ArrayList<>(edges);
     }
 
     @Override
-    public List<Edge<org.nuberjonas.pompalette.core.model.domain.graph.EdgeType, MavenProject>> incidentEdges(Vertex<MavenProject> projectVertex) throws InvalidVertexException {
+    public List<Edge<org.nuberjonas.pompalette.core.model.domain.graph.EdgeType, Project>> incidentEdges(Vertex<Project> projectVertex) throws InvalidVertexException {
         checkVertex(projectVertex);
 
         return this.edges.stream()
@@ -41,7 +41,7 @@ public class ProjectGraph implements Digraph<MavenProject, org.nuberjonas.pompal
     }
 
     @Override
-    public Collection<Edge<org.nuberjonas.pompalette.core.model.domain.graph.EdgeType, MavenProject>> outboundEdges(Vertex<MavenProject> vertex) throws InvalidVertexException {
+    public Collection<Edge<org.nuberjonas.pompalette.core.model.domain.graph.EdgeType, Project>> outboundEdges(Vertex<Project> vertex) throws InvalidVertexException {
         checkVertex(vertex);
 
         return this.edges.stream()
@@ -50,7 +50,7 @@ public class ProjectGraph implements Digraph<MavenProject, org.nuberjonas.pompal
     }
 
     @Override
-    public Vertex<MavenProject> opposite(Vertex<MavenProject> projectVertex, Edge<org.nuberjonas.pompalette.core.model.domain.graph.EdgeType, MavenProject> projectEdge) throws InvalidVertexException, InvalidEdgeException {
+    public Vertex<Project> opposite(Vertex<Project> projectVertex, Edge<org.nuberjonas.pompalette.core.model.domain.graph.EdgeType, Project> projectEdge) throws InvalidVertexException, InvalidEdgeException {
         checkVertex(projectVertex);
         checkEdge(projectEdge);
 
@@ -62,7 +62,7 @@ public class ProjectGraph implements Digraph<MavenProject, org.nuberjonas.pompal
     }
 
     @Override
-    public synchronized boolean areAdjacent(Vertex<MavenProject> projectVertex, Vertex<MavenProject> otherProjectVertex) throws InvalidVertexException {
+    public synchronized boolean areAdjacent(Vertex<Project> projectVertex, Vertex<Project> otherProjectVertex) throws InvalidVertexException {
         checkVertex(projectVertex);
         checkVertex(otherProjectVertex);
 
@@ -76,7 +76,7 @@ public class ProjectGraph implements Digraph<MavenProject, org.nuberjonas.pompal
     }
 
     @Override
-    public synchronized Vertex<MavenProject> insertVertex(MavenProject project) throws InvalidVertexException {
+    public synchronized Vertex<Project> insertVertex(Project project) throws InvalidVertexException {
         if(vertices.containsKey(project)){
             throw new InvalidVertexException("There's already a vertex with this Project.");
         }
@@ -88,7 +88,7 @@ public class ProjectGraph implements Digraph<MavenProject, org.nuberjonas.pompal
     }
 
     @Override
-    public Edge<org.nuberjonas.pompalette.core.model.domain.graph.EdgeType, MavenProject> insertEdge(Vertex<MavenProject> projectOutbound, Vertex<MavenProject> projectInbound, org.nuberjonas.pompalette.core.model.domain.graph.EdgeType relationship) throws InvalidVertexException, InvalidEdgeException {
+    public Edge<org.nuberjonas.pompalette.core.model.domain.graph.EdgeType, Project> insertEdge(Vertex<Project> projectOutbound, Vertex<Project> projectInbound, org.nuberjonas.pompalette.core.model.domain.graph.EdgeType relationship) throws InvalidVertexException, InvalidEdgeException {
         if(edgeExists(projectOutbound, projectInbound, relationship)){
             throw new InvalidEdgeException("There's already an edge with these projects and relationship.");
         }
@@ -100,7 +100,7 @@ public class ProjectGraph implements Digraph<MavenProject, org.nuberjonas.pompal
     }
 
     @Override
-    public Edge<org.nuberjonas.pompalette.core.model.domain.graph.EdgeType, MavenProject> insertEdge(MavenProject projectOutbound, MavenProject projectInbound, org.nuberjonas.pompalette.core.model.domain.graph.EdgeType relationship) throws InvalidVertexException, InvalidEdgeException {
+    public Edge<org.nuberjonas.pompalette.core.model.domain.graph.EdgeType, Project> insertEdge(Project projectOutbound, Project projectInbound, org.nuberjonas.pompalette.core.model.domain.graph.EdgeType relationship) throws InvalidVertexException, InvalidEdgeException {
         var projectVertexOutbound = new org.nuberjonas.pompalette.core.model.domain.graph.ProjectVertex(projectOutbound);
         var projectVertexInbound = new org.nuberjonas.pompalette.core.model.domain.graph.ProjectVertex(projectInbound);
 
@@ -114,7 +114,7 @@ public class ProjectGraph implements Digraph<MavenProject, org.nuberjonas.pompal
         return projectRelationship;
     }
 
-    private boolean edgeExists(Vertex<MavenProject> projectOutbound, Vertex<MavenProject> projectInbound, org.nuberjonas.pompalette.core.model.domain.graph.EdgeType relationship){
+    private boolean edgeExists(Vertex<Project> projectOutbound, Vertex<Project> projectInbound, org.nuberjonas.pompalette.core.model.domain.graph.EdgeType relationship){
         checkVertex(projectOutbound);
         checkVertex(projectInbound);
 
@@ -128,7 +128,7 @@ public class ProjectGraph implements Digraph<MavenProject, org.nuberjonas.pompal
     }
 
     @Override
-    public MavenProject removeVertex(Vertex<MavenProject> project) throws InvalidVertexException {
+    public Project removeVertex(Vertex<Project> project) throws InvalidVertexException {
         checkVertex(project);
         incidentEdges(project).forEach(edges::remove);
 
@@ -136,7 +136,7 @@ public class ProjectGraph implements Digraph<MavenProject, org.nuberjonas.pompal
     }
 
     @Override
-    public org.nuberjonas.pompalette.core.model.domain.graph.EdgeType removeEdge(Edge<org.nuberjonas.pompalette.core.model.domain.graph.EdgeType, MavenProject> edge) throws InvalidEdgeException {
+    public org.nuberjonas.pompalette.core.model.domain.graph.EdgeType removeEdge(Edge<org.nuberjonas.pompalette.core.model.domain.graph.EdgeType, Project> edge) throws InvalidEdgeException {
         checkEdge(edge);
         edges.remove(edge);
 
@@ -144,7 +144,7 @@ public class ProjectGraph implements Digraph<MavenProject, org.nuberjonas.pompal
     }
 
     @Override
-    public MavenProject replace(Vertex<MavenProject> projectVertex, MavenProject project) throws InvalidVertexException {
+    public Project replace(Vertex<Project> projectVertex, Project project) throws InvalidVertexException {
         checkVertex(projectVertex);
         checkVertex(new org.nuberjonas.pompalette.core.model.domain.graph.ProjectVertex(project));
 
@@ -155,7 +155,7 @@ public class ProjectGraph implements Digraph<MavenProject, org.nuberjonas.pompal
     }
 
     @Override
-    public org.nuberjonas.pompalette.core.model.domain.graph.EdgeType replace(Edge<org.nuberjonas.pompalette.core.model.domain.graph.EdgeType, MavenProject> edge, org.nuberjonas.pompalette.core.model.domain.graph.EdgeType edgeType) throws InvalidEdgeException {
+    public org.nuberjonas.pompalette.core.model.domain.graph.EdgeType replace(Edge<org.nuberjonas.pompalette.core.model.domain.graph.EdgeType, Project> edge, org.nuberjonas.pompalette.core.model.domain.graph.EdgeType edgeType) throws InvalidEdgeException {
         var newEdge = new org.nuberjonas.pompalette.core.model.domain.graph.ProjectRelationship(edgeType, (org.nuberjonas.pompalette.core.model.domain.graph.ProjectVertex) edge.vertices()[0], (org.nuberjonas.pompalette.core.model.domain.graph.ProjectVertex) edge.vertices()[1]);
         checkEdge(edge);
         checkEdge(newEdge);
@@ -168,7 +168,7 @@ public class ProjectGraph implements Digraph<MavenProject, org.nuberjonas.pompal
         return oldType;
     }
 
-    private void checkVertex(Vertex<MavenProject> v) throws InvalidVertexException {
+    private void checkVertex(Vertex<Project> v) throws InvalidVertexException {
         if (v == null) {
             throw new InvalidVertexException("Null vertex.");
         } else {
@@ -185,7 +185,7 @@ public class ProjectGraph implements Digraph<MavenProject, org.nuberjonas.pompal
         }
     }
 
-    private void checkEdge(Edge<org.nuberjonas.pompalette.core.model.domain.graph.EdgeType, MavenProject> e) throws InvalidEdgeException {
+    private void checkEdge(Edge<org.nuberjonas.pompalette.core.model.domain.graph.EdgeType, Project> e) throws InvalidEdgeException {
         if (e == null) {
             throw new InvalidEdgeException("Null edge.");
         } else {

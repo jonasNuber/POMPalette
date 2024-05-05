@@ -2,9 +2,11 @@ package org.nuberjonas.pompalette.core.model.application;
 
 import org.nuberjonas.pompalette.core.model.domain.graph.EdgeType;
 import org.nuberjonas.pompalette.core.model.domain.graph.ProjectGraph;
+import org.nuberjonas.pompalette.core.model.domain.project.MavenDependency;
 import org.nuberjonas.pompalette.core.model.domain.project.MavenProject;
 import org.nuberjonas.pompalette.core.model.domain.project.ProjectCoordinates;
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.MultiModuleProjectDTO;
+import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.dependency.DependencyDTO;
 
 public class ProjectGraphMapper {
 
@@ -16,6 +18,7 @@ public class ProjectGraphMapper {
         var project = mapToMavenProject(multiModuleProject);
         
         graph.insertVertex(project);
+        mapDepdendencies(multiModuleProject, project, graph);
         mapModules(multiModuleProject, project, graph);
 
         return graph;
@@ -32,7 +35,16 @@ public class ProjectGraphMapper {
             var project = new MavenProject(new ProjectCoordinates(child.get().groupId(), child.get().artifactId(), child.get().version()), child.get().name());
             graph.insertVertex(project);
             graph.insertEdge(root, project, EdgeType.MODULE);
+            mapDepdendencies(child, project, graph);
             mapModules(child, project, graph);
+        }
+    }
+
+    private void mapDepdendencies(MultiModuleProjectDTO multiModuleProjectDTO, MavenProject root, ProjectGraph graph){
+        for (DependencyDTO dependencyDTO : multiModuleProjectDTO.get().modelBase().dependencies()){
+            var dependency = mapToMavenDependency(dependencyDTO);
+            graph.insertVertex(dependency);
+            graph.insertEdge(root, dependency, EdgeType.DEPENDENCY);
         }
     }
 
@@ -42,5 +54,13 @@ public class ProjectGraphMapper {
                 project.get().artifactId(),
                 project.get().version()),
                 project.get().name());
+    }
+
+    private MavenDependency mapToMavenDependency(DependencyDTO dependency){
+        return new MavenDependency(new ProjectCoordinates(
+                dependency.groupId(),
+                dependency.artifactId(),
+                dependency.version()
+        ));
     }
 }

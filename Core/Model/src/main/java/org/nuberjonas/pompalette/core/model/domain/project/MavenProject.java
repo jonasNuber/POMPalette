@@ -4,7 +4,7 @@ import com.brunomnsilva.smartgraph.graphview.SmartShapeTypeSource;
 
 import java.util.Objects;
 
-public class MavenProject {
+public class MavenProject implements Project {
 
     private ProjectCoordinates coordinates;
     private String name;
@@ -14,6 +14,7 @@ public class MavenProject {
         this.name = name;
     }
 
+    @Override
     public ProjectCoordinates getCoordinates() {
         return coordinates;
     }
@@ -22,6 +23,7 @@ public class MavenProject {
         return name;
     }
 
+    @Override
     @SmartShapeTypeSource
     public String getShape(){
         return "square";
