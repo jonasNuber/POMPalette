@@ -1,6 +1,4 @@
-package org.nuberjonas.pompalette.application.javafx_application.events;
-
-import org.nuberjonas.pompalette.infrastructure.eventbus.events.Event;
+package org.nuberjonas.pompalette.infrastructure.eventbus.events;
 
 public final class NotificationEvent extends Event<NotificationEvent.Notification> {
 
@@ -20,8 +18,8 @@ public final class NotificationEvent extends Event<NotificationEvent.Notificatio
         return new NotificationEvent(new Notification(Notification.Type.ERROR, message));
     }
 
-    public static NotificationEvent error(String message, String errorMessage){
-        return new NotificationEvent(new Notification(Notification.Type.ERROR, message, errorMessage));
+    public static NotificationEvent error(String message, Throwable error){
+        return new NotificationEvent(new Notification(Notification.Type.ERROR, message, error));
     }
 
     public static final class Notification {
@@ -33,16 +31,16 @@ public final class NotificationEvent extends Event<NotificationEvent.Notificatio
 
         private final Type eventType;
         private final String message;
-        private final String errorMessage;
+        private final Throwable error;
 
-        public Notification(Type eventType, String message, String errorMessage) {
+        public Notification(Type eventType, String message, Throwable error) {
             this.eventType = eventType;
             this.message = message;
-            this.errorMessage = errorMessage;
+            this.error = error;
         }
 
         public Notification(Type eventType, String message){
-            this(eventType, message, "");
+            this(eventType, message, null);
         }
 
         public Type getEventType() {
@@ -53,8 +51,8 @@ public final class NotificationEvent extends Event<NotificationEvent.Notificatio
             return message;
         }
 
-        public String getErrorMessage() {
-            return errorMessage;
+        public Throwable getErrorMessage() {
+            return error;
         }
     }
 }

@@ -34,6 +34,10 @@
             <groupId>org.nuberjonas.pompalette.infrastructure.parsing</groupId>
             <artifactId>org.nuberjonas.pompalette.infrastructure.parsing.project-parsing-maven-impl</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.nuberjonas.pompalette.infrastructure</groupId>
+            <artifactId>org.nuberjonas.pompalette.infrastructure.eventbus</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

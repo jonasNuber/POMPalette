@@ -21,6 +21,7 @@
 
 .vertex-label {
     -fx-font: bold 8pt "sans-serif";
+    -fx-fill: #000000;
 }
 
 .edge {
@@ -38,6 +39,11 @@
 
 .edge-label {
     -fx-font: normal 5pt "sans-serif";
+    -fx-fill: #000000;
+}
+
+.label-darkmode{
+    -fx-fill: #000000;
 }
 
 .arrow {

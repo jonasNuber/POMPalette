@@ -1,19 +1,26 @@
 package org.nuberjonas.pompalette.application.javafx_application.gui.main.view;
 
+import atlantafx.base.theme.PrimerDark;
+import atlantafx.base.theme.PrimerLight;
+import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
-import org.nuberjonas.pompalette.application.javafx_application.events.NotificationEvent;
 import org.nuberjonas.pompalette.application.javafx_application.extensions.NotificationPane;
 import org.nuberjonas.pompalette.infrastructure.eventbus.EventBus;
 import org.nuberjonas.pompalette.infrastructure.eventbus.Subscribable;
 import org.nuberjonas.pompalette.infrastructure.eventbus.events.Event;
+import org.nuberjonas.pompalette.infrastructure.eventbus.events.NotificationEvent;
 
 import java.util.Set;
 
 public class MainViewController implements Subscribable {
 
+    @FXML
+    private ToggleButton darkmodeToggle;
     @FXML
     private SplitPane splittableScene;
     @FXML
@@ -24,11 +31,22 @@ public class MainViewController implements Subscribable {
     private NotificationPane notificationPane;
 
     public void init() {
+        setupDarkmodeToggle();
         setupDividerConstraints();
         notificationPane = new NotificationPane();
         mainContent.getChildren().add(notificationPane);
 
         EventBus.getInstance().subscribe(NotificationEvent.class, this);
+    }
+
+    private void setupDarkmodeToggle(){
+        darkmodeToggle.addEventHandler(ActionEvent.ACTION, (event) -> {
+            if(darkmodeToggle.isSelected()){
+                Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
+            } else {
+                Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
+            }
+        });
     }
 
     private void setupDividerConstraints(){

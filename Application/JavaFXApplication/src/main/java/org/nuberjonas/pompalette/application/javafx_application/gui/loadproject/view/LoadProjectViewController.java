@@ -9,9 +9,9 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
-import org.nuberjonas.pompalette.application.javafx_application.events.NotificationEvent;
 import org.nuberjonas.pompalette.application.javafx_application.gui.loadproject.viewmodel.LoadProjectViewModel;
 import org.nuberjonas.pompalette.infrastructure.eventbus.EventBus;
+import org.nuberjonas.pompalette.infrastructure.eventbus.events.NotificationEvent;
 
 import java.io.File;
 import java.nio.file.Files;

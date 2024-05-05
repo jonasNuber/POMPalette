@@ -40,6 +40,15 @@ public class ProjectGraphViewController implements Subscribable {
         EventBus.getInstance().subscribe(LoadProjectInitializationEvent.class, this);
     }
 
+    @Override
+    public void handleEvent(Event<?> event) {
+        if(event instanceof LoadProjectInitializationEvent loadEvent){
+            loadProjectGraph(loadEvent.getData());
+        }
+    }
+
+
+
     private void loadProjectGraph(Path projectPath){
         if(isGraphInitialized == false){
             graphView.init();
@@ -48,13 +57,6 @@ public class ProjectGraphViewController implements Subscribable {
 
         viewModel.loadProjectGraph(projectPath);
         graphView.update();
-    }
-
-    @Override
-    public void handleEvent(Event<?> event) {
-        if(event instanceof LoadProjectInitializationEvent loadEvent){
-            loadProjectGraph(loadEvent.getData());
-        }
     }
 
     @Override
