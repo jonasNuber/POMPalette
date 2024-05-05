@@ -10,6 +10,7 @@ import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.ProjectDTO;
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.model.ModelBaseDTO;
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.model.ProfileDTO;
 import org.nuberjonas.pompalette.infrastructure.parsing.projectparsingapi.ProjectParsingService;
+import org.nuberjonas.pompalette.infrastructure.parsing.projectparsingapi.exceptions.NotAProjectException;
 import org.nuberjonas.pompalette.infrastructure.parsing.projectparsingapi.exceptions.ProjectParsingException;
 import org.nuberjonas.pompalette.mapping.mappingapi.mapper.MapperService;
 import org.nuberjonas.pompalette.mapping.projectmapping.ProjectMapperService;
@@ -53,6 +54,10 @@ public class MavenProjectParsingService implements ProjectParsingService {
     }
 
     private Model readProjectPOM(Path projectPath){
+        if(!Files.exists(projectPath)){
+            throw new NotAProjectException(String.format("The provided path: %s does not point to a maven project.", projectPath));
+        }
+
         try(var fis = new FileInputStream(projectPath.toFile())){
             return reader.read(fis);
         } catch (IOException e) {
