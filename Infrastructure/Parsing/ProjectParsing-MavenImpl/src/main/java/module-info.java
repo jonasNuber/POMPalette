@@ -7,6 +7,7 @@ module org.nuberjonas.pompalette.infrastructure.parsing.projectparsingmavenimpl 
 
     requires maven.model;
     requires plexus.xml;
+    requires org.apache.commons.lang3;
 
     exports org.nuberjonas.pompalette.infrastructure.parsing.projectparsingmavenimpl;
 

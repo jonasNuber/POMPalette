@@ -3,6 +3,7 @@ package org.nuberjonas.pompalette.application.javafx_application.controls;
 import org.nuberjonas.pompalette.application.javafx_application.gui.loadproject.viewmodel.LoadProjectViewModel;
 import org.nuberjonas.pompalette.application.javafx_application.gui.projectgraph.viewmodel.ProjectGraphViewModel;
 import org.nuberjonas.pompalette.core.model.ModelFactory;
+import org.nuberjonas.pompalette.core.model.application.ProjectGraphService;
 
 public final class ViewModelFactory {
 
@@ -23,7 +24,7 @@ public final class ViewModelFactory {
 
     public ProjectGraphViewModel getProjectGraphViewModel(){
         if(projectGraphViewModel == null){
-            projectGraphViewModel = new ProjectGraphViewModel();
+            projectGraphViewModel = new ProjectGraphViewModel(modelFactory.getProjectGraph(), new ProjectGraphService());
         }
 
         return projectGraphViewModel;

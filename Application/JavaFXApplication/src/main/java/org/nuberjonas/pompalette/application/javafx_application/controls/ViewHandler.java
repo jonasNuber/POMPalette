@@ -72,7 +72,7 @@ public class ViewHandler {
         var loader = getFXMLLoaderFor(Views.PROJECT_GRAPH);
         Parent projectGraphView = loader.load();
         ProjectGraphViewController controller = loader.getController();
-        controller.init();
+        controller.init(viewModelFactory.getProjectGraphViewModel());
 
         contentPane.layout();
         contentPane.getChildren().add(projectGraphView);

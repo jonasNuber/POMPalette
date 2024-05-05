@@ -9,6 +9,7 @@ module javafx.application {
 
     requires org.nuberjonas.pompalette.core.model;
     requires org.nuberjonas.pompalette.infrastructure.eventbus;
+    requires java.logging;
 
     exports org.nuberjonas.pompalette.application.javafx_application;
     opens org.nuberjonas.pompalette.application.javafx_application.gui.loadproject.view to javafx.fxml;

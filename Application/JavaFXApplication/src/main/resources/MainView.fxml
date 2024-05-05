@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <BorderPane prefHeight="720.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/20" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nuberjonas.pompalette.application.javafx_application.gui.main.view.MainViewController">
    <center>
-      <SplitPane fx:id="splitableScene" dividerPositions="0.7374768089053804" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <SplitPane fx:id="splittableScene" dividerPositions="0.7374768089053804" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
           <StackPane fx:id="mainContent" prefHeight="150.0" prefWidth="200.0" />
           <GridPane fx:id="controls">
               <columnConstraints>

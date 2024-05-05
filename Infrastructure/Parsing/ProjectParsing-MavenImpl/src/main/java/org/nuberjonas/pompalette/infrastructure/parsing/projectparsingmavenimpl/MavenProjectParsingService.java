@@ -1,5 +1,6 @@
 package org.nuberjonas.pompalette.infrastructure.parsing.projectparsingmavenimpl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
@@ -16,10 +17,12 @@ import org.nuberjonas.pompalette.mapping.projectmapping.ProjectMapperService;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.nio.file.Files.isDirectory;
 
@@ -46,11 +49,12 @@ public class MavenProjectParsingService implements ProjectParsingService {
 
     @Override
     public ProjectDTO loadProject(Path projectPath) {
-        projectPath = appendPomPathIfDirectory(projectPath);
+        return mapperService.mapToDestination(readProjectPOM(appendPomPathIfDirectory(projectPath)));
+    }
 
+    private Model readProjectPOM(Path projectPath){
         try(var fis = new FileInputStream(projectPath.toFile())){
-            var model = reader.read(fis);
-            return mapperService.mapToDestination(model);
+            return reader.read(fis);
         } catch (IOException e) {
             throw new ProjectParsingException(String.format("Project for the path: %s could not be loaded.", projectPath), e);
         } catch (XmlPullParserException e) {
@@ -64,10 +68,67 @@ public class MavenProjectParsingService implements ProjectParsingService {
 
     @Override
     public MultiModuleProjectDTO loadMultiModuleProject(Path projectPath) {
-        var finalProjectPath = appendPomPathIfDirectory(projectPath);
-        var project = loadProject(projectPath);
+        var finalProjectPath = findTopLevelParentProject(appendPomPathIfDirectory(projectPath));
+        var project = loadProject(finalProjectPath);
         var multiModuleProject = new MultiModuleProjectDTO(project);
+        multiModuleProject.setProjectPath(finalProjectPath);
+        multiModuleProject.addProjectBOM(findProjectBOM(finalProjectPath, project));
 
+        return loadMultiModuleProjectModules(finalProjectPath, multiModuleProject);
+    }
+
+
+    private Path findTopLevelParentProject(Path currentProjectPath){
+        var model = readProjectPOM(currentProjectPath);
+
+        if(hasParent(model)){
+            return findTopLevelParentProject(currentProjectPath.resolveSibling(model.getParent().getRelativePath()).normalize().toAbsolutePath());
+        } else {
+            return currentProjectPath;
+        }
+    }
+
+    private boolean hasParent(Model model){
+        return model.getParent() != null;
+    }
+
+    private MultiModuleProjectDTO findProjectBOM(Path projectPath, ProjectDTO project) {
+        var groupId = project.groupId();
+        var artifactId = project.artifactId();
+
+        var possibleBom = project.modelBase().dependencyManagement().dependencies()
+                .stream()
+                .filter(dependencyDTO ->
+                        "pom".equals(dependencyDTO.type()) &&
+                                (StringUtils.containsIgnoreCase(dependencyDTO.groupId(), groupId) || StringUtils.containsIgnoreCase(dependencyDTO.groupId(), artifactId)))
+                .findFirst();
+
+        if(possibleBom.isPresent()){
+            var bom = possibleBom.get();
+            List<Path> folders;
+
+            try {
+                folders = Files.list(projectPath.getParent()).filter(Files::isDirectory).collect(Collectors.toList());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            for (Path folder : folders) {
+                if(StringUtils.containsIgnoreCase(folder.getFileName().toString(), "bom") || Files.isRegularFile(folder.resolve("pom.xml"))){
+                    var bomProject = loadProject(folder.resolve("pom.xml"));
+
+                    if(bomProject.groupId().equals(bom.groupId()) && bomProject.artifactId().equals(bom.artifactId()) && bomProject.version().equals(bom.version())){
+                        return new MultiModuleProjectDTO(bomProject);
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private MultiModuleProjectDTO loadMultiModuleProjectModules(Path path, MultiModuleProjectDTO multiModuleProject){
+        var project = multiModuleProject.get();
 
         List<String> modules = Optional.ofNullable(project.modelBase())
                 .map(ModelBaseDTO::modules)
@@ -83,8 +144,11 @@ public class MavenProjectParsingService implements ProjectParsingService {
         List<String> selectedModules = modules.isEmpty() ? defaultModules : modules;
 
         selectedModules.forEach(moduleName -> {
-            var modulePath = resolveModulePath(finalProjectPath, moduleName);
-            multiModuleProject.addModule(loadMultiModuleProject(modulePath));
+            var modulePath = resolveModulePath(path, moduleName);
+            var moduleProject = new MultiModuleProjectDTO(loadProject(modulePath));
+
+            moduleProject = loadMultiModuleProjectModules(modulePath, moduleProject);
+            multiModuleProject.addModule(moduleProject);
         });
 
         return multiModuleProject;

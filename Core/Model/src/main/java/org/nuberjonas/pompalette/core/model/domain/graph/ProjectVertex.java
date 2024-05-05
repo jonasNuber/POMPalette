@@ -1,8 +1,8 @@
-package org.nuberjonas.pompalette.core.model.graph;
+package org.nuberjonas.pompalette.core.model.domain.graph;
 
 import com.brunomnsilva.smartgraph.graph.Vertex;
-import org.nuberjonas.pompalette.core.model.project.MavenProject;
-import org.nuberjonas.pompalette.core.model.project.ProjectCoordinates;
+import org.nuberjonas.pompalette.core.model.domain.project.MavenProject;
+import org.nuberjonas.pompalette.core.model.domain.project.ProjectCoordinates;
 
 import java.util.Objects;
 

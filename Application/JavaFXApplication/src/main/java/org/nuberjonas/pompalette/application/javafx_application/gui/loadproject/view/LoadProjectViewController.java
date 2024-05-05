@@ -4,10 +4,14 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
+import org.nuberjonas.pompalette.application.javafx_application.events.NotificationEvent;
 import org.nuberjonas.pompalette.application.javafx_application.gui.loadproject.viewmodel.LoadProjectViewModel;
+import org.nuberjonas.pompalette.infrastructure.eventbus.EventBus;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -27,15 +31,34 @@ public class LoadProjectViewController {
     public void init(LoadProjectViewModel viewModel, Stage primaryStage){
         this.viewModel = viewModel;
         this.primaryStage = primaryStage;
-
         viewModel.projectPathProperty().bind(projectPathTextfield.textProperty());
+
+        projectPathTextfield.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                initiateLoad();
+                event.consume();
+            }
+        });
     }
 
     @FXML
     public void onLoadButtonPress(ActionEvent event){
-        if(StringUtils.isNotEmpty(viewModel.projectPathProperty().get()) && StringUtils.isNotBlank(viewModel.projectPathProperty().get())){
+        initiateLoad();
+    }
+
+    private void initiateLoad(){
+        if(isFileOrDirectory()){
             viewModel.initiateLoading();
+        } else {
+            EventBus.getInstance().publish(NotificationEvent.error("Is Not a File"));
         }
+    }
+
+    private boolean isFileOrDirectory(){
+        return StringUtils.isNotEmpty(projectPathTextfield.textProperty().get()) &&
+                StringUtils.isNotBlank(projectPathTextfield.textProperty().get()) &&
+                (Files.isRegularFile(Path.of(projectPathTextfield.textProperty().get())) ||
+                        Files.isDirectory(Path.of(projectPathTextfield.textProperty().get())));
     }
 
     @FXML

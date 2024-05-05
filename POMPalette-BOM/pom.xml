@@ -203,11 +203,6 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.nuberjonas.pompalette.mapping</groupId>
-                <artifactId>org.nuberjonas.pompalette.mapping.projectgraph-mapping</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.nuberjonas.pompalette.core</groupId>
                 <artifactId>org.nuberjonas.pompalette.core.model</artifactId>
                 <version>${project.version}</version>

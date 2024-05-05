@@ -1,4 +1,4 @@
-package org.nuberjonas.pompalette.core.model.project;
+package org.nuberjonas.pompalette.core.model.domain.project;
 
 import java.util.Objects;
 
