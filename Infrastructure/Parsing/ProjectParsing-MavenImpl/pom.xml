@@ -57,12 +57,21 @@
         </dependency>
 
         <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.nuberjonas.pompalette.infrastructure.parsing</groupId>
             <artifactId>org.nuberjonas.pompalette.infrastructure.parsing.project-parsing-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.nuberjonas.pompalette.mapping</groupId>
             <artifactId>org.nuberjonas.pompalette.mapping.mapping-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.nuberjonas.pompalette.mapping</groupId>
+            <artifactId>org.nuberjonas.pompalette.mapping.project-mapping</artifactId>
         </dependency>
         <dependency>
             <groupId>org.nuberjonas.pompalette.infrastructure</groupId>

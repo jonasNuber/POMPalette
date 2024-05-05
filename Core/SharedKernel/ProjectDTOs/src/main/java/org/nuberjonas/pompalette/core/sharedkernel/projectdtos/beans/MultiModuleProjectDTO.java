@@ -1,5 +1,6 @@
 package org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -7,6 +8,8 @@ import java.util.Objects;
 public class MultiModuleProjectDTO {
 
     private ProjectDTO project;
+    private MultiModuleProjectDTO projectBOM;
+    private Path projectPath;
     private List<MultiModuleProjectDTO> modules;
 
     public MultiModuleProjectDTO(ProjectDTO project){
@@ -22,6 +25,22 @@ public class MultiModuleProjectDTO {
 
     public List<MultiModuleProjectDTO> getModules() {
         return modules;
+    }
+
+    public void addProjectBOM(MultiModuleProjectDTO projectBOM){
+        this.projectBOM = projectBOM;
+    }
+
+    public void setProjectPath(Path projectPath){
+        this.projectPath = projectPath;
+    }
+
+    public MultiModuleProjectDTO getProjectBOM() {
+        return projectBOM;
+    }
+
+    public Path getProjectPath() {
+        return projectPath;
     }
 
     public ProjectDTO get(){

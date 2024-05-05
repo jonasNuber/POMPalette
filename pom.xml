@@ -39,6 +39,12 @@
                     <artifactId>maven-dependency-plugin</artifactId>
                     <version>3.6.1</version>
                 </plugin>
+                <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-assembly-plugin -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>3.7.1</version>
+                </plugin>
                 <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -106,11 +112,16 @@
                             <excludedGroups>org.nuberjonas.pompalette*</excludedGroups>
                             <licenseMerges>
                                 <licenseMerge>The Apache Software License, Version 2.0|The Apache License, Version 2.0|Apache License, Version 2.0|Apache-2.0</licenseMerge>
+                                <licenseMerge>MIT License|MIT</licenseMerge>
                             </licenseMerges>
                             <licenseUrlReplacements>
                                 <licenseUrlReplacement>
                                     <regexp>\Qhttps://glassfish.dev.java.net/nonav/public/CDDL+GPL.html\E</regexp>
                                     <replacement>https://oss.oracle.com/licenses/CDDL+GPL-1.1</replacement>
+                                </licenseUrlReplacement>
+                                <licenseUrlReplacement>
+                                    <regexp>\Qhttps://openjdk.java.net/legal/gplv2+ce.html\E</regexp>
+                                    <replacement>https://raw.githubusercontent.com/jonasNuber/gplv2-with-classpath-exception/main/GPLv2%20%2B%20Classpath%20Exception.txt</replacement>
                                 </licenseUrlReplacement>
                             </licenseUrlReplacements>
                         </configuration>
