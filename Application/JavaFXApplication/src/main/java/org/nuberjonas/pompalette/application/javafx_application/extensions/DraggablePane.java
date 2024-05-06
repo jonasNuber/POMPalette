@@ -18,9 +18,12 @@ public class DraggablePane extends Pane{
     private double maxX;
     private double maxY;
 
-    public DraggablePane(double width, double height, Parent parent) {
+    private boolean initialized = false;
+
+    public DraggablePane(double width, double height, double startx, double starty, Parent parent) {
         setPrefSize(width, height);
         setMaxSize(Region.USE_PREF_SIZE, Region.USE_PREF_SIZE);
+
         setStyle("-fx-border-color: gray");
         setStyle("-fx-background-color: #f5f5f5");
         setEffect(new DropShadow(10, Color.BLACK));
@@ -66,14 +69,20 @@ public class DraggablePane extends Pane{
             maxX = newValue.getWidth() - getWidth();
             maxY = newValue.getHeight() - getHeight();
 
-            // Ensure the draggable pane stays within bounds
-            setTranslateX(Math.min(Math.max(minX, getTranslateX()), maxX));
-            setTranslateY(Math.min(Math.max(minY, getTranslateY()), maxY));
-        });
-    }
+            var oldWidthFromRightBound = oldValue.getWidth() - (getTranslateX() + getWidth());
+            var newWidthFromRightBound = newValue.getWidth() - (oldWidthFromRightBound + getWidth());
+            var oldWidthFromLeftBound = getTranslateX();
+            var newTranslateX = oldWidthFromLeftBound + (getWidth() / 2) < (newValue.getWidth() / 2) ? oldWidthFromLeftBound : newWidthFromRightBound;
 
-    public void setInitialPosition(double initialTranslateX, double initialTranslateY){
-        setTranslateX(initialTranslateX);
-        setTranslateY(initialTranslateY);
+            // Ensure the draggable pane stays within bounds
+            setTranslateX(Math.min(Math.max(minX, newTranslateX), maxX));
+            setTranslateY(Math.min(Math.max(minY, getTranslateY()), maxY));
+
+            if(!initialized){
+                setTranslateX(startx);
+                setTranslateY(starty);
+                initialized = true;
+            }
+        });
     }
 }

@@ -45,8 +45,7 @@ public class MainViewController implements Subscribable {
     }
 
     private void setupLoadProjectPane(Parent loadProjectView){
-        var loadProjectPane = new DraggablePane(400, 200, parentPane);
-        loadProjectPane.setInitialPosition(0, 0);
+        var loadProjectPane = new DraggablePane(400, 200, 600,0, parentPane);
         loadProjectPane.getChildren().add(loadProjectView);
         parentPane.getChildren().add(loadProjectPane);
         controlPanes.put(Controls.LOAD_PROJECT, loadProjectPane);
