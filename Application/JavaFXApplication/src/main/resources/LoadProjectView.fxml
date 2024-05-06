@@ -1,16 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-
-<AnchorPane prefHeight="200.0" prefWidth="237.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nuberjonas.pompalette.application.javafx_application.gui.loadproject.view.LoadProjectViewController">
-   <children>
-      <Label layoutX="96.0" layoutY="51.0" prefHeight="17.0" prefWidth="81.0" styleClass="h4" text="Path to Project" textAlignment="CENTER" AnchorPane.leftAnchor="96.0" AnchorPane.rightAnchor="96.0" AnchorPane.topAnchor="51.0" />
-      <TextField fx:id="projectPathTextfield" prefHeight="25.0" prefWidth="261.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="80.0" />
-      <Button fx:id="loadButton" layoutX="114.0" layoutY="117.0" mnemonicParsing="false" onAction="#onLoadButtonPress" prefHeight="25.0" prefWidth="45.0" styleClass="rounded" text="Load" AnchorPane.leftAnchor="114.0" AnchorPane.rightAnchor="114.0" AnchorPane.topAnchor="117.0" />
-      <Button layoutX="229.0" layoutY="80.0" mnemonicParsing="false" onAction="#openFileChooser" prefHeight="25.0" prefWidth="35.0" styleClass="flat" text="🗁" AnchorPane.leftAnchor="229.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="80.0" />
-   </children>
-</AnchorPane>
+<StackPane prefHeight="200.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.nuberjonas.pompalette.application.javafx_application.gui.loadproject.view.LoadProjectViewController">
+   <VBox alignment="CENTER" prefHeight="200.0" prefWidth="400.0" spacing="10.0">
+      <Label styleClass="h4" text="Path to Project" />
+      <HBox alignment="CENTER">
+         <TextField fx:id="projectPathTextfield" promptText="Enter project path" HBox.hgrow="ALWAYS">
+            <HBox.margin>
+               <Insets left="30.0" />
+            </HBox.margin></TextField>
+         <Button onAction="#openFileChooser" text="🗁">
+            <HBox.margin>
+               <Insets right="20.0" />
+            </HBox.margin></Button>
+      </HBox>
+      <Button fx:id="loadButton" onAction="#onLoadButtonPress" text="Load" />
+   </VBox>
+</StackPane>

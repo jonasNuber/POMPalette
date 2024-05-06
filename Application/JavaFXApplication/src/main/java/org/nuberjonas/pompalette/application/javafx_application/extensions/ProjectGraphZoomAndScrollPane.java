@@ -4,10 +4,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleWrapper;
 import javafx.scene.Group;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.ScrollEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.Pane;
 
 public class ProjectGraphZoomAndScrollPane extends ScrollPane {
@@ -86,7 +83,7 @@ public class ProjectGraphZoomAndScrollPane extends ScrollPane {
 
     private void enableCentering(){
         this.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-            if (new KeyCodeCombination(KeyCode.DIGIT0, KeyCodeCombination.SHORTCUT_DOWN).match(event)) {
+            if (new KeyCodeCombination(KeyCode.DIGIT0, KeyCombination.SHORTCUT_DOWN).match(event)) {
                 this.setVvalue(0.5);
                 this.setHvalue(0.5);
             }
@@ -94,7 +91,7 @@ public class ProjectGraphZoomAndScrollPane extends ScrollPane {
     }
 
     private void enableZoom() {
-        this.addEventFilter(ScrollEvent.ANY, (event) -> {
+        this.addEventFilter(ScrollEvent.ANY, event -> {
             if (event.getDeltaY() > 0.0) {
                 this.zoomIn(event);
             } else {
@@ -117,7 +114,7 @@ public class ProjectGraphZoomAndScrollPane extends ScrollPane {
 
     private void zoomContent(double pivotX, double pivotY, ProjectGraphZoomAndScrollPane.ZoomDirection direction) {
         double previousScale = this.scaleFactorProperty.doubleValue();
-        double nextScale = previousScale + (double)direction.getValue() * this.deltaScaleFactor;
+        double nextScale = previousScale + direction.getValue() * this.deltaScaleFactor;
         double scaleFactor = nextScale / previousScale;
         double scaleTotal = this.scaleFactorProperty.doubleValue() * scaleFactor;
 
@@ -157,13 +154,13 @@ public class ProjectGraphZoomAndScrollPane extends ScrollPane {
         }
     }
 
-    private static enum ZoomDirection {
+    private enum ZoomDirection {
         IN(1),
         OUT(-1);
 
         private final int value;
 
-        private ZoomDirection(int value) {
+        ZoomDirection(int value) {
             this.value = value;
         }
 

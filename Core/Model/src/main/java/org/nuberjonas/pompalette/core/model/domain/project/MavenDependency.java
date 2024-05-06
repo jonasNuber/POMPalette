@@ -2,6 +2,8 @@ package org.nuberjonas.pompalette.core.model.domain.project;
 
 import com.brunomnsilva.smartgraph.graphview.SmartShapeTypeSource;
 
+import java.util.Objects;
+
 public class MavenDependency implements Project{
 
     private ProjectCoordinates dependencyCoordinates;
@@ -21,18 +23,18 @@ public class MavenDependency implements Project{
         return dependencyCoordinates;
     }
 
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (o == null || getClass() != o.getClass()) return false;
-//        MavenDependency that = (MavenDependency) o;
-//        return Objects.equals(dependencyCoordinates, that.dependencyCoordinates);
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(dependencyCoordinates);
-//    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MavenDependency that = (MavenDependency) o;
+        return Objects.equals(dependencyCoordinates, that.dependencyCoordinates);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(dependencyCoordinates);
+    }
 
     @Override
     public String toString() {

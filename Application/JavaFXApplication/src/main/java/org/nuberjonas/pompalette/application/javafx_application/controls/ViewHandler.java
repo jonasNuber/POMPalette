@@ -5,7 +5,6 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.nuberjonas.pompalette.application.javafx_application.gui.loadproject.view.LoadProjectViewController;
@@ -45,8 +44,8 @@ public class ViewHandler {
         var root = mainLoader.load();
 
         MainViewController mainViewController = mainLoader.getController();
-        mainViewController.init();
-        addLoadProjectViewToControls(mainViewController.getControls());
+
+        mainViewController.init(getLoadProjectViewControls());
         addProjectGraphViewToMainContentPane(mainViewController.getMainContent());
 
         var scene = new Scene((Parent) root, 1080, 720);
@@ -59,13 +58,13 @@ public class ViewHandler {
         primaryStage.show();
     }
 
-    private void addLoadProjectViewToControls(GridPane pane) throws IOException {
+    private Parent getLoadProjectViewControls() throws IOException {
         var loader = getFXMLLoaderFor(Views.LOAD_PROJECT);
         Parent loadProjectView = loader.load();
         LoadProjectViewController controller = loader.getController();
         controller.init(viewModelFactory.getLoadProjectViewModel(), primaryStage);
 
-        pane.add(loadProjectView, 0,0);
+        return loadProjectView;
     }
 
     public void addProjectGraphViewToMainContentPane(StackPane contentPane) throws IOException {

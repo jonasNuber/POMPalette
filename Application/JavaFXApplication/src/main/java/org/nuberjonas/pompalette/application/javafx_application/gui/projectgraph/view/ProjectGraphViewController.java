@@ -50,7 +50,7 @@ public class ProjectGraphViewController implements Subscribable {
 
 
     private void loadProjectGraph(Path projectPath){
-        if(isGraphInitialized == false){
+        if(!isGraphInitialized){
             graphView.init();
             isGraphInitialized = true;
         }
