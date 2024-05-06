@@ -35,7 +35,7 @@ public class DraggablePane extends Pane{
 
         setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.MIDDLE) {
-                setVisible(false); // Hides the DraggablePane
+                setVisible(false);
                 event.consume();
             }
         });

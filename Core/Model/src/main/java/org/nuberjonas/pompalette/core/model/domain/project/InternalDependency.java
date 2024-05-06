@@ -4,12 +4,12 @@ import com.brunomnsilva.smartgraph.graphview.SmartShapeTypeSource;
 
 import java.util.Objects;
 
-public class MavenDependency implements Project{
+public class InternalDependency implements Project{
 
-    private ProjectCoordinates dependencyCoordinates;
+    private MavenProject project;
 
-    public MavenDependency(ProjectCoordinates dependencyCoordinates) {
-        this.dependencyCoordinates = dependencyCoordinates;
+    public InternalDependency(MavenProject project) {
+        this.project = project;
     }
 
     @Override
@@ -20,25 +20,24 @@ public class MavenDependency implements Project{
 
     @Override
     public ProjectCoordinates getCoordinates() {
-        return dependencyCoordinates;
+        return project.getCoordinates();
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MavenDependency that = (MavenDependency) o;
-        return Objects.equals(dependencyCoordinates, that.dependencyCoordinates);
+        InternalDependency that = (InternalDependency) o;
+        return Objects.equals(project, that.project);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(dependencyCoordinates);
+        return Objects.hash(project);
     }
 
     @Override
     public String toString() {
-        var name = dependencyCoordinates.artifactId().split("\\.");
-        return name[name.length -1];
+        return project.getName();
     }
 }

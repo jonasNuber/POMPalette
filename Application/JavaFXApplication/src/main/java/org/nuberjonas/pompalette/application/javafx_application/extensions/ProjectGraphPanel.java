@@ -21,7 +21,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import org.nuberjonas.pompalette.core.model.domain.graph.EdgeType;
-import org.nuberjonas.pompalette.core.model.domain.project.MavenDependency;
+import org.nuberjonas.pompalette.core.model.domain.project.ThirdPartyDependency;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -753,7 +753,7 @@ public class ProjectGraphPanel<V, E> extends Pane {
                         newVertex.addStyleClass("root");
                     }
 
-                    if(vertex.element() instanceof MavenDependency){
+                    if(vertex.element() instanceof ThirdPartyDependency){
                         newVertex.addStyleClass("dependency");
                     }
                 }

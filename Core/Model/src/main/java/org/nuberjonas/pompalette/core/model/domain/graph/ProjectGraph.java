@@ -11,6 +11,9 @@ public class ProjectGraph implements Digraph<Project, EdgeType> {
     private final Map<Project, ProjectVertex> vertices = new HashMap<>();
     private final Set<ProjectRelationship> edges = new HashSet<>();
 
+    private final Map<Project, ProjectVertex> invisibleVertices = new HashMap<>();
+    private final Set<ProjectRelationship> invisibleEdges = new HashSet<>();
+
     @Override
     public int numVertices() {
         return vertices.size();
@@ -81,10 +84,15 @@ public class ProjectGraph implements Digraph<Project, EdgeType> {
             return vertices.get(project);
         }
 
-        var vertex = new ProjectVertex(project);
-        vertices.put(project, vertex);
+        return vertices.put(project, new ProjectVertex(project));
+    }
 
-        return vertex;
+    public synchronized Vertex<Project> insertInvisibleVertex(Project project) {
+        if(invisibleVertices.containsKey(project)){
+            return invisibleVertices.get(project);
+        }
+
+        return invisibleVertices.put(project, new ProjectVertex(project));
     }
 
     @Override
