@@ -1,21 +1,15 @@
-package org.nuberjonas.pompalette.core.model.domain.project;
+package org.nuberjonas.pompalette.core.model.domain.project.dependecies;
 
-import com.brunomnsilva.smartgraph.graphview.SmartShapeTypeSource;
+import org.nuberjonas.pompalette.core.model.domain.project.ProjectCoordinates;
 
 import java.util.Objects;
 
-public class ThirdPartyDependency implements Project{
+public class ExternalDependency implements Dependency {
 
-    private ProjectCoordinates dependencyCoordinates;
+    private final ProjectCoordinates dependencyCoordinates;
 
-    public ThirdPartyDependency(ProjectCoordinates dependencyCoordinates) {
+    public ExternalDependency(ProjectCoordinates dependencyCoordinates) {
         this.dependencyCoordinates = dependencyCoordinates;
-    }
-
-    @Override
-    @SmartShapeTypeSource
-    public String getShape() {
-        return "triangle";
     }
 
     @Override
@@ -27,7 +21,7 @@ public class ThirdPartyDependency implements Project{
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        ThirdPartyDependency that = (ThirdPartyDependency) o;
+        ExternalDependency that = (ExternalDependency) o;
         return Objects.equals(dependencyCoordinates, that.dependencyCoordinates);
     }
 

@@ -1,21 +1,16 @@
-package org.nuberjonas.pompalette.core.model.domain.project;
+package org.nuberjonas.pompalette.core.model.domain.project.dependecies;
 
-import com.brunomnsilva.smartgraph.graphview.SmartShapeTypeSource;
+import org.nuberjonas.pompalette.core.model.domain.project.MavenProject;
+import org.nuberjonas.pompalette.core.model.domain.project.ProjectCoordinates;
 
 import java.util.Objects;
 
-public class InternalDependency implements Project{
+public class InternalDependency implements Dependency {
 
     private MavenProject project;
 
     public InternalDependency(MavenProject project) {
         this.project = project;
-    }
-
-    @Override
-    @SmartShapeTypeSource
-    public String getShape() {
-        return "triangle";
     }
 
     @Override

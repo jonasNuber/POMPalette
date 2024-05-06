@@ -1,7 +1,5 @@
 package org.nuberjonas.pompalette.core.model.domain.project;
 
-import com.brunomnsilva.smartgraph.graphview.SmartShapeTypeSource;
-
 import java.util.Objects;
 
 public class MavenProject implements Project {
@@ -21,12 +19,6 @@ public class MavenProject implements Project {
 
     public String getName() {
         return name;
-    }
-
-    @Override
-    @SmartShapeTypeSource
-    public String getShape(){
-        return "square";
     }
 
     @Override

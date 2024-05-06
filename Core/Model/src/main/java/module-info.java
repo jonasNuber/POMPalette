@@ -9,4 +9,5 @@ module org.nuberjonas.pompalette.core.model {
     exports org.nuberjonas.pompalette.core.model.domain.project;
     exports org.nuberjonas.pompalette.core.model.domain.graph;
     exports org.nuberjonas.pompalette.core.model.application;
+    exports org.nuberjonas.pompalette.core.model.domain.project.dependecies;
 }

@@ -21,7 +21,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import org.nuberjonas.pompalette.core.model.domain.graph.EdgeType;
-import org.nuberjonas.pompalette.core.model.domain.project.ThirdPartyDependency;
+import org.nuberjonas.pompalette.core.model.domain.project.dependecies.ExternalDependency;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -745,17 +745,7 @@ public class ProjectGraphPanel<V, E> extends Pane {
                     //add to global mapping
                     vertexNodes.put(vertex, newVertex);
 
-                    if(theGraph.incidentEdges(vertex).isEmpty()){
-                        newVertex.addStyleClass("root");
-                    }
-
-                    if(theGraph.incidentEdges(vertex).stream().filter(e -> e.element().equals(EdgeType.BOM)).findAny().isPresent()){
-                        newVertex.addStyleClass("root");
-                    }
-
-                    if(vertex.element() instanceof ThirdPartyDependency){
-                        newVertex.addStyleClass("dependency");
-                    }
+                    setVertexStyleClasses(vertex, newVertex);
                 }
             }
 
@@ -789,10 +779,7 @@ public class ProjectGraphPanel<V, E> extends Pane {
                         graphEdge.attachArrow(arrow);
                         this.getChildren().add(arrow);
 
-                        if(graphEdge.getUnderlyingEdge().element().equals(EdgeType.BOM)){
-                            graphEdge.addStyleClass("bom-edge");
-                            arrow.addStyleClass("bom-arrow");
-                        }
+                        setEdgeStyleClasses(graphEdge, arrow);
                     }
 
                     /* Track edges */
@@ -807,6 +794,27 @@ public class ProjectGraphPanel<V, E> extends Pane {
                 }
             }
 
+        }
+
+        private void setVertexStyleClasses(Vertex<V> vertex, SmartGraphVertex<V> newVertex){
+            if(theGraph.incidentEdges(vertex).isEmpty()){
+                newVertex.addStyleClass("root");
+            }
+
+            if(theGraph.incidentEdges(vertex).stream().anyMatch(e -> e.element().equals(EdgeType.BOM))){
+                newVertex.addStyleClass("root");
+            }
+
+            if(vertex.element() instanceof ExternalDependency){
+                newVertex.addStyleClass("dependency");
+            }
+        }
+
+        private void setEdgeStyleClasses(SmartGraphEdge<E, V> graphEdge, SmartArrow arrow){
+            if(graphEdge.getUnderlyingEdge().element().equals(EdgeType.BOM)){
+                graphEdge.addStyleClass("bom-edge");
+                arrow.addStyleClass("bom-arrow");
+            }
         }
 
         private void removeNodes() {
@@ -957,13 +965,17 @@ public class ProjectGraphPanel<V, E> extends Pane {
 
             try {
                 Class<?> clazz = vertexElement.getClass();
-                for (Method method : clazz.getDeclaredMethods()) {
-                    if (method.isAnnotationPresent(SmartShapeTypeSource.class)) {
-                        method.setAccessible(true);
-                        Object value = method.invoke(vertexElement);
-                        return value.toString();
+                Class<?>[] interfaces = clazz.getInterfaces();
+
+                for (Class<?> currentClass : new Class<?>[]{clazz, interfaces[0]}) {
+                    for (Method method : currentClass.getDeclaredMethods()) {
+                        if (method.isAnnotationPresent(SmartShapeTypeSource.class)) {
+                            Object value = method.invoke(vertexElement);
+                            return value.toString();
+                        }
                     }
                 }
+
             } catch (SecurityException | IllegalAccessException  | IllegalArgumentException | InvocationTargetException ex) {
                 Logger.getLogger(SmartGraphPanel.class.getName()).log(Level.SEVERE, null, ex);
             }
