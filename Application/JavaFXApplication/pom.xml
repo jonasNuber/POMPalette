@@ -7,12 +7,12 @@
     <parent>
         <groupId>org.nuberjonas.pompalette</groupId>
         <artifactId>application</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>0.9.0-SNAPSHOT</version>
     </parent>
 
     <groupId>org.nuberjonas.pompalette.application</groupId>
     <artifactId>javafx-application</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>0.9.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>JavaFXApplication</name>
