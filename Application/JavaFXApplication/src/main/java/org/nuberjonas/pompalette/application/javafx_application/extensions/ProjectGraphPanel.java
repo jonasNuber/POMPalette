@@ -20,8 +20,8 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
-import org.nuberjonas.pompalette.core.model.domain.graph.EdgeType;
-import org.nuberjonas.pompalette.core.model.domain.project.dependecies.ExternalDependency;
+import org.nuberjonas.pompalette.core.model.domain.graph.relationship.Relationship;
+import org.nuberjonas.pompalette.core.model.domain.project.dependecies.Dependency;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -62,6 +62,7 @@ public class ProjectGraphPanel<V, E> extends Pane {
         INTERACTION WITH VERTICES AND EDGES
          */
         private Consumer<SmartGraphVertex<V>> vertexClickConsumer;
+        private Consumer<SmartGraphVertex<V>> vertexDoubleClickConsumer;
         private Consumer<SmartGraphEdge<E, V>> edgeClickConsumer;
 
         /*
@@ -133,6 +134,7 @@ public class ProjectGraphPanel<V, E> extends Pane {
             // consumers initially are not set. This initialization is not necessary, but we make it explicit
             // for the sake of readability
             this.vertexClickConsumer = null;
+            this.vertexDoubleClickConsumer = null;
             this.edgeClickConsumer = null;
 
             //set stylesheet and class
@@ -140,7 +142,7 @@ public class ProjectGraphPanel<V, E> extends Pane {
 
             initNodes();
 
-            enableDoubleClickListener();
+            enableClickListener();
 
             //automatic layout initializations
             timer = new AnimationTimer() {
@@ -489,6 +491,10 @@ public class ProjectGraphPanel<V, E> extends Pane {
          * @param action action to be performed
          */
         public void setVertexDoubleClickAction(Consumer<SmartGraphVertex<V>> action) {
+            this.vertexDoubleClickConsumer = action;
+        }
+
+        public void setVertexClickAction(Consumer<SmartGraphVertex<V>> action) {
             this.vertexClickConsumer = action;
         }
 
@@ -801,17 +807,17 @@ public class ProjectGraphPanel<V, E> extends Pane {
                 newVertex.addStyleClass("root");
             }
 
-            if(theGraph.incidentEdges(vertex).stream().anyMatch(e -> e.element().equals(EdgeType.BOM))){
+            if(theGraph.incidentEdges(vertex).stream().anyMatch(e -> "BOM".equals(((Relationship)e.element()).denominator()))){
                 newVertex.addStyleClass("root");
             }
 
-            if(vertex.element() instanceof ExternalDependency){
+            if(vertex.element() instanceof Dependency){
                 newVertex.addStyleClass("dependency");
             }
         }
 
         private void setEdgeStyleClasses(SmartGraphEdge<E, V> graphEdge, SmartArrow arrow){
-            if(graphEdge.getUnderlyingEdge().element().equals(EdgeType.BOM)){
+            if("BOM".equals(((Relationship)graphEdge.getUnderlyingEdge().element()).denominator())){
                 graphEdge.addStyleClass("bom-edge");
                 arrow.addStyleClass("bom-arrow");
             }
@@ -1286,27 +1292,33 @@ public class ProjectGraphPanel<V, E> extends Pane {
          * This method identifies the node that was clicked and, if any, calls the
          * appropriate consumer, i.e., vertex or edge consumers.
          */
+
+
         @SuppressWarnings("unchecked")
-        private void enableDoubleClickListener() {
+        private void enableClickListener() {
             setOnMouseClicked((MouseEvent mouseEvent) -> {
-                if (mouseEvent.getButton().equals(MouseButton.PRIMARY)) {
-                    if (mouseEvent.getClickCount() == 2) {
+                Node node = pick(ProjectGraphPanel.this, mouseEvent.getSceneX(), mouseEvent.getSceneY());
+                if (node == null) {
+                    return;
+                }
 
-                        Node node = pick(ProjectGraphPanel.this, mouseEvent.getSceneX(), mouseEvent.getSceneY());
-                        if (node == null) {
-                            return;
+                if (mouseEvent.getButton().equals(MouseButton.PRIMARY) && mouseEvent.getClickCount() == 2) {
+                    if (node instanceof SmartGraphVertex) {
+                        SmartGraphVertex<V> v = (SmartGraphVertex<V>) node;
+                        if(vertexDoubleClickConsumer != null) { // Only if the consumer is set
+                            vertexDoubleClickConsumer.accept(v);
                         }
-
-                        if (node instanceof SmartGraphVertex) {
-                            SmartGraphVertex<V> v = (SmartGraphVertex<V>) node;
-                            if(vertexClickConsumer != null) { // Only if the consumer is set
-                                vertexClickConsumer.accept(v);
-                            }
-                        } else if (node instanceof SmartGraphEdge) {
-                            SmartGraphEdge<E,V> e = (SmartGraphEdge<E,V>) node;
-                            if(edgeClickConsumer != null) { // Only if the consumer is set
-                                edgeClickConsumer.accept(e);
-                            }
+                    } else if (node instanceof SmartGraphEdge) {
+                        SmartGraphEdge<E,V> e = (SmartGraphEdge<E,V>) node;
+                        if(edgeClickConsumer != null) { // Only if the consumer is set
+                            edgeClickConsumer.accept(e);
+                        }
+                    }
+                } else if(mouseEvent.getButton().equals(MouseButton.SECONDARY)){
+                    if (node instanceof SmartGraphVertex) {
+                        SmartGraphVertex<V> v = (SmartGraphVertex<V>) node;
+                        if(vertexClickConsumer != null) { // Only if the consumer is set
+                            vertexClickConsumer.accept(v);
                         }
                     }
                 }

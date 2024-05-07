@@ -1,5 +1,6 @@
 package org.nuberjonas.pompalette.core.model.application;
 
+import org.nuberjonas.pompalette.core.model.application.mapper.ProjectGraphMapper;
 import org.nuberjonas.pompalette.core.model.domain.graph.ProjectGraph;
 import org.nuberjonas.pompalette.infrastructure.eventbus.EventBus;
 import org.nuberjonas.pompalette.infrastructure.eventbus.events.NotificationEvent;

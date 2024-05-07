@@ -6,7 +6,7 @@ import org.nuberjonas.pompalette.application.javafx_application.events.LoadProje
 import org.nuberjonas.pompalette.application.javafx_application.extensions.ProjectGraphPanel;
 import org.nuberjonas.pompalette.application.javafx_application.extensions.ProjectGraphZoomAndScrollPane;
 import org.nuberjonas.pompalette.application.javafx_application.gui.projectgraph.viewmodel.ProjectGraphViewModel;
-import org.nuberjonas.pompalette.core.model.domain.graph.EdgeType;
+import org.nuberjonas.pompalette.core.model.domain.graph.relationship.Relationship;
 import org.nuberjonas.pompalette.core.model.domain.project.Project;
 import org.nuberjonas.pompalette.infrastructure.eventbus.EventBus;
 import org.nuberjonas.pompalette.infrastructure.eventbus.Subscribable;
@@ -20,7 +20,7 @@ public class ProjectGraphViewController implements Subscribable {
     @FXML
     private StackPane projectBasePane;
 
-    private ProjectGraphPanel<Project, EdgeType> graphView;
+    private ProjectGraphPanel<Project, Relationship> graphView;
 
     private ProjectGraphViewModel viewModel;
 
@@ -34,6 +34,8 @@ public class ProjectGraphViewController implements Subscribable {
         graphView = new ProjectGraphPanel<>(viewModel.getGraph());
         graphView.setPrefSize(5000, 5000);
         graphView.setAutomaticLayout(true);
+        graphView.setVertexClickAction(e-> System.out.println("one click"));
+        graphView.setVertexDoubleClickAction(e-> System.out.println("double click"));
 
         projectBasePane.getChildren().add(new ProjectGraphZoomAndScrollPane(graphView));
 

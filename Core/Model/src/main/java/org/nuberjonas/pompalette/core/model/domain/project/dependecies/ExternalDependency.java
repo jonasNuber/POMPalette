@@ -7,14 +7,28 @@ import java.util.Objects;
 public class ExternalDependency implements Dependency {
 
     private final ProjectCoordinates dependencyCoordinates;
+    private final DependencyScope scope;
+    private final DependencyType type;
 
-    public ExternalDependency(ProjectCoordinates dependencyCoordinates) {
+    public ExternalDependency(ProjectCoordinates dependencyCoordinates, DependencyScope scope, DependencyType type) {
         this.dependencyCoordinates = dependencyCoordinates;
+        this.scope = scope;
+        this.type = type;
     }
 
     @Override
     public ProjectCoordinates getCoordinates() {
         return dependencyCoordinates;
+    }
+
+    @Override
+    public DependencyScope getScope() {
+        return scope;
+    }
+
+    @Override
+    public DependencyType getType() {
+        return type;
     }
 
     @Override
@@ -32,7 +46,7 @@ public class ExternalDependency implements Dependency {
 
     @Override
     public String toString() {
-        var name = dependencyCoordinates.artifactId().split("\\.");
-        return name[name.length -1];
+        var artifactName = dependencyCoordinates.artifactId().split("\\.");
+        return artifactName[artifactName.length -1];
     }
 }

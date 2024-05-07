@@ -6,15 +6,29 @@ import java.util.Objects;
 
 public class ManagedDependency implements Dependency{
 
-    private Dependency dependency;
+    private final Dependency dependency;
+    private final DependencyScope scope;
+    private final DependencyType type;
 
-    public ManagedDependency(Dependency dependency) {
+    public ManagedDependency(Dependency dependency, DependencyScope scope, DependencyType type) {
         this.dependency = dependency;
+        this.scope = scope;
+        this.type = type;
     }
 
     @Override
     public ProjectCoordinates getCoordinates() {
         return dependency.getCoordinates();
+    }
+
+    @Override
+    public DependencyScope getScope() {
+        return scope;
+    }
+
+    @Override
+    public DependencyType getType() {
+        return type;
     }
 
     @Override
@@ -32,7 +46,6 @@ public class ManagedDependency implements Dependency{
 
     @Override
     public String toString() {
-        var name = dependency.getCoordinates().artifactId().split("\\.");
-        return name[name.length -1];
+        return dependency.toString();
     }
 }

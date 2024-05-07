@@ -5,6 +5,9 @@ import org.nuberjonas.pompalette.core.model.domain.project.Project;
 
 public interface Dependency extends Project {
 
+    DependencyScope getScope();
+    DependencyType getType();
+
     @Override
     @SmartShapeTypeSource
     default String getShape(){

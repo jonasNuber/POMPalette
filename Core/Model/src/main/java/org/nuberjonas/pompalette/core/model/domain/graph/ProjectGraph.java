@@ -1,18 +1,19 @@
 package org.nuberjonas.pompalette.core.model.domain.graph;
 
 import com.brunomnsilva.smartgraph.graph.*;
+import org.nuberjonas.pompalette.core.model.domain.graph.relationship.Relationship;
+import org.nuberjonas.pompalette.core.model.domain.graph.relationship.RelationshipEdge;
 import org.nuberjonas.pompalette.core.model.domain.project.Project;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ProjectGraph implements Digraph<Project, EdgeType> {
+public class ProjectGraph implements Digraph<Project, Relationship> {
 
     private final Map<Project, ProjectVertex> vertices = new HashMap<>();
-    private final Set<ProjectRelationship> edges = new HashSet<>();
+    private final Set<RelationshipEdge> edges = new HashSet<>();
 
-    private final Map<Project, ProjectVertex> invisibleVertices = new HashMap<>();
-    private final Set<ProjectRelationship> invisibleEdges = new HashSet<>();
+    private Vertex<Project> rootProject;
 
     @Override
     public int numVertices() {
@@ -29,13 +30,25 @@ public class ProjectGraph implements Digraph<Project, EdgeType> {
         return new ArrayList<>(vertices.values());
     }
 
+    public Vertex<Project> rootProject(){
+        if(rootProject == null){
+            for (Vertex<Project> vertex : vertices()){
+                if(incidentEdges(vertex).isEmpty()){
+                    rootProject = vertex;
+                    return rootProject;
+                }
+            }
+        }
+        return rootProject;
+    }
+
     @Override
-    public List<Edge<EdgeType, Project>> edges() {
+    public List<Edge<Relationship, Project>> edges() {
         return new ArrayList<>(edges);
     }
 
     @Override
-    public List<Edge<EdgeType, Project>> incidentEdges(Vertex<Project> projectVertex) throws InvalidVertexException {
+    public List<Edge<Relationship, Project>> incidentEdges(Vertex<Project> projectVertex) throws InvalidVertexException {
         checkVertex(projectVertex);
 
         return this.edges.stream()
@@ -43,8 +56,16 @@ public class ProjectGraph implements Digraph<Project, EdgeType> {
                 .collect(Collectors.toList());
     }
 
+    public List<Edge<Relationship, Project>> modules(Vertex<Project> projectVertex){
+        checkVertex(projectVertex);
+
+        return this.edges.stream()
+                .filter(relationship -> relationship.containsInboundVertex((ProjectVertex) projectVertex) && "Module".equals(relationship.element().denominator()))
+                .collect(Collectors.toList());
+    }
+
     @Override
-    public Collection<Edge<EdgeType, Project>> outboundEdges(Vertex<Project> vertex) throws InvalidVertexException {
+    public Collection<Edge<Relationship, Project>> outboundEdges(Vertex<Project> vertex) throws InvalidVertexException {
         checkVertex(vertex);
 
         return this.edges.stream()
@@ -53,11 +74,11 @@ public class ProjectGraph implements Digraph<Project, EdgeType> {
     }
 
     @Override
-    public Vertex<Project> opposite(Vertex<Project> projectVertex, Edge<EdgeType, Project> projectEdge) throws InvalidVertexException, InvalidEdgeException {
+    public Vertex<Project> opposite(Vertex<Project> projectVertex, Edge<Relationship, Project> projectEdge) throws InvalidVertexException, InvalidEdgeException {
         checkVertex(projectVertex);
         checkEdge(projectEdge);
 
-        if (!((ProjectRelationship)projectEdge).contains((ProjectVertex) projectVertex)) {
+        if (!((RelationshipEdge)projectEdge).contains((ProjectVertex) projectVertex)) {
             return null;
         } else {
             return projectEdge.vertices()[0] == projectVertex ? projectEdge.vertices()[1] : projectEdge.vertices()[0];
@@ -69,7 +90,7 @@ public class ProjectGraph implements Digraph<Project, EdgeType> {
         checkVertex(projectVertex);
         checkVertex(otherProjectVertex);
 
-        for(ProjectRelationship rel : edges){
+        for(RelationshipEdge rel : edges){
             if(rel.contains((ProjectVertex)projectVertex) && rel.contains((ProjectVertex) otherProjectVertex)) {
                 return true;
             }
@@ -87,28 +108,20 @@ public class ProjectGraph implements Digraph<Project, EdgeType> {
         return vertices.put(project, new ProjectVertex(project));
     }
 
-    public synchronized Vertex<Project> insertInvisibleVertex(Project project) {
-        if(invisibleVertices.containsKey(project)){
-            return invisibleVertices.get(project);
-        }
-
-        return invisibleVertices.put(project, new ProjectVertex(project));
-    }
-
     @Override
-    public Edge<EdgeType, Project> insertEdge(Vertex<Project> projectOutbound, Vertex<Project> projectInbound, EdgeType relationship) throws InvalidVertexException, InvalidEdgeException {
+    public Edge<Relationship, Project> insertEdge(Vertex<Project> projectOutbound, Vertex<Project> projectInbound, Relationship relationship) throws InvalidVertexException, InvalidEdgeException {
         if(edgeExists(projectOutbound, projectInbound, relationship)){
             throw new InvalidEdgeException("There's already an edge with these projects and relationship.");
         }
 
-        var projectRelationship = new ProjectRelationship(relationship, (ProjectVertex) projectOutbound, (ProjectVertex) projectInbound);
+        var projectRelationship = new RelationshipEdge(relationship, (ProjectVertex) projectOutbound, (ProjectVertex) projectInbound);
         edges.add(projectRelationship);
 
         return projectRelationship;
     }
 
     @Override
-    public Edge<EdgeType, Project> insertEdge(Project projectOutbound, Project projectInbound, EdgeType relationship) throws InvalidVertexException, InvalidEdgeException {
+    public Edge<Relationship, Project> insertEdge(Project projectOutbound, Project projectInbound, Relationship relationship) throws InvalidVertexException, InvalidEdgeException {
         var projectVertexOutbound = new ProjectVertex(projectOutbound);
         var projectVertexInbound = new ProjectVertex(projectInbound);
 
@@ -116,17 +129,17 @@ public class ProjectGraph implements Digraph<Project, EdgeType> {
             throw new InvalidEdgeException("There's already an edge with these projects and relationship.");
         }
 
-        ProjectRelationship projectRelationship = new ProjectRelationship(relationship, projectVertexOutbound, projectVertexInbound);
+        RelationshipEdge projectRelationship = new RelationshipEdge(relationship, projectVertexOutbound, projectVertexInbound);
         edges.add(projectRelationship);
 
         return projectRelationship;
     }
 
-    private boolean edgeExists(Vertex<Project> projectOutbound, Vertex<Project> projectInbound, EdgeType relationship){
+    private boolean edgeExists(Vertex<Project> projectOutbound, Vertex<Project> projectInbound, Relationship relationship){
         checkVertex(projectOutbound);
         checkVertex(projectInbound);
 
-        for(ProjectRelationship rel : edges){
+        for(RelationshipEdge rel : edges){
             if(rel.contains((ProjectVertex)projectOutbound, (org.nuberjonas.pompalette.core.model.domain.graph.ProjectVertex) projectInbound, relationship)) {
                 return true;
             }
@@ -144,7 +157,7 @@ public class ProjectGraph implements Digraph<Project, EdgeType> {
     }
 
     @Override
-    public EdgeType removeEdge(Edge<EdgeType, Project> edge) throws InvalidEdgeException {
+    public Relationship removeEdge(Edge<Relationship, Project> edge) throws InvalidEdgeException {
         checkEdge(edge);
         edges.remove(edge);
 
@@ -163,8 +176,8 @@ public class ProjectGraph implements Digraph<Project, EdgeType> {
     }
 
     @Override
-    public EdgeType replace(Edge<EdgeType, Project> edge, EdgeType edgeType) throws InvalidEdgeException {
-        var newEdge = new ProjectRelationship(edgeType, (ProjectVertex) edge.vertices()[0], (ProjectVertex) edge.vertices()[1]);
+    public Relationship replace(Edge<Relationship, Project> edge, Relationship Relationship) throws InvalidEdgeException {
+        var newEdge = new RelationshipEdge(Relationship, (ProjectVertex) edge.vertices()[0], (ProjectVertex) edge.vertices()[1]);
         checkEdge(edge);
         checkEdge(newEdge);
 
@@ -193,13 +206,13 @@ public class ProjectGraph implements Digraph<Project, EdgeType> {
         }
     }
 
-    private void checkEdge(Edge<EdgeType, Project> e) throws InvalidEdgeException {
+    private void checkEdge(Edge<Relationship, Project> e) throws InvalidEdgeException {
         if (e == null) {
             throw new InvalidEdgeException("Null edge.");
         } else {
-            ProjectRelationship edge;
+            RelationshipEdge edge;
             try {
-                edge = (ProjectRelationship) e;
+                edge = (RelationshipEdge) e;
             } catch (ClassCastException var4) {
                 throw new InvalidVertexException("Not an adge.");
             }
