@@ -7,6 +7,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import org.nuberjonas.pompalette.application.javafx_application.gui.dependencygraph.view.DependencyGraphViewController;
 import org.nuberjonas.pompalette.application.javafx_application.gui.loadproject.view.LoadProjectViewController;
 import org.nuberjonas.pompalette.application.javafx_application.gui.main.view.MainViewController;
 import org.nuberjonas.pompalette.application.javafx_application.gui.projectgraph.view.ProjectGraphViewController;
@@ -18,7 +19,8 @@ public class ViewHandler {
     public enum Views{
         MAIN("MainView.fxml"),
         LOAD_PROJECT("LoadProjectView.fxml"),
-        PROJECT_GRAPH("ProjectGraphView.fxml");
+        PROJECT_GRAPH("ProjectGraphView.fxml"),
+        DEPENDENCY_GRAPH("DependencyGraphView.fxml");
 
         private final String path;
 
@@ -45,7 +47,7 @@ public class ViewHandler {
 
         MainViewController mainViewController = mainLoader.getController();
 
-        mainViewController.init(getLoadProjectViewControls());
+        mainViewController.init(getLoadProjectViewControls(), getDependencyGraphViewControls());
         addProjectGraphViewToMainContentPane(mainViewController.getMainContent());
 
         var scene = new Scene((Parent) root, 1080, 720);
@@ -65,6 +67,15 @@ public class ViewHandler {
         controller.init(viewModelFactory.getLoadProjectViewModel(), primaryStage);
 
         return loadProjectView;
+    }
+
+    private Parent getDependencyGraphViewControls() throws IOException {
+        var loader = getFXMLLoaderFor(Views.DEPENDENCY_GRAPH);
+        Parent dependecyGraphView = loader.load();
+        DependencyGraphViewController controller = loader.getController();
+        controller.init(viewModelFactory.getDependencyGraphViewModel());
+
+        return dependecyGraphView;
     }
 
     public void addProjectGraphViewToMainContentPane(StackPane contentPane) throws IOException {

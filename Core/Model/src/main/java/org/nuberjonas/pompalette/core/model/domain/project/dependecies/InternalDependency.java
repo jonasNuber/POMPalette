@@ -6,21 +6,28 @@ import org.nuberjonas.pompalette.core.model.domain.project.ProjectCoordinates;
 
 import java.util.Objects;
 
-public class InternalDependency implements Dependency {
+public final class InternalDependency implements Dependency {
 
     private final MavenProject project;
-    private final DependencyScope scope;
-    private final DependencyType type;
+    private final DependencyCoordinates coordinates;
 
-    public InternalDependency(MavenProject project, DependencyScope scope, DependencyType type) {
+    public InternalDependency(MavenProject project) {
         this.project = project;
-        this.scope = scope;
-        this.type = type;
+        this.coordinates = new DependencyCoordinates(project.getCoordinates().groupId(), project.getCoordinates().artifactId());
+    }
+
+    public MavenProject getProject(){
+        return project;
     }
 
     @Override
     public ProjectCoordinates getCoordinates() {
-        return project.getCoordinates();
+        return ProjectCoordinates.coordinatesFor(coordinates);
+    }
+
+    @Override
+    public DependencyCoordinates dependencyCoordinates() {
+        return coordinates;
     }
 
     @Override
@@ -28,27 +35,17 @@ public class InternalDependency implements Dependency {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         InternalDependency that = (InternalDependency) o;
-        return Objects.equals(project, that.project);
-    }
-
-    @Override
-    public DependencyScope getScope() {
-        return scope;
-    }
-
-    @Override
-    public DependencyType getType() {
-        return type;
+        return Objects.equals(coordinates, that.coordinates);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(project);
+        return Objects.hash(coordinates);
     }
 
     @Override
     public String toString() {
-        var artifactName = project.getCoordinates().artifactId().split("\\.");
+        var artifactName = coordinates.artifactId().split("\\.");
 
         return StringUtils.isNotEmpty(project.getName()) ? project.getName() : artifactName[artifactName.length - 1] ;
     }

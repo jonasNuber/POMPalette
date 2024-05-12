@@ -4,16 +4,12 @@ import org.nuberjonas.pompalette.core.model.domain.project.ProjectCoordinates;
 
 import java.util.Objects;
 
-public class TransitiveDependency implements Dependency{
+public final class TransitiveDependency implements Dependency {
 
     private final Dependency dependency;
-    private final DependencyScope scope;
-    private final DependencyType type;
 
-    public TransitiveDependency(Dependency dependency, DependencyScope scope, DependencyType type) {
+    public TransitiveDependency(Dependency dependency) {
         this.dependency = dependency;
-        this.scope = scope;
-        this.type = type;
     }
 
     @Override
@@ -22,13 +18,8 @@ public class TransitiveDependency implements Dependency{
     }
 
     @Override
-    public DependencyScope getScope() {
-        return scope;
-    }
-
-    @Override
-    public DependencyType getType() {
-        return type;
+    public DependencyCoordinates dependencyCoordinates() {
+        return dependency.dependencyCoordinates();
     }
 
     @Override

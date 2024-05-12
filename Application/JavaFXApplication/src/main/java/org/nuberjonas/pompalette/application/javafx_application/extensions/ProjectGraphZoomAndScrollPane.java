@@ -102,6 +102,19 @@ public class ProjectGraphZoomAndScrollPane extends ScrollPane {
         });
         this.setVbarPolicy(ScrollBarPolicy.NEVER);
         this.setHbarPolicy(ScrollBarPolicy.NEVER);
+
+        this.addEventFilter(MouseEvent.MOUSE_DRAGGED, event -> {
+            if (!event.isConsumed() && event.isSecondaryButtonDown()) {
+                getParent().fireEvent(event);
+                event.consume();
+            }
+        });
+
+        this.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+            if (!event.isConsumed() && event.isSecondaryButtonDown()) {
+                getParent().fireEvent(event);
+            }
+        });
     }
 
     private void zoomOut(ScrollEvent event) {

@@ -1,19 +1,22 @@
 package org.nuberjonas.pompalette.core.model.domain.project.dependecies;
 
+import org.nuberjonas.pompalette.core.model.domain.project.MavenProject;
 import org.nuberjonas.pompalette.core.model.domain.project.ProjectCoordinates;
 
 import java.util.Objects;
 
-public class ManagedDependency implements Dependency{
+public final class ManagedDependency implements Dependency{
 
     private final Dependency dependency;
-    private final DependencyScope scope;
-    private final DependencyType type;
+    private final MavenProject managingProject;
 
-    public ManagedDependency(Dependency dependency, DependencyScope scope, DependencyType type) {
+    public ManagedDependency(Dependency dependency, MavenProject managingProject) {
+        if(dependency instanceof ManagedDependency){
+            throw new IllegalArgumentException(String.format("Dependency %s is already a managed dependency", dependency));
+        }
+
         this.dependency = dependency;
-        this.scope = scope;
-        this.type = type;
+        this.managingProject = managingProject;
     }
 
     @Override
@@ -22,13 +25,8 @@ public class ManagedDependency implements Dependency{
     }
 
     @Override
-    public DependencyScope getScope() {
-        return scope;
-    }
-
-    @Override
-    public DependencyType getType() {
-        return type;
+    public DependencyCoordinates dependencyCoordinates() {
+        return dependency.dependencyCoordinates();
     }
 
     @Override
@@ -36,16 +34,16 @@ public class ManagedDependency implements Dependency{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ManagedDependency that = (ManagedDependency) o;
-        return Objects.equals(dependency, that.dependency);
+        return Objects.equals(dependency, that.dependency) && Objects.equals(managingProject, that.managingProject);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(dependency);
+        return Objects.hash(dependency, managingProject);
     }
 
     @Override
     public String toString() {
-        return dependency.toString();
+        return "";
     }
 }

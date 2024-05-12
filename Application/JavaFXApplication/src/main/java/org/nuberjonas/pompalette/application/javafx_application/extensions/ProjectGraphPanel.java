@@ -20,8 +20,11 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
+import org.nuberjonas.pompalette.core.model.domain.graph.relationship.ModuleRelationship;
 import org.nuberjonas.pompalette.core.model.domain.graph.relationship.Relationship;
-import org.nuberjonas.pompalette.core.model.domain.project.dependecies.Dependency;
+import org.nuberjonas.pompalette.core.model.domain.project.dependecies.ExternalDependency;
+import org.nuberjonas.pompalette.core.model.domain.project.dependecies.ManagedDependency;
+import org.nuberjonas.pompalette.core.model.domain.project.dependecies.ResolvedDependency;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -49,12 +52,12 @@ public class ProjectGraphPanel<V, E> extends Pane {
         /*
         INTERNAL DATA STRUCTURE
          */
-        private final Graph<V, E> theGraph;
+        private Graph<V, E> theGraph;
         private final ProjectGraphPlacementStrategy placementStrategy;
-        private final Map<Vertex<V>, SmartGraphVertexNode<V>> vertexNodes;
-        private final Map<Edge<E, V>, SmartGraphEdgeBase<E, V>> edgeNodes;
-        private final Map<Edge<E,V>, Tuple<Vertex<V>>> connections;
-        private final Map<Tuple<SmartGraphVertexNode<V>>, Integer> placedEdges = new HashMap<>();
+        private Map<Vertex<V>, SmartGraphVertexNode<V>> vertexNodes;
+        private Map<Edge<E, V>, SmartGraphEdgeBase<E, V>> edgeNodes;
+        private Map<Edge<E,V>, Tuple<Vertex<V>>> connections;
+        private Map<Tuple<SmartGraphVertexNode<V>>, Integer> placedEdges = new HashMap<>();
         private boolean initialized = false;
         private final boolean edgesWithArrows;
 
@@ -494,7 +497,7 @@ public class ProjectGraphPanel<V, E> extends Pane {
             this.vertexDoubleClickConsumer = action;
         }
 
-        public void setVertexClickAction(Consumer<SmartGraphVertex<V>> action) {
+        public void setVertexLeftClickAction(Consumer<SmartGraphVertex<V>> action) {
             this.vertexClickConsumer = action;
         }
 
@@ -803,21 +806,22 @@ public class ProjectGraphPanel<V, E> extends Pane {
         }
 
         private void setVertexStyleClasses(Vertex<V> vertex, SmartGraphVertex<V> newVertex){
-            if(theGraph.incidentEdges(vertex).isEmpty()){
+            if(theGraph.incidentEdges(vertex).isEmpty()
+                    || theGraph.incidentEdges(vertex).stream().anyMatch(e -> ModuleRelationship.BOM.equals(((Relationship)e.element()).denominator()))){
                 newVertex.addStyleClass("root");
             }
 
-            if(theGraph.incidentEdges(vertex).stream().anyMatch(e -> "BOM".equals(((Relationship)e.element()).denominator()))){
-                newVertex.addStyleClass("root");
-            }
-
-            if(vertex.element() instanceof Dependency){
-                newVertex.addStyleClass("dependency");
+            if(vertex.element() instanceof ExternalDependency){
+                newVertex.addStyleClass("external-dependency");
+            } else if(vertex.element() instanceof ManagedDependency){
+                newVertex.addStyleClass("managed-dependency");
+            } else if(vertex.element() instanceof ResolvedDependency){
+                newVertex.addStyleClass("resolved-dependency");
             }
         }
 
         private void setEdgeStyleClasses(SmartGraphEdge<E, V> graphEdge, SmartArrow arrow){
-            if("BOM".equals(((Relationship)graphEdge.getUnderlyingEdge().element()).denominator())){
+            if(ModuleRelationship.BOM.equals(((Relationship)graphEdge.getUnderlyingEdge().element()).denominator())){
                 graphEdge.addStyleClass("bom-edge");
                 arrow.addStyleClass("bom-arrow");
             }
@@ -1380,5 +1384,11 @@ public class ProjectGraphPanel<V, E> extends Pane {
             }
         }
 
+        public void setGraph(Graph<V,E> graph){
+            removeNodes();
+            removedEdges();
+            removedVertices();
+            theGraph = graph;
+        }
     }
 

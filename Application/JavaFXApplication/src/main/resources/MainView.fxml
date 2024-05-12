@@ -8,11 +8,10 @@
            <Menu mnemonicParsing="false" text="File">
                <MenuItem mnemonicParsing="false" text="Close" />
            </Menu>
-         <Menu mnemonicParsing="false" text="View">
-           <items>
-             <MenuItem mnemonicParsing="false" onAction="#showLoadProjectView" text="OpenProjectView" />
-           </items>
-         </Menu>
+           <Menu mnemonicParsing="false" text="View">
+               <MenuItem mnemonicParsing="false" onAction="#showLoadProjectView" text="Open Project View"/>
+               <MenuItem mnemonicParsing="false" onAction="#showDependencyGraphView" text="Open Dependecy View"/>
+           </Menu>
            <Menu mnemonicParsing="false" text="Help">
                <CustomMenuItem mnemonicParsing="false" text="View">
                    <content>

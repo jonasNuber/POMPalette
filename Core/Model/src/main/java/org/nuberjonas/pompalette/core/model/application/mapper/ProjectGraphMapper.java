@@ -1,95 +1,199 @@
 package org.nuberjonas.pompalette.core.model.application.mapper;
 
-import org.apache.commons.lang3.StringUtils;
-import org.nuberjonas.pompalette.core.model.application.exceptions.DependencyResolverException;
+import com.brunomnsilva.smartgraph.graph.Vertex;
 import org.nuberjonas.pompalette.core.model.domain.graph.ProjectGraph;
+import org.nuberjonas.pompalette.core.model.domain.graph.relationship.DependencyRelationship;
 import org.nuberjonas.pompalette.core.model.domain.graph.relationship.ModuleRelationship;
 import org.nuberjonas.pompalette.core.model.domain.project.MavenProject;
 import org.nuberjonas.pompalette.core.model.domain.project.Project;
 import org.nuberjonas.pompalette.core.model.domain.project.ProjectCoordinates;
-import org.nuberjonas.pompalette.core.model.domain.project.dependecies.Dependency;
+import org.nuberjonas.pompalette.core.model.domain.project.dependecies.*;
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.MultiModuleProjectDTO;
-import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.ProjectDTO;
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.dependency.DependencyDTO;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.ArrayList;
 
 public class ProjectGraphMapper {
-
-    private Map<Project, ProjectDTO> projectMatrix;
 
     public ProjectGraph mapToGraph(MultiModuleProjectDTO multiModuleProject, ProjectGraph graph){
         if(multiModuleProject == null){
             throw new IllegalArgumentException("Input cannot be empty");
         }
 
-        projectMatrix = new HashMap<>();
-
+        var environment = new ProjectEnvironment();
         var project = mapToMavenProject(multiModuleProject);
-        
         graph.insertVertex(project);
-        mapModules(multiModuleProject, project, graph);
-        mapDependecies(graph);
+
+        mapProjectBom(graph, multiModuleProject, project, environment);
+        mapModules(multiModuleProject, project, graph, environment);
+        mapDependencies(graph, graph.rootProject(), environment);
 
         return graph;
     }
 
-    private void mapModules(MultiModuleProjectDTO multiModuleProjectDTO, MavenProject root, ProjectGraph graph) {
-        if(multiModuleProjectDTO.getProjectBOM() != null){
-            var bom = mapToMavenProject(multiModuleProjectDTO.getProjectBOM());
+    private void mapProjectBom(ProjectGraph graph, MultiModuleProjectDTO multiModuleProject, MavenProject project, ProjectEnvironment environment){
+        if(multiModuleProject.getProjectBOM() != null){
+            var bom = mapToMavenProject(multiModuleProject.getProjectBOM());
             graph.insertVertex(bom);
-            graph.insertEdge(root, bom, ModuleRelationship.bom());
-        }
+            graph.insertEdge(project, bom, ModuleRelationship.bom());
 
+            environment.addProjectPair(bom, multiModuleProject.getProjectBOM().get(), null);
+            environment.addProjectPair(project, multiModuleProject.get(), bom);
+        } else {
+            environment.addProjectPair(project, multiModuleProject.get(), null);
+        }
+    }
+
+    private void mapModules(MultiModuleProjectDTO multiModuleProjectDTO, MavenProject root, ProjectGraph graph, ProjectEnvironment environment) {
         for (MultiModuleProjectDTO child : multiModuleProjectDTO.getModules()) {
             var project = mapToMavenProject(child);
             graph.insertVertex(project);
             graph.insertEdge(root, project, ModuleRelationship.module());
-            mapModules(child, project, graph);
+
+            environment.addProjectPair(project, child.get(), root);
+
+            mapModules(child, project, graph, environment);
         }
     }
 
     private MavenProject mapToMavenProject(MultiModuleProjectDTO project){
         var projectDTO = project.get();
-        var mavenProject = new MavenProject(new ProjectCoordinates(
+
+        return new MavenProject(new ProjectCoordinates(
                 projectDTO.groupId(),
                 projectDTO.artifactId(),
                 projectDTO.version()),
                 projectDTO.name());
-        projectMatrix.put(mavenProject, projectDTO);
-
-        return mavenProject;
     }
 
-    private void mapDependecies(ProjectGraph graph){
-        Map<Integer, List<Dependency>> managedDependencies = new HashMap<>();
-        var rootProject = graph.rootProject();
-        var internalGroupIdRoot = rootProject.element().getCoordinates().groupId() + "." + rootProject.element().getCoordinates().artifactId();
-        var projectDTO = projectMatrix.get(rootProject.element());
+    private void mapDependencies(ProjectGraph graph, Vertex<Project> projectVertex, ProjectEnvironment environment){
+        if(!environment.getProperties().contains("project.version")){
+            environment.addProperty("project.version", projectVertex.element().getCoordinates().version());
+        }
 
-        for(DependencyDTO dependencyDTO : projectDTO.modelBase().dependencyManagement().dependencies()){
-            var dependencyCoordinates = mapDependencyCoordinates(dependencyDTO);
+        mapBomDependencies(graph, projectVertex, environment);
+        mapManagedDependencies(graph, projectVertex, environment);
+        mapDirectDependencies(graph, projectVertex, environment);
 
-            if(isInternalDependency(dependencyDTO, internalGroupIdRoot)){
-                if(projectMatrix.containsKey(new MavenProject(dependencyCoordinates, null))){
+        for(var module : graph.modules(projectVertex)){
+            mapDependencies(graph, module, environment);
+        }
+    }
 
-                } else {
-                    throw new DependencyResolverException(String.format("The dependency %s is internal but cannot be resolved.", dependencyCoordinates));
-                }
+    private void mapBomDependencies(ProjectGraph graph, Vertex<Project> projectVertex, ProjectEnvironment environment){
+        var bomProjectVertex = graph.bomProject(projectVertex.element());
+
+        if(bomProjectVertex != null){
+            mapManagedDependencies(graph, bomProjectVertex, environment);
+        }
+    }
+
+    private void mapManagedDependencies(ProjectGraph graph, Vertex<Project> projectVertex, ProjectEnvironment environment){
+        var projectCoordinates = projectVertex.element().getCoordinates();
+        var projectDTO = environment.getProjectDTOFor(DependencyCoordinates.coordinatesFor(projectCoordinates));
+        var project = environment.getMavenProjectFor(DependencyCoordinates.coordinatesFor(projectCoordinates));
+        environment.addAllProperties(projectDTO.modelBase().properties());
+
+        if(projectDTO.modelBase().dependencyManagement() != null){
+            var dependencies = new ArrayList<ManagedDependency>();
+
+            for(var dependencyDTO : projectDTO.modelBase().dependencyManagement().dependencies()){
+                dependencies.add(mapManagedDependency(graph, dependencyDTO, project, environment));
+            }
+
+            environment.addManagedDependenciesTo(project, dependencies);
+        }
+    }
+
+    private ManagedDependency mapManagedDependency(ProjectGraph graph, DependencyDTO dependencyDTO, MavenProject project, ProjectEnvironment environment){
+        var dependencyCoordinates = new DependencyCoordinates(dependencyDTO.groupId(), dependencyDTO.artifactId());
+        Dependency dependency;
+        ManagedDependency managedDependency;
+
+        if(environment.projectExists(dependencyCoordinates)){
+            dependency = new InternalDependency(environment.getMavenProjectFor(dependencyCoordinates));
+            managedDependency = new ManagedDependency(dependency, project);
+        } else {
+            dependency = new ExternalDependency(dependencyCoordinates);
+            managedDependency = new ManagedDependency(dependency, project);
+            graph.insertVertex(dependency);
+        }
+
+        var targetVertex = dependency instanceof InternalDependency ?
+                ((InternalDependency) dependency).getProject() : dependency;
+        var relationship = dependency instanceof InternalDependency ?
+                DependencyRelationship.internal(
+                        PropertiesResolver.resolve(dependencyDTO.version(), environment.getProperties()),
+                        DependencyScope.fromString(dependencyDTO.scope()),
+                        DependencyType.fromString(dependencyDTO.type())) :
+                DependencyRelationship.external(
+                        PropertiesResolver.resolve(dependencyDTO.version(), environment.getProperties()),
+                        DependencyScope.fromString(dependencyDTO.scope()),
+                        DependencyType.fromString(dependencyDTO.type()));
+
+
+        graph.insertVertex(managedDependency);
+        graph.insertEdge(project, managedDependency, DependencyRelationship.manages());
+        graph.insertEdge(managedDependency, targetVertex, relationship);
+
+        return managedDependency;
+    }
+
+    private void mapDirectDependencies(ProjectGraph graph, Vertex<Project> projectVertex, ProjectEnvironment environment){
+        var projectCoordinates = projectVertex.element().getCoordinates();
+        var rootProjectDTO = environment.getProjectDTOFor(DependencyCoordinates.coordinatesFor(projectCoordinates));
+        var project = environment.getMavenProjectFor(DependencyCoordinates.coordinatesFor(projectCoordinates));
+        environment.addAllProperties(rootProjectDTO.modelBase().properties());
+
+
+        if(rootProjectDTO.modelBase().dependencies() != null){
+            for (var dependencyDTO : rootProjectDTO.modelBase().dependencies()){
+                mapDirectDependency(graph, dependencyDTO, project, environment);
             }
         }
     }
 
-    private boolean isInternalDependency(DependencyDTO dependencyDTO, String internalGroupIdRoot){
-        return StringUtils.containsIgnoreCase(dependencyDTO.groupId(), internalGroupIdRoot);
-    }
+    private void mapDirectDependency(ProjectGraph graph, DependencyDTO dependencyDTO, MavenProject project, ProjectEnvironment environment){
+        var dependencyCoordinates = new DependencyCoordinates(dependencyDTO.groupId(), dependencyDTO.artifactId());
+        Dependency dependency;
 
-    private ProjectCoordinates mapDependencyCoordinates(DependencyDTO dependencyDTO){
-        return new ProjectCoordinates(
-                dependencyDTO.groupId(),
-                dependencyDTO.artifactId(),
-                dependencyDTO.version());
+        if(dependencyDTO.version() == null){
+            var managedDependency = environment.findManagedDependency(project, dependencyCoordinates);
+            dependency = new ResolvedDependency(project, managedDependency);
+            graph.insertVertex(dependency);
+            graph.insertEdge(
+                    project,
+                    dependency,
+                    DependencyRelationship.dependsOn(
+                            DependencyScope.fromString(dependencyDTO.scope()),
+                            DependencyType.fromString(dependencyDTO.type())));
+            graph.insertEdge(
+                    dependency,
+                    managedDependency,
+                    DependencyRelationship.resolvedBy(
+                            DependencyScope.fromString(dependencyDTO.scope()),
+                            DependencyType.fromString(dependencyDTO.type())));
+
+        } else if(environment.projectExists(dependencyCoordinates)){
+            graph.insertEdge(
+                    project,
+                    environment.getMavenProjectFor(dependencyCoordinates),
+                    DependencyRelationship.internal(
+                            PropertiesResolver.resolve(dependencyDTO.version(),
+                                    environment.getProperties()),
+                            DependencyScope.fromString(dependencyDTO.scope()),
+                            DependencyType.fromString(dependencyDTO.type())));
+
+        } else {
+            dependency = new ExternalDependency(dependencyCoordinates);
+            graph.insertVertex(dependency);
+            graph.insertEdge(
+                    project,
+                    dependency,
+                    DependencyRelationship.external(
+                            PropertiesResolver.resolve(dependencyDTO.version(), environment.getProperties()),
+                            DependencyScope.fromString(dependencyDTO.scope()),
+                            DependencyType.fromString(dependencyDTO.type())));
+        }
     }
 }

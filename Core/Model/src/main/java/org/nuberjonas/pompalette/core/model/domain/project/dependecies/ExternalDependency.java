@@ -4,31 +4,11 @@ import org.nuberjonas.pompalette.core.model.domain.project.ProjectCoordinates;
 
 import java.util.Objects;
 
-public class ExternalDependency implements Dependency {
-
-    private final ProjectCoordinates dependencyCoordinates;
-    private final DependencyScope scope;
-    private final DependencyType type;
-
-    public ExternalDependency(ProjectCoordinates dependencyCoordinates, DependencyScope scope, DependencyType type) {
-        this.dependencyCoordinates = dependencyCoordinates;
-        this.scope = scope;
-        this.type = type;
-    }
+public record ExternalDependency(DependencyCoordinates dependencyCoordinates) implements Dependency {
 
     @Override
     public ProjectCoordinates getCoordinates() {
-        return dependencyCoordinates;
-    }
-
-    @Override
-    public DependencyScope getScope() {
-        return scope;
-    }
-
-    @Override
-    public DependencyType getType() {
-        return type;
+        return ProjectCoordinates.coordinatesFor(dependencyCoordinates);
     }
 
     @Override
@@ -47,6 +27,6 @@ public class ExternalDependency implements Dependency {
     @Override
     public String toString() {
         var artifactName = dependencyCoordinates.artifactId().split("\\.");
-        return artifactName[artifactName.length -1];
+        return artifactName[artifactName.length - 1];
     }
 }

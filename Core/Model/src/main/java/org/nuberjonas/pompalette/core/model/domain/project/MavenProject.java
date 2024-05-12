@@ -2,7 +2,7 @@ package org.nuberjonas.pompalette.core.model.domain.project;
 
 import java.util.Objects;
 
-public class MavenProject implements Project {
+public final class MavenProject implements Project {
 
     private ProjectCoordinates coordinates;
     private String name;

@@ -1,7 +1,7 @@
-package org.nuberjonas.pompalette.core.model.domain.graph.relationship;
+package org.nuberjonas.pompalette.core.model.domain.graph;
 
 import com.brunomnsilva.smartgraph.graph.Edge;
-import org.nuberjonas.pompalette.core.model.domain.graph.ProjectVertex;
+import org.nuberjonas.pompalette.core.model.domain.graph.relationship.Relationship;
 import org.nuberjonas.pompalette.core.model.domain.project.Project;
 import org.nuberjonas.pompalette.core.model.domain.project.ProjectCoordinates;
 

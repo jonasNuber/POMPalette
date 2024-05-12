@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.StackPane;
+import org.nuberjonas.pompalette.application.javafx_application.events.ShowControlsEvent;
 import org.nuberjonas.pompalette.application.javafx_application.extensions.DraggablePane;
 import org.nuberjonas.pompalette.application.javafx_application.extensions.NotificationPane;
 import org.nuberjonas.pompalette.infrastructure.eventbus.EventBus;
@@ -20,28 +21,26 @@ import java.util.Set;
 
 public class MainViewController implements Subscribable {
 
-    private enum Controls {
-        LOAD_PROJECT;
-    }
-
-    @FXML
-    private ToggleButton darkmodeToggle;
-
     @FXML
     private StackPane parentPane;
     @FXML
     private StackPane mainContent;
+    @FXML
+    private ToggleButton darkmodeToggle;
 
     private NotificationPane notificationPane;
     private Map<Controls, DraggablePane> controlPanes;
 
-    public void init(Parent loadProjectView) {
+    public void init(Parent loadProjectView, Parent dependencyGraphView) {
         controlPanes = new HashMap<>();
         notificationPane = new NotificationPane();
         mainContent.getChildren().add(notificationPane);
 
         setupLoadProjectPane(loadProjectView);
+        setupDependencyGraphPane(dependencyGraphView);
+
         EventBus.getInstance().subscribe(NotificationEvent.class, this);
+        EventBus.getInstance().subscribe(ShowControlsEvent.class, this);
     }
 
     private void setupLoadProjectPane(Parent loadProjectView){
@@ -49,6 +48,14 @@ public class MainViewController implements Subscribable {
         loadProjectPane.getChildren().add(loadProjectView);
         parentPane.getChildren().add(loadProjectPane);
         controlPanes.put(Controls.LOAD_PROJECT, loadProjectPane);
+    }
+
+    private void setupDependencyGraphPane(Parent dependencyGraphView){
+        var dependencyGraphPane = new DraggablePane(600, 600, 0,0, parentPane);
+        dependencyGraphPane.getChildren().add(dependencyGraphView);
+        parentPane.getChildren().add(dependencyGraphPane);
+        controlPanes.put(Controls.DEPENDENCY_GRAPH, dependencyGraphPane);
+        dependencyGraphPane.setVisible(false);
     }
 
     @FXML
@@ -68,6 +75,14 @@ public class MainViewController implements Subscribable {
         }
     }
 
+    @FXML
+    private void showDependencyGraphView(){
+        var dependencyGraphView = controlPanes.get(Controls.DEPENDENCY_GRAPH);
+        if(!dependencyGraphView.isVisible()){
+            dependencyGraphView.setVisible(true);
+        }
+    }
+
     @Override
     public void handleEvent(Event<?> event) {
         if(event instanceof NotificationEvent notificationEvent){
@@ -79,12 +94,14 @@ public class MainViewController implements Subscribable {
                 case ERROR -> notificationPane.showError(notificationMessage);
                 case null, default -> notificationPane.showWarning(notificationMessage);
             }
+        } else if(event instanceof ShowControlsEvent showControlsEvent) {
+            controlPanes.get(showControlsEvent.getData().controls()).setVisible(showControlsEvent.getData().shouldShow());
         }
     }
 
     @Override
     public Set<Class<?>> supports() {
-        return Set.of(NotificationEvent.class);
+        return Set.of(NotificationEvent.class, ShowControlsEvent.class);
     }
 
     public StackPane getMainContent() {
