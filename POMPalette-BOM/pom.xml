@@ -15,7 +15,12 @@
         <junit.version>5.10.1</junit.version>
         <maven.version>3.9.6</maven.version>
         <javafx.version>20</javafx.version>
+        <smartgraph.version>2.0.0</smartgraph.version>
     </properties>
+
+    <modules>
+        <module>../../POMPalette</module>
+    </modules>
 
     <dependencyManagement>
         <dependencies>
@@ -142,7 +147,7 @@
             <dependency>
                 <groupId>com.brunomnsilva</groupId>
                 <artifactId>smartgraph</artifactId>
-                <version>2.0.0</version>
+                <version>${smartgraph.version}</version>
             </dependency>
 
             <!-- ++++++++++++++++++++++UTILS++++++++++++++++++++++ -->
