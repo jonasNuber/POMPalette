@@ -7,6 +7,7 @@ import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.MultiModuleProjectDTO;
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.ProjectDTO;
+import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.dependency.DependencyDTO;
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.model.ModelBaseDTO;
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.model.ProfileDTO;
 import org.nuberjonas.pompalette.infrastructure.parsing.projectparsingapi.ProjectParsingService;
@@ -23,7 +24,6 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static java.nio.file.Files.isDirectory;
 
@@ -75,10 +75,23 @@ public class MavenProjectParsingService implements ProjectParsingService {
     public MultiModuleProjectDTO loadMultiModuleProject(Path projectPath) {
         var finalProjectPath = findTopLevelParentProject(appendPomPathIfDirectory(projectPath));
         var project = loadProject(finalProjectPath);
-        var multiModuleProject = new MultiModuleProjectDTO(project);
-        multiModuleProject.setProjectPath(finalProjectPath);
-        multiModuleProject.addProjectBOM(findProjectBOM(finalProjectPath, project));
+        MultiModuleProjectDTO multiModuleProject;
 
+        if(StringUtils.containsIgnoreCase(project.artifactId(), "BOM") && project.modelBase().modules().size() == 1){
+            var bom = new MultiModuleProjectDTO(project);
+            bom.setProjectPath(finalProjectPath);
+
+            finalProjectPath = resolveModulePath(finalProjectPath, project.modelBase().modules().get(0));
+            project = loadProject(finalProjectPath);
+            multiModuleProject = new MultiModuleProjectDTO(project);
+            multiModuleProject.setProjectPath(finalProjectPath);
+            multiModuleProject.addProjectBOM(bom);
+        } else {
+            multiModuleProject = new MultiModuleProjectDTO(project);
+            multiModuleProject.setProjectPath(finalProjectPath);
+            multiModuleProject.addProjectBOM(findProjectBOM(finalProjectPath, project));
+        }
+        
         return loadMultiModuleProjectModules(finalProjectPath, multiModuleProject);
     }
 
@@ -100,20 +113,23 @@ public class MavenProjectParsingService implements ProjectParsingService {
     private MultiModuleProjectDTO findProjectBOM(Path projectPath, ProjectDTO project) {
         var groupId = project.groupId();
         var artifactId = project.artifactId();
+        Optional<DependencyDTO> possibleBom = Optional.empty();
 
-        var possibleBom = project.modelBase().dependencyManagement().dependencies()
-                .stream()
-                .filter(dependencyDTO ->
-                        "pom".equals(dependencyDTO.type()) &&
-                                (StringUtils.containsIgnoreCase(dependencyDTO.groupId(), groupId) || StringUtils.containsIgnoreCase(dependencyDTO.groupId(), artifactId)))
-                .findFirst();
+        if (project.modelBase().dependencyManagement() != null) {
+            possibleBom = project.modelBase().dependencyManagement().dependencies()
+                    .stream()
+                    .filter(dependencyDTO ->
+                            "pom".equals(dependencyDTO.type()) &&
+                                    (StringUtils.containsIgnoreCase(dependencyDTO.groupId(), groupId) || StringUtils.containsIgnoreCase(dependencyDTO.groupId(), artifactId)))
+                    .findFirst();
+        }
 
         if(possibleBom.isPresent()){
             var bom = possibleBom.get();
             List<Path> folders;
 
             try {
-                folders = Files.list(projectPath.getParent()).filter(Files::isDirectory).collect(Collectors.toList());
+                folders = Files.list(projectPath.getParent()).filter(Files::isDirectory).toList();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

@@ -1,10 +1,10 @@
 package org.nuberjonas.pompalette.core.model.domain.project;
 
-import com.brunomnsilva.smartgraph.graphview.SmartShapeTypeSource;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Objects;
 
-public class MavenProject {
+public final class MavenProject implements Project {
 
     private ProjectCoordinates coordinates;
     private String name;
@@ -14,17 +14,13 @@ public class MavenProject {
         this.name = name;
     }
 
+    @Override
     public ProjectCoordinates getCoordinates() {
         return coordinates;
     }
 
     public String getName() {
         return name;
-    }
-
-    @SmartShapeTypeSource
-    public String getShape(){
-        return "square";
     }
 
     @Override
@@ -42,6 +38,8 @@ public class MavenProject {
 
     @Override
     public String toString() {
-        return name;
+        var artifactName = coordinates.artifactId().split("\\.");
+
+        return StringUtils.isNotEmpty(name) ? name : artifactName[artifactName.length - 1] ;
     }
 }

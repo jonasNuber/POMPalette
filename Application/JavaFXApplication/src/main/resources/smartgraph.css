@@ -5,8 +5,17 @@
 .vertex {
     -fx-stroke-width: 3;
     -fx-stroke: #5F9EA0;
-    -fx-stroke-type: inside; /* you should keep this for vertex.radius to hold */
+    -fx-stroke-type: inside;
     -fx-fill: #AFE1AF;
+}
+
+.vertex:hover {
+    -fx-stroke-width: 4;
+}
+
+.vertex-label {
+    -fx-font: bold 8pt "sans-serif";
+    -fx-fill: #000000;
 }
 
 .root {
@@ -14,14 +23,19 @@
      -fx-fill: #B1DFF7;
 }
 
-.vertex:hover { /* pseudo-classes also work */
-    /*-fx-cursor: default; */ /* You can use this style to override the hand/move cursors while hovering. */
-    -fx-stroke-width: 4;
+.external-dependency {
+    -fx-stroke: #E4D00A;
+    -fx-fill: #DFFF00;
 }
 
-.vertex-label {
-    -fx-font: bold 8pt "sans-serif";
-    -fx-fill: #000000;
+.managed-dependency {
+    -fx-stroke: #FF6F00;
+    -fx-fill: #FFB300;
+}
+
+.resolved-dependency {
+    -fx-stroke: #424242;
+    -fx-fill: #9E9E9E;
 }
 
 .edge {

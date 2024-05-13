@@ -9,6 +9,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
+import org.nuberjonas.pompalette.application.javafx_application.events.ShowControlsEvent;
 import org.nuberjonas.pompalette.application.javafx_application.gui.loadproject.viewmodel.LoadProjectViewModel;
 import org.nuberjonas.pompalette.infrastructure.eventbus.EventBus;
 import org.nuberjonas.pompalette.infrastructure.eventbus.events.NotificationEvent;
@@ -49,6 +50,7 @@ public class LoadProjectViewController {
     private void initiateLoad(){
         if(isFileOrDirectory()){
             viewModel.initiateLoading();
+            EventBus.getInstance().publish(ShowControlsEvent.showLoadProjectControls(false));
         } else {
             EventBus.getInstance().publish(NotificationEvent.error("Is Not a File"));
         }

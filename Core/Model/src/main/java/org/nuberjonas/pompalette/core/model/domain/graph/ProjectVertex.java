@@ -1,29 +1,29 @@
 package org.nuberjonas.pompalette.core.model.domain.graph;
 
 import com.brunomnsilva.smartgraph.graph.Vertex;
-import org.nuberjonas.pompalette.core.model.domain.project.MavenProject;
+import org.nuberjonas.pompalette.core.model.domain.project.Project;
 import org.nuberjonas.pompalette.core.model.domain.project.ProjectCoordinates;
 
 import java.util.Objects;
 
-public class ProjectVertex implements Vertex<MavenProject> {
+public class ProjectVertex implements Vertex<Project> {
 
-    private MavenProject project;
+    private Project project;
 
-    public ProjectVertex(MavenProject project) {
+    public ProjectVertex(Project project) {
         this.project = project;
     }
 
     @Override
-    public MavenProject element() {
+    public Project element() {
         return project;
     }
 
-    public void setProject(MavenProject newProject){
+    public void setProject(Project newProject){
         project = newProject;
     }
 
-    public boolean contains(MavenProject project){
+    public boolean contains(Project project){
         return project.equals(this.project);
     }
 

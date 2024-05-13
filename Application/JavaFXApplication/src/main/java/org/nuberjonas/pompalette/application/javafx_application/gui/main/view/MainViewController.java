@@ -3,72 +3,84 @@ package org.nuberjonas.pompalette.application.javafx_application.gui.main.view;
 import atlantafx.base.theme.PrimerDark;
 import atlantafx.base.theme.PrimerLight;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.SplitPane;
+import javafx.scene.Parent;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import org.nuberjonas.pompalette.application.javafx_application.events.ShowControlsEvent;
+import org.nuberjonas.pompalette.application.javafx_application.extensions.DraggablePane;
 import org.nuberjonas.pompalette.application.javafx_application.extensions.NotificationPane;
 import org.nuberjonas.pompalette.infrastructure.eventbus.EventBus;
 import org.nuberjonas.pompalette.infrastructure.eventbus.Subscribable;
 import org.nuberjonas.pompalette.infrastructure.eventbus.events.Event;
 import org.nuberjonas.pompalette.infrastructure.eventbus.events.NotificationEvent;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 public class MainViewController implements Subscribable {
 
     @FXML
-    private ToggleButton darkmodeToggle;
-    @FXML
-    private SplitPane splittableScene;
+    private StackPane parentPane;
     @FXML
     private StackPane mainContent;
     @FXML
-    private GridPane controls;
+    private ToggleButton darkmodeToggle;
 
     private NotificationPane notificationPane;
+    private Map<Controls, DraggablePane> controlPanes;
 
-    public void init() {
-        setupDarkmodeToggle();
-        setupDividerConstraints();
+    public void init(Parent loadProjectView, Parent dependencyGraphView) {
+        controlPanes = new HashMap<>();
         notificationPane = new NotificationPane();
         mainContent.getChildren().add(notificationPane);
 
+        setupLoadProjectPane(loadProjectView);
+        setupDependencyGraphPane(dependencyGraphView);
+
         EventBus.getInstance().subscribe(NotificationEvent.class, this);
+        EventBus.getInstance().subscribe(ShowControlsEvent.class, this);
     }
 
-    private void setupDarkmodeToggle(){
-        darkmodeToggle.addEventHandler(ActionEvent.ACTION, (event) -> {
+    private void setupLoadProjectPane(Parent loadProjectView){
+        var loadProjectPane = new DraggablePane(400, 200, 600,0, parentPane);
+        loadProjectPane.getChildren().add(loadProjectView);
+        parentPane.getChildren().add(loadProjectPane);
+        controlPanes.put(Controls.LOAD_PROJECT, loadProjectPane);
+    }
+
+    private void setupDependencyGraphPane(Parent dependencyGraphView){
+        var dependencyGraphPane = new DraggablePane(600, 600, 0,0, parentPane);
+        dependencyGraphPane.getChildren().add(dependencyGraphView);
+        parentPane.getChildren().add(dependencyGraphPane);
+        controlPanes.put(Controls.DEPENDENCY_GRAPH, dependencyGraphPane);
+        dependencyGraphPane.setVisible(false);
+    }
+
+    @FXML
+    private void darkModeToggleAction(){
             if(darkmodeToggle.isSelected()){
                 Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
             } else {
                 Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
             }
-        });
     }
 
-    private void setupDividerConstraints(){
-        splittableScene.getDividers().getFirst().setPosition(0.8);
-
-        splittableScene.getDividers().getFirst().positionProperty().addListener((obs, oldVal, newVal) -> {
-            double minPosition = 0.8;
-            double maxPosition = 1;
-            if (newVal.doubleValue() < minPosition) {
-                splittableScene.getDividers().getFirst().setPosition(minPosition);
-            } else if (newVal.doubleValue() > maxPosition) {
-                splittableScene.getDividers().getFirst().setPosition(maxPosition);
-            }
-        });
+    @FXML
+    private void showLoadProjectView(){
+        var loadProjectView = controlPanes.get(Controls.LOAD_PROJECT);
+        if(!loadProjectView.isVisible()){
+            loadProjectView.setVisible(true);
+        }
     }
 
-    public GridPane getControls(){
-        return controls;
-    }
-
-    public StackPane getMainContent(){
-        return mainContent;
+    @FXML
+    private void showDependencyGraphView(){
+        var dependencyGraphView = controlPanes.get(Controls.DEPENDENCY_GRAPH);
+        if(!dependencyGraphView.isVisible()){
+            dependencyGraphView.setVisible(true);
+        }
     }
 
     @Override
@@ -82,11 +94,17 @@ public class MainViewController implements Subscribable {
                 case ERROR -> notificationPane.showError(notificationMessage);
                 case null, default -> notificationPane.showWarning(notificationMessage);
             }
+        } else if(event instanceof ShowControlsEvent showControlsEvent) {
+            controlPanes.get(showControlsEvent.getData().controls()).setVisible(showControlsEvent.getData().shouldShow());
         }
     }
 
     @Override
     public Set<Class<?>> supports() {
-        return Set.of(NotificationEvent.class);
+        return Set.of(NotificationEvent.class, ShowControlsEvent.class);
+    }
+
+    public StackPane getMainContent() {
+        return mainContent;
     }
 }
