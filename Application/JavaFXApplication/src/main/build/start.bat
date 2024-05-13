@@ -8,6 +8,6 @@ rem Set the path to the Java executable
 set "JAVA_EXE=%JAVA_HOME%\bin\java.exe"
 
 rem Start the jar file
-"%JAVA_EXE%" --module-path /libs;/libs/third-party -jar "%~dp0libs\javafx-application-1.0.0-SNAPSHOT.jar"
+"%JAVA_EXE%" --module-path /libs;/libs/third-party -jar "%~dp0libs\javafx-application-0.9.0-SNAPSHOT.jar"
 
 endlocal

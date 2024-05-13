@@ -24,6 +24,10 @@ public class ProjectGraphMapper {
         var project = mapToMavenProject(multiModuleProject);
         graph.insertVertex(project);
 
+        if(!environment.getProperties().contains("project.version")){
+            environment.addProperty("project.version", project.getCoordinates().version());
+        }
+
         mapProjectBom(graph, multiModuleProject, project, environment);
         mapModules(multiModuleProject, project, graph, environment);
         mapDependencies(graph, graph.rootProject(), environment);
@@ -67,9 +71,6 @@ public class ProjectGraphMapper {
     }
 
     private void mapDependencies(ProjectGraph graph, Vertex<Project> projectVertex, ProjectEnvironment environment){
-        if(!environment.getProperties().contains("project.version")){
-            environment.addProperty("project.version", projectVertex.element().getCoordinates().version());
-        }
 
         mapBomDependencies(graph, projectVertex, environment);
         mapManagedDependencies(graph, projectVertex, environment);

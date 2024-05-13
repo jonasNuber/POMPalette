@@ -1,5 +1,7 @@
 package org.nuberjonas.pompalette.core.model.domain.project;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Objects;
 
 public final class MavenProject implements Project {
@@ -36,6 +38,8 @@ public final class MavenProject implements Project {
 
     @Override
     public String toString() {
-        return name;
+        var artifactName = coordinates.artifactId().split("\\.");
+
+        return StringUtils.isNotEmpty(name) ? name : artifactName[artifactName.length - 1] ;
     }
 }

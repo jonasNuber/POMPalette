@@ -14,11 +14,11 @@ import java.util.concurrent.CompletableFuture;
 
 public class ProjectGraphViewModel {
 
-    private List<Observer> observers;
+    private final List<Observer> observers;
+    private final ProjectGraphService service;
 
     private ProjectGraph fullGraph;
     private ProjectGraph projectGraph;
-    private ProjectGraphService service;
 
     public ProjectGraphViewModel(ProjectGraph graph, ProjectGraphService service) {
         observers = new ArrayList<>();
@@ -41,8 +41,8 @@ public class ProjectGraphViewModel {
         }
     }
 
-    public void loadProjectGraph(Path projectGraph){
-        service.loadProjectAsync(projectGraph, fullGraph).thenAccept(
+    public void loadProjectGraph(Path projectPath){
+        service.loadProjectAsync(projectPath, new ProjectGraph()).thenAccept(
                 graph -> {
                     Platform.runLater(() -> fullGraph = graph);
 
@@ -58,7 +58,7 @@ public class ProjectGraphViewModel {
     private void loadProjectModelSubgraph(ProjectGraph graph){
         service.loadProjectSubgraphAsync(graph).thenAccept(subGraph -> Platform.runLater(() -> {
             projectGraph = subGraph;
-            notifyObservers(subGraph);
+            notifyObservers(projectGraph);
         })).exceptionally(ex -> {
             Platform.runLater(() -> {
                 throw new RuntimeException(ex);
