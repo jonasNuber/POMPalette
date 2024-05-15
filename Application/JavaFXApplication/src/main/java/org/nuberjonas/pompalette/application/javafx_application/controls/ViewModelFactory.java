@@ -3,6 +3,7 @@ package org.nuberjonas.pompalette.application.javafx_application.controls;
 import org.nuberjonas.pompalette.application.javafx_application.gui.dependencygraph.viewmodel.DependencyGraphViewModel;
 import org.nuberjonas.pompalette.application.javafx_application.gui.loadproject.viewmodel.LoadProjectViewModel;
 import org.nuberjonas.pompalette.application.javafx_application.gui.projectgraph.viewmodel.ProjectGraphViewModel;
+import org.nuberjonas.pompalette.application.javafx_application.gui.projectsearchlist.viewmodel.ProjectSearchListViewModel;
 import org.nuberjonas.pompalette.core.model.ModelFactory;
 import org.nuberjonas.pompalette.core.model.application.ProjectGraphService;
 
@@ -12,6 +13,7 @@ public final class ViewModelFactory {
     private LoadProjectViewModel loadProjectViewModel;
     private ProjectGraphViewModel projectGraphViewModel;
     private DependencyGraphViewModel dependencyGraphViewModel;
+    private ProjectSearchListViewModel projectSearchListViewModel;
 
     public ViewModelFactory(ModelFactory modelFactory) {
         this.modelFactory = modelFactory;
@@ -38,5 +40,13 @@ public final class ViewModelFactory {
         }
 
         return dependencyGraphViewModel;
+    }
+
+    public ProjectSearchListViewModel getProjectSearchListViewModel(){
+        if(projectSearchListViewModel == null){
+            projectSearchListViewModel = new ProjectSearchListViewModel();
+        }
+
+        return projectSearchListViewModel;
     }
 }

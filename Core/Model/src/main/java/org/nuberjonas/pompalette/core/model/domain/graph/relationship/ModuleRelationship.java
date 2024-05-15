@@ -32,4 +32,9 @@ public record ModuleRelationship(String denominator) implements Relationship {
     public String toString() {
         return denominator;
     }
+
+    @Override
+    public String tooltipText() {
+        return denominator;
+    }
 }

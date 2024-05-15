@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:id="root"
+      fx:controller="org.nuberjonas.pompalette.application.javafx_application.gui.projectsearchlist.view.ProjectSearchListViewController"
+      prefHeight="550" prefWidth="400">
+    <VBox prefWidth="400" prefHeight="550">
+        <TextField fx:id="searchBar" promptText="Search..." />
+        <ListView fx:id="listView" VBox.vgrow="ALWAYS" />
+    </VBox>
+</VBox>

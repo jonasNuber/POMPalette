@@ -77,7 +77,7 @@ public class ProjectGraph implements Digraph<Project, Relationship> {
                 .stream()
                 .filter(relationship -> StringUtils.equals(ModuleRelationship.MODULE, relationship.element().denominator()))
                 .map(relationship -> relationship.vertices()[1])
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public ProjectGraph subGraph(Predicate<Vertex<Project>> vertexFilter, Predicate<RelationshipEdge> edgeFilter){
@@ -94,70 +94,116 @@ public class ProjectGraph implements Digraph<Project, Relationship> {
         return subGraph;
     }
 
-    public ProjectGraph dependencySubGraph(Vertex<Project> startingVertex, boolean isDependency){
-        var dependencyGraph = new ProjectGraph();
-        dependencyGraph.insertVertex(startingVertex.element());
+    public ProjectGraph dependencySubGraph(Vertex<Project> startingVertex, boolean isDependency) {
+        ProjectGraph dependencyGraph = new ProjectGraph();
+        Project startingProject = startingVertex.element();
 
-        if(startingVertex.element() instanceof MavenProject && !isDependency){
-            var outGoingDependencyEdges = outboundEdges(startingVertex).stream().filter(relationshipProjectEdge -> relationshipProjectEdge.element() instanceof DependencyRelationship);
-            outGoingDependencyEdges.forEach(dependencyEdge -> {
-                var dependency = dependencyEdge.vertices()[1].element();
-                dependencyGraph.insertVertex(dependency);
-                dependencyGraph.insertEdge(dependencyEdge.vertices()[0], dependencyEdge.vertices()[1], dependencyEdge.element());
+        dependencyGraph.insertVertex(startingProject);
 
-                if(dependency instanceof ResolvedDependency resolvedDependency){
-                    var managedDependencyEdge = outboundEdges(dependencyEdge.vertices()[1]).getFirst();
-                    dependencyGraph.insertVertex(managedDependencyEdge.vertices()[1].element());
-                    dependencyGraph.insertEdge(dependency, managedDependencyEdge.vertices()[1].element(), managedDependencyEdge.element());
-
-                    var directDependencyEdge = outboundEdges(managedDependencyEdge.vertices()[1]).getFirst();
-
-                    dependencyGraph.insertVertex(directDependencyEdge.vertices()[1].element());
-                    dependencyGraph.insertEdge(managedDependencyEdge.vertices()[1].element(), directDependencyEdge.vertices()[1].element(), directDependencyEdge.element());
-                } else if (dependency instanceof ManagedDependency managedDependency){
-                    var directDependencyEdge = outboundEdges(dependencyEdge.vertices()[1]).getFirst();
-
-                    dependencyGraph.insertVertex(directDependencyEdge.vertices()[1].element());
-                    dependencyGraph.insertEdge(dependencyEdge.vertices()[1].element(), directDependencyEdge.vertices()[1].element(), directDependencyEdge.element());
-                }
-            });
-        } else if(startingVertex.element() instanceof ManagedDependency){
-            var dependencyEdge = outboundEdges(startingVertex).getFirst();
-            dependencyGraph.insertVertex(startingVertex.element());
-            dependencyGraph.insertVertex(dependencyEdge.vertices()[1].element());
-            dependencyGraph.insertEdge(startingVertex, dependencyEdge.vertices()[1], dependencyEdge.element());
-
-            var resolvedEdges = incidentEdges(startingVertex);
-
-            resolvedEdges.forEach(resolvedEdge -> {
-                var resolvedVertex = resolvedEdge.vertices()[0];
-                dependencyGraph.insertVertex(resolvedVertex.element());
-                dependencyGraph.insertEdge(resolvedVertex, startingVertex, resolvedEdge.element());
-
-                var dependsOnEdge = incidentEdges(resolvedVertex).getFirst();
-
-                if(dependsOnEdge.element() instanceof DependencyRelationship){
-                    dependencyGraph.insertVertex(dependsOnEdge.vertices()[0].element());
-                    dependencyGraph.insertEdge(dependsOnEdge.vertices()[0], resolvedVertex, dependsOnEdge.element());
-                }
-
-            });
-        } else if((startingVertex.element() instanceof MavenProject && isDependency) || startingVertex.element() instanceof ExternalDependency){
-            var dependencyEdges = incidentEdges(startingVertex).stream().filter(edge -> edge.element() instanceof DependencyRelationship).toList();
-            dependencyEdges.forEach(dependencyEdge -> {
-                var dependencyVertex = dependencyEdge.vertices()[0];
-                dependencyGraph.insertVertex(dependencyVertex.element());
-                dependencyGraph.insertEdge(dependencyVertex, startingVertex, dependencyEdge.element());
-
-                var managedEdge = incidentEdges(dependencyVertex).stream().filter(edge -> edge.vertices()[0].element() instanceof MavenProject).findFirst();
-                managedEdge.ifPresent(edge -> {
-                    dependencyGraph.insertVertex(edge.vertices()[0].element());
-                    dependencyGraph.insertEdge(edge.vertices()[0], dependencyVertex, edge.element());
-                });
-            });
+        if (startingProject instanceof MavenProject && !isDependency) {
+            handleMavenProject(startingVertex, dependencyGraph);
+        } else if (startingProject instanceof ManagedDependency) {
+            handleManagedDependency(startingVertex, dependencyGraph);
+        } else if (startingProject instanceof MavenProject || startingProject instanceof ExternalDependency) {
+            handleExternalOrMavenDependency(startingVertex, dependencyGraph);
         }
 
         return dependencyGraph;
+    }
+
+    private void handleMavenProject(Vertex<Project> startingVertex, ProjectGraph dependencyGraph) {
+        var outGoingDependencyEdges = outboundEdges(startingVertex)
+                .stream()
+                .filter(edge -> edge.element() instanceof DependencyRelationship);
+
+        outGoingDependencyEdges.forEach(dependencyEdge -> {
+            Vertex<Project> targetVertex = dependencyEdge.vertices()[1];
+            Project dependency = targetVertex.element();
+
+            dependencyGraph.insertVertex(dependency);
+            dependencyGraph.insertEdge(dependencyEdge.vertices()[0], targetVertex, dependencyEdge.element());
+
+            if (dependency instanceof ResolvedDependency) {
+                handleResolvedDependency(targetVertex, dependencyGraph);
+            } else if (dependency instanceof ManagedDependency) {
+                handleManagedDependencyEdge(targetVertex, dependencyGraph);
+            }
+        });
+    }
+
+    private void handleResolvedDependency(Vertex<Project> targetVertex, ProjectGraph dependencyGraph) {
+        var managedDependencyEdge = outboundEdges(targetVertex).getFirst();
+        Project managedDependency = managedDependencyEdge.vertices()[1].element();
+
+        dependencyGraph.insertVertex(managedDependency);
+        dependencyGraph.insertEdge(targetVertex, managedDependencyEdge.vertices()[1], managedDependencyEdge.element());
+
+        var directDependencyEdge = outboundEdges(managedDependencyEdge.vertices()[1]).getFirst();
+        Project directDependency = directDependencyEdge.vertices()[1].element();
+
+        dependencyGraph.insertVertex(directDependency);
+        dependencyGraph.insertEdge(managedDependencyEdge.vertices()[1], directDependencyEdge.vertices()[1], directDependencyEdge.element());
+    }
+
+    private void handleManagedDependencyEdge(Vertex<Project> targetVertex, ProjectGraph dependencyGraph) {
+        var directDependencyEdge = outboundEdges(targetVertex).getFirst();
+        Project directDependency = directDependencyEdge.vertices()[1].element();
+
+        dependencyGraph.insertVertex(directDependency);
+        dependencyGraph.insertEdge(targetVertex, directDependencyEdge.vertices()[1], directDependencyEdge.element());
+    }
+
+    private void handleManagedDependency(Vertex<Project> startingVertex, ProjectGraph dependencyGraph) {
+        var dependencyEdge = outboundEdges(startingVertex).getFirst();
+        Vertex<Project> targetVertex = dependencyEdge.vertices()[1];
+        Project targetProject = targetVertex.element();
+
+        dependencyGraph.insertVertex(targetProject);
+        dependencyGraph.insertEdge(startingVertex, targetVertex, dependencyEdge.element());
+
+        var resolvedEdges = incidentEdges(startingVertex);
+
+        resolvedEdges.forEach(resolvedEdge -> {
+            Vertex<Project> resolvedVertex = resolvedEdge.vertices()[0];
+            Project resolvedProject = resolvedVertex.element();
+
+            dependencyGraph.insertVertex(resolvedProject);
+            dependencyGraph.insertEdge(resolvedVertex, startingVertex, resolvedEdge.element());
+
+            var dependsOnEdge = incidentEdges(resolvedVertex).getFirst();
+
+            if (dependsOnEdge.element() instanceof DependencyRelationship) {
+                Project dependsOnProject = dependsOnEdge.vertices()[0].element();
+                dependencyGraph.insertVertex(dependsOnProject);
+                dependencyGraph.insertEdge(dependsOnEdge.vertices()[0], resolvedVertex, dependsOnEdge.element());
+            }
+        });
+    }
+
+    private void handleExternalOrMavenDependency(Vertex<Project> startingVertex, ProjectGraph dependencyGraph) {
+        var dependencyEdges = incidentEdges(startingVertex)
+                .stream()
+                .filter(edge -> edge.element() instanceof DependencyRelationship)
+                .toList();
+
+        dependencyEdges.forEach(dependencyEdge -> {
+            Vertex<Project> dependencyVertex = dependencyEdge.vertices()[0];
+            Project dependencyProject = dependencyVertex.element();
+
+            dependencyGraph.insertVertex(dependencyProject);
+            dependencyGraph.insertEdge(dependencyVertex, startingVertex, dependencyEdge.element());
+
+            var managedEdge = incidentEdges(dependencyVertex)
+                    .stream()
+                    .filter(edge -> edge.vertices()[0].element() instanceof MavenProject)
+                    .findFirst();
+
+            managedEdge.ifPresent(edge -> {
+                Project managedProject = edge.vertices()[0].element();
+                dependencyGraph.insertVertex(managedProject);
+                dependencyGraph.insertEdge(edge.vertices()[0], dependencyVertex, edge.element());
+            });
+        });
     }
 
     @Override

@@ -16,4 +16,5 @@ module javafx.application {
     opens org.nuberjonas.pompalette.application.javafx_application.gui.main.view to javafx.fxml;
     opens org.nuberjonas.pompalette.application.javafx_application.gui.projectgraph.view to javafx.fxml;
     opens org.nuberjonas.pompalette.application.javafx_application.gui.dependencygraph.view to javafx.fxml;
+    opens org.nuberjonas.pompalette.application.javafx_application.gui.projectsearchlist.view to javafx.fxml;
 }

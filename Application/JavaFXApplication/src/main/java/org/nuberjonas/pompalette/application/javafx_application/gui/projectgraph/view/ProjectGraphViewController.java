@@ -1,6 +1,6 @@
 package org.nuberjonas.pompalette.application.javafx_application.gui.projectgraph.view;
 
-import com.brunomnsilva.smartgraph.graphview.SmartGraphVertex;
+import com.brunomnsilva.smartgraph.graph.Vertex;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.layout.StackPane;
@@ -41,7 +41,7 @@ public class ProjectGraphViewController implements Subscribable, Observer {
         graphView.setPrefSize(5000, 5000);
         graphView.setAutomaticLayout(true);
 
-        graphView.setVertexDoubleClickAction(projectSmartGraphVertex -> loadDependencyGraph(projectSmartGraphVertex, false));
+        graphView.setVertexDoubleClickAction(projectSmartGraphVertex -> loadDependencyGraph(projectSmartGraphVertex.getUnderlyingVertex(), false));
 
         projectBasePane.getChildren().add(new ProjectGraphZoomAndScrollPane(graphView));
 
@@ -81,8 +81,8 @@ public class ProjectGraphViewController implements Subscribable, Observer {
         viewModel.loadProjectGraph(projectPath);
     }
 
-    private void loadDependencyGraph(SmartGraphVertex<Project> projectSmartGraphVertex, boolean isDependency) {
-        viewModel.loadDependencySubGraph(projectSmartGraphVertex.getUnderlyingVertex(), isDependency).thenAccept(
+    private void loadDependencyGraph(Vertex<Project> projectVertex, boolean isDependency) {
+        viewModel.loadDependencySubGraph(projectVertex, isDependency).thenAccept(
                 dependencySubGraph ->
                         Platform.runLater(
                                 () -> EventBus.getInstance().publish(new ShowDependencyGraphEvent(dependencySubGraph))

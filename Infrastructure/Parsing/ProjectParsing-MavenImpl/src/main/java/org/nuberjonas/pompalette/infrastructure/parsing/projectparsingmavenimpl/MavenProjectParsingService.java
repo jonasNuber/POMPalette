@@ -81,7 +81,7 @@ public class MavenProjectParsingService implements ProjectParsingService {
             var bom = new MultiModuleProjectDTO(project);
             bom.setProjectPath(finalProjectPath);
 
-            finalProjectPath = resolveModulePath(finalProjectPath, project.modelBase().modules().get(0));
+            finalProjectPath = resolveModulePath(finalProjectPath, project.modelBase().modules().getFirst());
             project = loadProject(finalProjectPath);
             multiModuleProject = new MultiModuleProjectDTO(project);
             multiModuleProject.setProjectPath(finalProjectPath);

@@ -11,6 +11,7 @@ import org.nuberjonas.pompalette.application.javafx_application.gui.dependencygr
 import org.nuberjonas.pompalette.application.javafx_application.gui.loadproject.view.LoadProjectViewController;
 import org.nuberjonas.pompalette.application.javafx_application.gui.main.view.MainViewController;
 import org.nuberjonas.pompalette.application.javafx_application.gui.projectgraph.view.ProjectGraphViewController;
+import org.nuberjonas.pompalette.application.javafx_application.gui.projectsearchlist.view.ProjectSearchListViewController;
 
 import java.io.IOException;
 
@@ -20,7 +21,8 @@ public class ViewHandler {
         MAIN("MainView.fxml"),
         LOAD_PROJECT("LoadProjectView.fxml"),
         PROJECT_GRAPH("ProjectGraphView.fxml"),
-        DEPENDENCY_GRAPH("DependencyGraphView.fxml");
+        DEPENDENCY_GRAPH("DependencyGraphView.fxml"),
+        PROJECT_SEARCH_LIST("ProjectSearchListView.fxml");
 
         private final String path;
 
@@ -47,7 +49,7 @@ public class ViewHandler {
 
         MainViewController mainViewController = mainLoader.getController();
 
-        mainViewController.init(getLoadProjectViewControls(), getDependencyGraphViewControls());
+        mainViewController.init(getLoadProjectViewControls(), getDependencyGraphViewControls(), getProjectSearchListControls());
         addProjectGraphViewToMainContentPane(mainViewController.getMainContent());
 
         var scene = new Scene((Parent) root, 1080, 720);
@@ -76,6 +78,15 @@ public class ViewHandler {
         controller.init(viewModelFactory.getDependencyGraphViewModel());
 
         return dependecyGraphView;
+    }
+
+    private Parent getProjectSearchListControls() throws IOException {
+        var loader = getFXMLLoaderFor(Views.PROJECT_SEARCH_LIST);
+        Parent projectSearchListView = loader.load();
+        ProjectSearchListViewController controller = loader.getController();
+        controller.init(viewModelFactory.getProjectSearchListViewModel());
+
+        return projectSearchListView;
     }
 
     public void addProjectGraphViewToMainContentPane(StackPane contentPane) throws IOException {

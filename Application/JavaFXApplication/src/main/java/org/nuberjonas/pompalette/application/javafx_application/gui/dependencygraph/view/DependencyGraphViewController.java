@@ -80,6 +80,6 @@ public class DependencyGraphViewController implements Subscribable, Observer {
     }
 
     private void loadDependencyGraph(SmartGraphVertex<Project> projectSmartGraphVertex) {
-        EventBus.getInstance().publish(new LoadDependencyGraphEvent(projectSmartGraphVertex));
+        EventBus.getInstance().publish(new LoadDependencyGraphEvent(projectSmartGraphVertex.getUnderlyingVertex()));
     }
 }

@@ -8,10 +8,12 @@ public final class MavenProject implements Project {
 
     private ProjectCoordinates coordinates;
     private String name;
+    private ProjectInformation projectInformation;
 
-    public MavenProject(ProjectCoordinates coordinates, String name){
+    public MavenProject(ProjectCoordinates coordinates, String name, ProjectInformation projectInformation){
         this.coordinates = coordinates;
         this.name = name;
+        this.projectInformation = projectInformation;
     }
 
     @Override
@@ -21,6 +23,10 @@ public final class MavenProject implements Project {
 
     public String getName() {
         return name;
+    }
+
+    public ProjectInformation getProjectInformation() {
+        return projectInformation;
     }
 
     @Override
