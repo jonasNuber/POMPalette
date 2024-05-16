@@ -13,14 +13,14 @@
            <Menu mnemonicParsing="false" text="Control">
                <CustomMenuItem mnemonicParsing="false">
                    <content>
-                       <ToggleButton fx:id="automaticLayoutToggle" onAction="#darkModeToggleAction" mnemonicParsing="false" text="Use Automatic Layout" />
+                       <ToggleButton fx:id="automaticLayoutToggle" onAction="#automaticLayoutToggleAction" mnemonicParsing="false" text="Use Automatic Layout"  />
                    </content>
                </CustomMenuItem>
-               <CustomMenuItem mnemonicParsing="false">
+               <!--<CustomMenuItem mnemonicParsing="false">
                    <content>
-                       <ToggleButton fx:id="testScopeDependencyToggle" onAction="#darkModeToggleAction" mnemonicParsing="false" text="Show test scoped dependencies" />
+                       <ToggleButton fx:id="filterTestDependenciesToggle" onAction="#filterTestDependenciesToggleAction" mnemonicParsing="false" text="Filter Test Dependencies" />
                    </content>
-               </CustomMenuItem>
+               </CustomMenuItem>-->
            </Menu>
            <Menu mnemonicParsing="false" text="Help">
                <CustomMenuItem mnemonicParsing="false">

@@ -31,6 +31,15 @@ public class ProjectGraph implements Digraph<Project, Relationship> {
         this.edges = edges;
     }
 
+    public ProjectGraph copy(){
+        var copiedGraph = new ProjectGraph();
+
+        vertices.forEach((project, vertex) -> copiedGraph.insertVertex(project));
+        edges.forEach(relationshipEdge -> copiedGraph.insertEdge(relationshipEdge.vertices()[0], relationshipEdge.vertices()[1],relationshipEdge.element()));
+
+        return copiedGraph;
+    }
+
     @Override
     public int numVertices() {
         return vertices.size();

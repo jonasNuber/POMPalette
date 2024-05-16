@@ -63,7 +63,7 @@ public class ProjectSearchListViewController {
                     setGraphic(null);
                 } else {
                     if(searchListElement.projectVertex().element() instanceof Dependency){
-                        setGraphic(getDependencyTitleFor(searchListElement.projectVertex()));
+                        setGraphic(getDependencyTitleFor(searchListElement));
                     } else {
                         setGraphic(getProjectTitleFor(searchListElement.projectVertex()));
                     }
@@ -91,7 +91,7 @@ public class ProjectSearchListViewController {
 
                 if (isExpanded) {
                     if(searchListElement.projectVertex().element() instanceof Dependency){
-                        setGraphic(getDependencyTitleFor(searchListElement.projectVertex()));
+                        setGraphic(getDependencyTitleFor(searchListElement));
                     } else {
                         setGraphic(getProjectTitleFor(searchListElement.projectVertex()));
                     }
@@ -103,7 +103,7 @@ public class ProjectSearchListViewController {
                     TextFlow expandedText = null;
 
                     if(searchListElement.projectVertex().element() instanceof Dependency){
-                        titleText = getDependencyTitleFor(searchListElement.projectVertex());
+                        titleText = getDependencyTitleFor(searchListElement);
                         expandedText = getDependencyInformationFor(searchListElement);
                     } else {
                         titleText = getProjectTitleFor(searchListElement.projectVertex());
@@ -135,9 +135,14 @@ public class ProjectSearchListViewController {
         };
     }
 
-    private Text getDependencyTitleFor(Vertex<Project> projectVertex){
-        var title = new Text(((Dependency)projectVertex.element()).dependencyCoordinates().toString());
+    private Text getDependencyTitleFor(ProjectSearchListElement searchListElement){
+        var title = new Text(((Dependency)searchListElement.projectVertex().element()).dependencyCoordinates().toString());
         title.setStyle("-fx-font-weight: bold;");
+
+        if(collectDependencyInfo(searchListElement, DependencyRelationship::dependencyVersion).size() > 1){
+            title.setStyle("-fx-font-weight: bold; -fx-fill: red;");
+        }
+
         title.setLineSpacing(5);
         title.wrappingWidthProperty().bind(listView.widthProperty().subtract(20));
 

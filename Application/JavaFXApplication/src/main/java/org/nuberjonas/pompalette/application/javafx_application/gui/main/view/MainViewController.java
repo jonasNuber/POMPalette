@@ -9,6 +9,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.StackPane;
 import org.nuberjonas.pompalette.application.javafx_application.events.ShowControlsEvent;
+import org.nuberjonas.pompalette.application.javafx_application.events.ToggleAutomaticGraphLayoutEvent;
 import org.nuberjonas.pompalette.application.javafx_application.extensions.DraggablePane;
 import org.nuberjonas.pompalette.application.javafx_application.extensions.NotificationPane;
 import org.nuberjonas.pompalette.infrastructure.eventbus.EventBus;
@@ -27,6 +28,10 @@ public class MainViewController implements Subscribable {
     @FXML
     private StackPane mainContent;
     @FXML
+    private ToggleButton automaticLayoutToggle;
+//    @FXML
+//    private ToggleButton filterTestDependenciesToggle;
+    @FXML
     private ToggleButton darkmodeToggle;
 
     private NotificationPane notificationPane;
@@ -36,6 +41,8 @@ public class MainViewController implements Subscribable {
         controlPanes = new HashMap<>();
         notificationPane = new NotificationPane();
         mainContent.getChildren().add(notificationPane);
+        automaticLayoutToggle.setSelected(true);
+//        filterTestDependenciesToggle.setSelected(false);
 
         setupLoadProjectPane(loadProjectView);
         setupDependencyGraphPane(dependencyGraphView);
@@ -69,15 +76,6 @@ public class MainViewController implements Subscribable {
     }
 
     @FXML
-    private void darkModeToggleAction(){
-            if(darkmodeToggle.isSelected()){
-                Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
-            } else {
-                Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
-            }
-    }
-
-    @FXML
     private void showLoadProjectView(){
         var loadProjectView = controlPanes.get(ControlPanels.LOAD_PROJECT);
         if(!loadProjectView.isVisible()){
@@ -98,6 +96,25 @@ public class MainViewController implements Subscribable {
         var projectSearchListView = controlPanes.get(ControlPanels.PROJECT_SEARCH_LIST);
         if(!projectSearchListView.isVisible()){
             projectSearchListView.setVisible(true);
+        }
+    }
+
+    @FXML
+    private void automaticLayoutToggleAction(){
+        EventBus.getInstance().publish(new ToggleAutomaticGraphLayoutEvent(automaticLayoutToggle.isSelected()));
+    }
+
+//    @FXML
+//    private void filterTestDependenciesToggleAction(){
+//        EventBus.getInstance().publish(new ToggleFilterTestDependenciesEvent(filterTestDependenciesToggle.isSelected()));
+//    }
+
+    @FXML
+    private void darkModeToggleAction(){
+        if(darkmodeToggle.isSelected()){
+            Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
+        } else {
+            Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
         }
     }
 

@@ -7,6 +7,7 @@ import javafx.scene.layout.StackPane;
 import org.nuberjonas.pompalette.application.javafx_application.events.LoadDependencyGraphEvent;
 import org.nuberjonas.pompalette.application.javafx_application.events.LoadProjectInitializationEvent;
 import org.nuberjonas.pompalette.application.javafx_application.events.ShowDependencyGraphEvent;
+import org.nuberjonas.pompalette.application.javafx_application.events.ToggleAutomaticGraphLayoutEvent;
 import org.nuberjonas.pompalette.application.javafx_application.extensions.ProjectGraphPanel;
 import org.nuberjonas.pompalette.application.javafx_application.extensions.ProjectGraphZoomAndScrollPane;
 import org.nuberjonas.pompalette.application.javafx_application.gui.projectgraph.viewmodel.ProjectGraphViewModel;
@@ -48,6 +49,7 @@ public class ProjectGraphViewController implements Subscribable, Observer {
         viewModel.addObserver(this);
         EventBus.getInstance().subscribe(LoadProjectInitializationEvent.class, this);
         EventBus.getInstance().subscribe(LoadDependencyGraphEvent.class, this);
+        EventBus.getInstance().subscribe(ToggleAutomaticGraphLayoutEvent.class, this);
     }
 
     @Override
@@ -56,12 +58,15 @@ public class ProjectGraphViewController implements Subscribable, Observer {
             loadProjectGraph(loadEvent.getData());
         } else if(event instanceof LoadDependencyGraphEvent loadDependencyGraphEvent) {
             loadDependencyGraph(loadDependencyGraphEvent.getData(), true);
+        } else if(event instanceof ToggleAutomaticGraphLayoutEvent toggleAutomaticGraphLayoutEvent){
+            graphView.setAutomaticLayout(toggleAutomaticGraphLayoutEvent.getData());
+            graphView.update();
         }
     }
 
     @Override
     public Set<Class<?>> supports() {
-        return Set.of(LoadProjectInitializationEvent.class, LoadDependencyGraphEvent.class);
+        return Set.of(LoadProjectInitializationEvent.class, LoadDependencyGraphEvent.class, ToggleAutomaticGraphLayoutEvent.class);
     }
 
     @Override
