@@ -1,6 +1,6 @@
 package org.nuberjonas.pompalette.application.javafx_application.events;
 
-import org.nuberjonas.pompalette.application.javafx_application.gui.main.view.Controls;
+import org.nuberjonas.pompalette.application.javafx_application.gui.main.view.ControlPanels;
 import org.nuberjonas.pompalette.infrastructure.eventbus.events.Event;
 
 public class ShowControlsEvent extends Event<ShowControlsEvent.ShowControlsPayload> {
@@ -10,12 +10,12 @@ public class ShowControlsEvent extends Event<ShowControlsEvent.ShowControlsPaylo
     }
 
     public static ShowControlsEvent showLoadProjectControls(boolean shouldShow){
-        return new ShowControlsEvent(new ShowControlsPayload(Controls.LOAD_PROJECT, shouldShow));
+        return new ShowControlsEvent(new ShowControlsPayload(ControlPanels.LOAD_PROJECT, shouldShow));
     }
 
     public static ShowControlsEvent showDependencyGraphControls(boolean shouldShow){
-        return new ShowControlsEvent(new ShowControlsPayload(Controls.DEPENDENCY_GRAPH, shouldShow));
+        return new ShowControlsEvent(new ShowControlsPayload(ControlPanels.DEPENDENCY_GRAPH, shouldShow));
     }
 
-    public record ShowControlsPayload(Controls controls, Boolean shouldShow){ }
+    public record ShowControlsPayload(ControlPanels controlPanels, Boolean shouldShow){ }
 }

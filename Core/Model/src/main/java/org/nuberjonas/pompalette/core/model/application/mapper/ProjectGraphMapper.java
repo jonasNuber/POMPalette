@@ -7,6 +7,7 @@ import org.nuberjonas.pompalette.core.model.domain.graph.relationship.ModuleRela
 import org.nuberjonas.pompalette.core.model.domain.project.MavenProject;
 import org.nuberjonas.pompalette.core.model.domain.project.Project;
 import org.nuberjonas.pompalette.core.model.domain.project.ProjectCoordinates;
+import org.nuberjonas.pompalette.core.model.domain.project.ProjectInformation;
 import org.nuberjonas.pompalette.core.model.domain.project.dependecies.*;
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.MultiModuleProjectDTO;
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.dependency.DependencyDTO;
@@ -67,7 +68,8 @@ public class ProjectGraphMapper {
                 projectDTO.groupId(),
                 projectDTO.artifactId(),
                 projectDTO.version()),
-                projectDTO.name());
+                projectDTO.name(),
+                new ProjectInformation(projectDTO.packaging(), projectDTO.description(), projectDTO.url(), projectDTO.modelBase().modules()));
     }
 
     private void mapDependencies(ProjectGraph graph, Vertex<Project> projectVertex, ProjectEnvironment environment){

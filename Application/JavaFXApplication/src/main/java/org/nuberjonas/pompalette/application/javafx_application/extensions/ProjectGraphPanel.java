@@ -687,7 +687,7 @@ public class ProjectGraphPanel<V, E> extends Pane {
             String labelText = getEdgeLabelFor(edge.element());
 
             if (graphProperties.getUseEdgeTooltip()) {
-                Tooltip t = new Tooltip(labelText);
+                Tooltip t = new Tooltip(((Relationship)edge.element()).tooltipText());
                 Tooltip.install((Node) e, t);
             }
 

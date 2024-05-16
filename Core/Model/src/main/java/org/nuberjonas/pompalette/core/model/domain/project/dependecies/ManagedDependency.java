@@ -1,5 +1,6 @@
 package org.nuberjonas.pompalette.core.model.domain.project.dependecies;
 
+import com.brunomnsilva.smartgraph.graphview.SmartLabelSource;
 import org.nuberjonas.pompalette.core.model.domain.project.MavenProject;
 import org.nuberjonas.pompalette.core.model.domain.project.ProjectCoordinates;
 
@@ -42,8 +43,13 @@ public final class ManagedDependency implements Dependency{
         return Objects.hash(dependency, managingProject);
     }
 
+    @SmartLabelSource
+    public String getLabel(){
+        return "";
+    }
+
     @Override
     public String toString() {
-        return "";
+        return dependency.toString();
     }
 }

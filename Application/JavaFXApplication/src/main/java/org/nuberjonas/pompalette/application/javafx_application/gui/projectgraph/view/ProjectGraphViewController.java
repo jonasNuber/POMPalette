@@ -1,12 +1,13 @@
 package org.nuberjonas.pompalette.application.javafx_application.gui.projectgraph.view;
 
-import com.brunomnsilva.smartgraph.graphview.SmartGraphVertex;
+import com.brunomnsilva.smartgraph.graph.Vertex;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.layout.StackPane;
 import org.nuberjonas.pompalette.application.javafx_application.events.LoadDependencyGraphEvent;
 import org.nuberjonas.pompalette.application.javafx_application.events.LoadProjectInitializationEvent;
 import org.nuberjonas.pompalette.application.javafx_application.events.ShowDependencyGraphEvent;
+import org.nuberjonas.pompalette.application.javafx_application.events.ToggleAutomaticGraphLayoutEvent;
 import org.nuberjonas.pompalette.application.javafx_application.extensions.ProjectGraphPanel;
 import org.nuberjonas.pompalette.application.javafx_application.extensions.ProjectGraphZoomAndScrollPane;
 import org.nuberjonas.pompalette.application.javafx_application.gui.projectgraph.viewmodel.ProjectGraphViewModel;
@@ -41,13 +42,14 @@ public class ProjectGraphViewController implements Subscribable, Observer {
         graphView.setPrefSize(5000, 5000);
         graphView.setAutomaticLayout(true);
 
-        graphView.setVertexDoubleClickAction(projectSmartGraphVertex -> loadDependencyGraph(projectSmartGraphVertex, false));
+        graphView.setVertexDoubleClickAction(projectSmartGraphVertex -> loadDependencyGraph(projectSmartGraphVertex.getUnderlyingVertex(), false));
 
         projectBasePane.getChildren().add(new ProjectGraphZoomAndScrollPane(graphView));
 
         viewModel.addObserver(this);
         EventBus.getInstance().subscribe(LoadProjectInitializationEvent.class, this);
         EventBus.getInstance().subscribe(LoadDependencyGraphEvent.class, this);
+        EventBus.getInstance().subscribe(ToggleAutomaticGraphLayoutEvent.class, this);
     }
 
     @Override
@@ -56,12 +58,15 @@ public class ProjectGraphViewController implements Subscribable, Observer {
             loadProjectGraph(loadEvent.getData());
         } else if(event instanceof LoadDependencyGraphEvent loadDependencyGraphEvent) {
             loadDependencyGraph(loadDependencyGraphEvent.getData(), true);
+        } else if(event instanceof ToggleAutomaticGraphLayoutEvent toggleAutomaticGraphLayoutEvent){
+            graphView.setAutomaticLayout(toggleAutomaticGraphLayoutEvent.getData());
+            graphView.update();
         }
     }
 
     @Override
     public Set<Class<?>> supports() {
-        return Set.of(LoadProjectInitializationEvent.class, LoadDependencyGraphEvent.class);
+        return Set.of(LoadProjectInitializationEvent.class, LoadDependencyGraphEvent.class, ToggleAutomaticGraphLayoutEvent.class);
     }
 
     @Override
@@ -81,8 +86,8 @@ public class ProjectGraphViewController implements Subscribable, Observer {
         viewModel.loadProjectGraph(projectPath);
     }
 
-    private void loadDependencyGraph(SmartGraphVertex<Project> projectSmartGraphVertex, boolean isDependency) {
-        viewModel.loadDependencySubGraph(projectSmartGraphVertex.getUnderlyingVertex(), isDependency).thenAccept(
+    private void loadDependencyGraph(Vertex<Project> projectVertex, boolean isDependency) {
+        viewModel.loadDependencySubGraph(projectVertex, isDependency).thenAccept(
                 dependencySubGraph ->
                         Platform.runLater(
                                 () -> EventBus.getInstance().publish(new ShowDependencyGraphEvent(dependencySubGraph))

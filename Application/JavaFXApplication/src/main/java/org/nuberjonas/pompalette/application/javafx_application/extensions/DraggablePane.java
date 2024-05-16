@@ -60,29 +60,35 @@ public class DraggablePane extends Pane{
     }
 
     private void onMousePressedAction(MouseEvent event){
-        mouseX = event.getSceneX();
-        mouseY = event.getSceneY();
-        initialTranslateX = getTranslateX();
-        initialTranslateY = getTranslateY();
-        toFront();
+        if(event.isSecondaryButtonDown()){
+            mouseX = event.getSceneX();
+            mouseY = event.getSceneY();
+            initialTranslateX = getTranslateX();
+            initialTranslateY = getTranslateY();
+            toFront();
+            event.consume();
+        }
     }
 
     private void onMouseDraggedAction(MouseEvent event){
-        double newX = initialTranslateX + event.getSceneX() - mouseX;
-        double newY = initialTranslateY + event.getSceneY() - mouseY;
+        if(event.isSecondaryButtonDown()) {
+            double newX = initialTranslateX + event.getSceneX() - mouseX;
+            double newY = initialTranslateY + event.getSceneY() - mouseY;
 
-        // Calculate movement bounds
-        minX = 0;
-        minY = 0;
-        maxX = ((Pane) getParent()).getWidth() - getWidth();
-        maxY = ((Pane) getParent()).getHeight() - getHeight();
+            // Calculate movement bounds
+            minX = 0;
+            minY = 0;
+            maxX = ((Pane) getParent()).getWidth() - getWidth();
+            maxY = ((Pane) getParent()).getHeight() - getHeight();
 
-        // Restrict movement within bounds
-        newX = Math.min(Math.max(minX, newX), maxX);
-        newY = Math.min(Math.max(minY, newY), maxY);
+            // Restrict movement within bounds
+            newX = Math.min(Math.max(minX, newX), maxX);
+            newY = Math.min(Math.max(minY, newY), maxY);
 
-        setTranslateX(newX);
-        setTranslateY(newY);
+            setTranslateX(newX);
+            setTranslateY(newY);
+            event.consume();
+        }
     }
 
     private void onMouseClickedAction(MouseEvent event){

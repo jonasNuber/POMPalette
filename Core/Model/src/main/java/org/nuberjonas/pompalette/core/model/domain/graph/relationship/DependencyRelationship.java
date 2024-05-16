@@ -51,4 +51,9 @@ public record DependencyRelationship(String denominator, DependencyVersion depen
     public String toString() {
         return denominator;
     }
+
+    @Override
+    public String tooltipText() {
+        return (scope != null && type != null) ? "Scope: " + scope + " Type: " + type : denominator;
+    }
 }

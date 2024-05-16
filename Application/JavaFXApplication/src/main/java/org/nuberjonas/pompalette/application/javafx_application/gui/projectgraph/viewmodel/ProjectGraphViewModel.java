@@ -2,9 +2,15 @@ package org.nuberjonas.pompalette.application.javafx_application.gui.projectgrap
 
 import com.brunomnsilva.smartgraph.graph.Vertex;
 import javafx.application.Platform;
+import org.nuberjonas.pompalette.application.javafx_application.events.SetProjectSearchListEvent;
 import org.nuberjonas.pompalette.core.model.application.ProjectGraphService;
 import org.nuberjonas.pompalette.core.model.domain.graph.ProjectGraph;
+import org.nuberjonas.pompalette.core.model.domain.graph.relationship.DependencyRelationship;
+import org.nuberjonas.pompalette.core.model.domain.project.MavenProject;
 import org.nuberjonas.pompalette.core.model.domain.project.Project;
+import org.nuberjonas.pompalette.core.model.domain.project.dependecies.ExternalDependency;
+import org.nuberjonas.pompalette.core.model.domain.searchlist.ProjectSearchListElement;
+import org.nuberjonas.pompalette.infrastructure.eventbus.EventBus;
 import org.nuberjonas.pompalette.infrastructure.eventbus.Observer;
 
 import java.nio.file.Path;
@@ -44,7 +50,10 @@ public class ProjectGraphViewModel {
     public void loadProjectGraph(Path projectPath){
         service.loadProjectAsync(projectPath, new ProjectGraph()).thenAccept(
                 graph -> {
-                    Platform.runLater(() -> fullGraph = graph);
+                    Platform.runLater(() -> {
+                        fullGraph = graph;
+                        EventBus.getInstance().publish(new SetProjectSearchListEvent(getSearchListElements()));
+                    });
 
                     loadProjectModelSubgraph(graph);
                 }).exceptionally(ex -> {
@@ -53,6 +62,18 @@ public class ProjectGraphViewModel {
             });
             return null;
         });
+    }
+
+    private List<ProjectSearchListElement> getSearchListElements(){
+        var searchListElements = new ArrayList<ProjectSearchListElement>();
+
+        fullGraph.vertices().forEach(projectVertex -> {
+            if(projectVertex.element() instanceof MavenProject || projectVertex.element() instanceof ExternalDependency){
+                searchListElements.add(new ProjectSearchListElement(projectVertex, fullGraph.incidentEdges(projectVertex).stream().filter(relationshipProjectEdge -> relationshipProjectEdge.element() instanceof DependencyRelationship).map(relationshipProjectEdge -> ((DependencyRelationship)relationshipProjectEdge.element())).toList()));
+            }
+        });
+
+        return searchListElements;
     }
 
     private void loadProjectModelSubgraph(ProjectGraph graph){
