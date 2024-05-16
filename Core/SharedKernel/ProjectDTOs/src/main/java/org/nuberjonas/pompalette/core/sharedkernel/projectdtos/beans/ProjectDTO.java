@@ -39,4 +39,36 @@ public record ProjectDTO(
         String modelEncodings
 ) implements Serializable {
 
+    public ProjectDTO setParentCoordinatesIfEmpty(ParentCoordinates parentCoordinates){
+        if(this.groupId == null){
+            return new ProjectDTO(
+                    this.modelBase,
+                    this.modelVersion,
+                    this.parent,
+                    parentCoordinates.groupId(),
+                    this.artifactId,
+                    parentCoordinates.version(),
+                    this.packaging,
+                    this.name,
+                    this.description,
+                    this.url,
+                    this.childProjectUrlInheritAppendPath,
+                    this.inceptionYear,
+                    this.organization,
+                    this.licenses,
+                    this.developers,
+                    this.contributors,
+                    this.mailingLists,
+                    this.prerequisites,
+                    this.scm,
+                    this.issueManagement,
+                    this.ciManagement,
+                    this.build,
+                    this.profiles,
+                    this.modelEncodings
+            );
+        } else {
+            return this;
+        }
+    }
 }

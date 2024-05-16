@@ -145,6 +145,7 @@
                                     <directory>${project.basedir}/src/main/build</directory>
                                     <includes>
                                         <include>*.bat</include>
+                                        <include>*.sh</include>
                                     </includes>
                                 </resource>
                             </resources>

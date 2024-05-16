@@ -6,6 +6,7 @@ import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.MultiModuleProjectDTO;
+import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.ParentCoordinates;
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.ProjectDTO;
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.dependency.DependencyDTO;
 import org.nuberjonas.pompalette.core.sharedkernel.projectdtos.beans.model.ModelBaseDTO;
@@ -92,7 +93,7 @@ public class MavenProjectParsingService implements ProjectParsingService {
             multiModuleProject.addProjectBOM(findProjectBOM(finalProjectPath, project));
         }
         
-        return loadMultiModuleProjectModules(finalProjectPath, multiModuleProject);
+        return loadMultiModuleProjectModules(finalProjectPath, multiModuleProject, new ParentCoordinates(project.groupId(), project.version()));
     }
 
 
@@ -148,7 +149,7 @@ public class MavenProjectParsingService implements ProjectParsingService {
         return null;
     }
 
-    private MultiModuleProjectDTO loadMultiModuleProjectModules(Path path, MultiModuleProjectDTO multiModuleProject){
+    private MultiModuleProjectDTO loadMultiModuleProjectModules(Path path, MultiModuleProjectDTO multiModuleProject, ParentCoordinates parentCoordinates){
         var project = multiModuleProject.get();
 
         List<String> modules = Optional.ofNullable(project.modelBase())
@@ -166,9 +167,9 @@ public class MavenProjectParsingService implements ProjectParsingService {
 
         selectedModules.forEach(moduleName -> {
             var modulePath = resolveModulePath(path, moduleName);
-            var moduleProject = new MultiModuleProjectDTO(loadProject(modulePath));
+            var moduleProject = new MultiModuleProjectDTO(loadProject(modulePath).setParentCoordinatesIfEmpty(parentCoordinates));
 
-            moduleProject = loadMultiModuleProjectModules(modulePath, moduleProject);
+            moduleProject = loadMultiModuleProjectModules(modulePath, moduleProject, new ParentCoordinates(moduleProject.get().groupId(), moduleProject.get().version()));
             multiModuleProject.addModule(moduleProject);
         });
 

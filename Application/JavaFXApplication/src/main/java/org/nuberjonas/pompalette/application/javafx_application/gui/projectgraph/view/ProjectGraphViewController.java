@@ -59,6 +59,7 @@ public class ProjectGraphViewController implements Subscribable, Observer {
         } else if(event instanceof LoadDependencyGraphEvent loadDependencyGraphEvent) {
             loadDependencyGraph(loadDependencyGraphEvent.getData(), true);
         } else if(event instanceof ToggleAutomaticGraphLayoutEvent toggleAutomaticGraphLayoutEvent){
+            initializeProjectGraph();
             graphView.setAutomaticLayout(toggleAutomaticGraphLayoutEvent.getData());
             graphView.update();
         }
@@ -78,12 +79,16 @@ public class ProjectGraphViewController implements Subscribable, Observer {
     }
 
     private void loadProjectGraph(Path projectPath){
+        initializeProjectGraph();
+
+        viewModel.loadProjectGraph(projectPath);
+    }
+
+    private void initializeProjectGraph(){
         if(!isGraphInitialized){
             graphView.init();
             isGraphInitialized = true;
         }
-
-        viewModel.loadProjectGraph(projectPath);
     }
 
     private void loadDependencyGraph(Vertex<Project> projectVertex, boolean isDependency) {
