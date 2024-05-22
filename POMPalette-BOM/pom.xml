@@ -167,51 +167,6 @@
             </dependency>
 
             <!-- ++++++++++++++++++++++POM_PALETTE++++++++++++++++++++++ -->
-            <dependency>
-                <groupId>org.nuberjonas.pompalette.application</groupId>
-                <artifactId>javafx-application</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.nuberjonas.pompalette.core.sharedkernel</groupId>
-                <artifactId>org.nuberjonas.pompalette.core.sharedkernel.project-dtos</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.nuberjonas.pompalette.infrastructure</groupId>
-                <artifactId>org.nuberjonas.pompalette.infrastructure.eventbus</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.nuberjonas.pompalette.infrastructure.parsing</groupId>
-                <artifactId>org.nuberjonas.pompalette.infrastructure.parsing.project-parsing-api</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.nuberjonas.pompalette.infrastructure.parsing</groupId>
-                <artifactId>org.nuberjonas.pompalette.infrastructure.parsing.project-parsing-maven-impl</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.nuberjonas.pompalette.infrastructure</groupId>
-                <artifactId>org.nuberjonas.pompalette.infrastructure.serviceloading</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.nuberjonas.pompalette.mapping</groupId>
-                <artifactId>org.nuberjonas.pompalette.mapping.mapping-api</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.nuberjonas.pompalette.mapping</groupId>
-                <artifactId>org.nuberjonas.pompalette.mapping.project-mapping</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.nuberjonas.pompalette.core</groupId>
-                <artifactId>org.nuberjonas.pompalette.core.model</artifactId>
-                <version>${project.version}</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>

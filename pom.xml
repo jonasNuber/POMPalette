@@ -28,6 +28,7 @@
     <build>
         <pluginManagement>
             <plugins>
+                <!-- ++++++++++++++++++++++MAVEN++++++++++++++++++++++ -->
                 <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-dependency-plugin -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -70,7 +71,6 @@
                     <artifactId>license-maven-plugin</artifactId>
                     <version>2.4.0</version>
                 </plugin>
-
                 <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-antrun-plugin -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -84,6 +84,7 @@
                     <version>1.6.8</version>
                 </plugin>
 
+                <!-- ++++++++++++++++++++++JAVAFX++++++++++++++++++++++ -->
                 <!-- https://mvnrepository.com/artifact/org.openjfx/javafx-maven-plugin -->
                 <plugin>
                     <groupId>org.openjfx</groupId>
@@ -172,6 +173,9 @@
             </activation>
 
             <modules>
+                <module>Core</module>
+                <module>Infrastructure</module>
+                <module>UserInterface</module>
                 <module>Tests</module>
             </modules>
 
@@ -184,13 +188,6 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>license-maven-plugin</artifactId>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-dependency-plugin</artifactId>
-                        <configuration>
-                            <outputType>dot</outputType>
-                        </configuration>
                     </plugin>
                 </plugins>
             </build>
