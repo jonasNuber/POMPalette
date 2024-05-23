@@ -167,6 +167,11 @@
             </dependency>
 
             <!-- ++++++++++++++++++++++POM_PALETTE++++++++++++++++++++++ -->
+            <dependency>
+                <groupId>org.nuberjonas.pompalette.userinterface</groupId>
+                <artifactId>javafx</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>

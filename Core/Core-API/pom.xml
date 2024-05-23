@@ -5,20 +5,15 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.nuberjonas</groupId>
-        <artifactId>pompalette</artifactId>
+        <groupId>org.nuberjonas.pompalette</groupId>
+        <artifactId>core</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.nuberjonas.pompalette</groupId>
-    <artifactId>tests</artifactId>
+    <groupId>org.nuberjonas.pompalette.core</groupId>
+    <artifactId>core-api</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>Tests</name>
-
-    <modules>
-        <module>Acceptance-Tests</module>
-        <module>Integration-Tests</module>
-    </modules>
+    <name>Core-API</name>
 </project>

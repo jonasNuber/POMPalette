@@ -8,7 +8,7 @@
         <groupId>org.nuberjonas.pompalette</groupId>
         <artifactId>pompalette-bom</artifactId>
         <version>1.0.0-SNAPSHOT</version>
-        <relativePath>POMPalette-BOM/pom.xml</relativePath>
+        <relativePath>POMPalette-BOM</relativePath>
     </parent>
 
     <groupId>org.nuberjonas</groupId>
@@ -17,6 +17,36 @@
     <packaging>pom</packaging>
 
     <name>POMPalette</name>
+
+    <description>
+        The POMPalette library aims to define a reusable api and graph structure to represent different aspects
+        of code and their relationships. This can be, but is not limited to, modules, packages, classes and functions.
+        The first idea was (as the name suggests) to represent maven module structures and analyze code usage of
+        and allow to optimize dependencies, imports and overall structure. But the focus has shifted and the idea to publish
+        a library with different standard implementations and allow anyone to leverage the core library for their uses
+        and different appliances is the overall goal of POMPalette.
+    </description>
+
+    <developers>
+        <developer>
+            <id>jonasNuber</id>
+            <name>Jonas Nuber</name>
+            <email>nuber-jonas@web.de</email>
+            <roles>
+                <role>product owner</role>
+                <role>developer</role>
+            </roles>
+            <timezone>GMT+2</timezone>
+        </developer>
+    </developers>
+
+    <issueManagement>
+        <system>JIRA</system>
+    </issueManagement>
+
+    <scm>
+        <url>https://github.com/jonasNuber/POMPalette</url>
+    </scm>
 
     <properties>
         <java.version>21</java.version>

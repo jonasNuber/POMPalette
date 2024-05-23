@@ -16,4 +16,9 @@
     <packaging>pom</packaging>
 
     <name>Core</name>
+
+    <modules>
+        <module>Core-API</module>
+        <module>Core-Impl</module>
+    </modules>
 </project>
