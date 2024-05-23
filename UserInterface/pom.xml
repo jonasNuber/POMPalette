@@ -11,14 +11,14 @@
     </parent>
 
     <groupId>org.nuberjonas.pompalette</groupId>
-    <artifactId>tests</artifactId>
+    <artifactId>userinterface</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>Tests</name>
+
+    <name>UserInterface</name>
 
     <modules>
-        <module>Acceptance-Tests</module>
-        <module>Integration-Tests</module>
+        <module>JavaFX</module>
     </modules>
 </project>
