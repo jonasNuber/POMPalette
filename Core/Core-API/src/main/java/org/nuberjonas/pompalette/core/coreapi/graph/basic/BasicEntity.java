@@ -17,7 +17,7 @@ public class BasicEntity<ED, RD> implements Entity<ED, RD> {
     }
 
     @Override
-    public ED changeData(ED newData) {
+    public synchronized ED changeData(ED newData) {
         var oldData = data;
         data = newData;
         return oldData;
@@ -29,17 +29,17 @@ public class BasicEntity<ED, RD> implements Entity<ED, RD> {
     }
 
     @Override
-    public boolean addRelationship(Relationship<ED, RD> relationship) {
+    public synchronized boolean addRelationship(Relationship<ED, RD> relationship) {
         return relationships.add(relationship);
     }
 
     @Override
-    public boolean removeRelationship(Relationship<ED, RD> relationship) {
+    public synchronized boolean removeRelationship(Relationship<ED, RD> relationship) {
         return relationships.remove(relationship);
     }
 
     @Override
-    public Set<Relationship<ED, RD>> getRelationships() {
+    public synchronized Set<Relationship<ED, RD>> getRelationships() {
         return relationships;
     }
 
