@@ -4,6 +4,7 @@ import org.nuberjonas.pompalette.core.coreapi.graph.api.Entity;
 import org.nuberjonas.pompalette.core.coreapi.graph.api.Relationship;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public class BasicEntity<ED, RD> implements Entity<ED, RD> {
@@ -42,5 +43,16 @@ public class BasicEntity<ED, RD> implements Entity<ED, RD> {
         return relationships;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BasicEntity<?, ?> that = (BasicEntity<?, ?>) o;
+        return Objects.equals(data, that.data);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(data);
+    }
 }
