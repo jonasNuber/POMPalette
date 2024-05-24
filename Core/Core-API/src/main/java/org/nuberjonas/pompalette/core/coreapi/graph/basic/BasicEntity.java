@@ -33,7 +33,14 @@ public class BasicEntity<ED, RD> implements Entity<ED, RD> {
     }
 
     @Override
+    public boolean removeRelationship(Relationship<ED, RD> relationship) {
+        return relationships.remove(relationship);
+    }
+
+    @Override
     public Set<Relationship<ED, RD>> getRelationships() {
         return relationships;
     }
+
+
 }
