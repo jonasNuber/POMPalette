@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class BasicEntityTest {
+class BasicEntityTest extends BaseTest{
 
     @Test
     void new_ShouldHaveDataAndNoRelationships(){
@@ -103,15 +103,5 @@ class BasicEntityTest {
         var secondEntity = createBasicEntity("otherData");
 
         assertThat(secondEntity).isNotEqualTo(firstEntity);
-    }
-
-    private BasicEntity<String, String> createBasicEntity(String data) {
-        return new BasicEntity<>(data);
-    }
-
-    private BasicRelationship<String, String> createBasicRelationship(BasicEntity<String, String> source,
-                                                                      BasicEntity<String, String> destination,
-                                                                      String label) {
-        return new BasicRelationship<>(source, destination, label);
     }
 }
