@@ -7,39 +7,39 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public class BasicEntity<ED, RD> implements Entity<ED, RD> {
-    private ED data;
-    private final Set<Relationship<ED, RD>> relationships;
+public class BasicEntity<D, U> implements Entity<D, U> {
+    private D data;
+    private final Set<Relationship<D, U>> relationships;
 
-    public BasicEntity(ED data) {
+    public BasicEntity(D data) {
         this.data = data;
         relationships = new HashSet<>();
     }
 
     @Override
-    public synchronized ED changeData(ED newData) {
+    public synchronized D changeData(D newData) {
         var oldData = data;
         data = newData;
         return oldData;
     }
 
     @Override
-    public ED getData() {
+    public D getData() {
         return data;
     }
 
     @Override
-    public synchronized boolean addRelationship(Relationship<ED, RD> relationship) {
+    public synchronized boolean addRelationship(Relationship<D, U> relationship) {
         return relationships.add(relationship);
     }
 
     @Override
-    public synchronized boolean removeRelationship(Relationship<ED, RD> relationship) {
+    public synchronized boolean removeRelationship(Relationship<D, U> relationship) {
         return relationships.remove(relationship);
     }
 
     @Override
-    public synchronized Set<Relationship<ED, RD>> getRelationships() {
+    public synchronized Set<Relationship<D, U>> getRelationships() {
         return relationships;
     }
 

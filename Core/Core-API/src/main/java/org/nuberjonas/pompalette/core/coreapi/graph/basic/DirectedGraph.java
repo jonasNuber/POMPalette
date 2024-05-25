@@ -8,12 +8,12 @@ import org.nuberjonas.pompalette.core.coreapi.graph.api.exceptions.RelationshipN
 
 import java.util.*;
 
-public class DirectedGraph<E extends Entity<ED, RD>, R extends Relationship<ED, RD>, ED, RD> implements Graph<E, R, ED, RD> {
-    private final Map<ED, E> entities;
-    private final EntityFactory<E, ED, RD> entityFactory;
-    private final RelationshipFactory<E, R, ED, RD> relationshipFactory;
+public class DirectedGraph<E extends Entity<D, U>, R extends Relationship<D, U>, D, U> implements Graph<E, R, D, U> {
+    private final Map<D, E> entities;
+    private final EntityFactory<E, D, U> entityFactory;
+    private final RelationshipFactory<E, R, D, U> relationshipFactory;
 
-    public DirectedGraph(EntityFactory<E, ED, RD> entityFactory, RelationshipFactory<E, R, ED, RD> relationshipFactory) {
+    public DirectedGraph(EntityFactory<E, D, U> entityFactory, RelationshipFactory<E, R, D, U> relationshipFactory) {
         this.entities = Collections.synchronizedMap(new HashMap<>());
         this.entityFactory = entityFactory;
         this.relationshipFactory = relationshipFactory;
@@ -29,7 +29,7 @@ public class DirectedGraph<E extends Entity<ED, RD>, R extends Relationship<ED, 
     }
 
     @Override
-    public synchronized E addEntity(ED entityData) throws EntityAlreadyExistsException {
+    public synchronized E addEntity(D entityData) throws EntityAlreadyExistsException {
         var entity = entityFactory.createEntity(entityData);
         addEntity(entity);
 
@@ -42,7 +42,7 @@ public class DirectedGraph<E extends Entity<ED, RD>, R extends Relationship<ED, 
     }
 
     @Override
-    public synchronized E removeEntity(ED entityData) throws EntityNotFoundException {
+    public synchronized E removeEntity(D entityData) throws EntityNotFoundException {
         if(doesNotExist(entityData)){
             throw entityNotFoundException(entityData);
         }
@@ -51,7 +51,7 @@ public class DirectedGraph<E extends Entity<ED, RD>, R extends Relationship<ED, 
     }
 
     @Override
-    public synchronized E getEntity(ED entityData) throws EntityNotFoundException {
+    public synchronized E getEntity(D entityData) throws EntityNotFoundException {
         var entity = entities.get(entityData);
 
         if(doesNotExist(entityData) || entity == null){
@@ -62,12 +62,12 @@ public class DirectedGraph<E extends Entity<ED, RD>, R extends Relationship<ED, 
     }
 
     @Override
-    public synchronized R addRelationship(E source, E destination, RD relationshipData) throws RelationshipAlreadyExistsException, EntityNotFoundException {
+    public synchronized R addRelationship(E source, E destination, U relationshipData) throws RelationshipAlreadyExistsException, EntityNotFoundException {
         return addRelationship(source.getData(), destination.getData(), relationshipData);
     }
 
     @Override
-    public synchronized R addRelationship(ED sourceData, ED destinationData, RD relationshipData) throws RelationshipAlreadyExistsException, EntityNotFoundException {
+    public synchronized R addRelationship(D sourceData, D destinationData, U relationshipData) throws RelationshipAlreadyExistsException, EntityNotFoundException {
         var source = entities.get(sourceData);
         var destination = entities.get(destinationData);
 
@@ -94,7 +94,7 @@ public class DirectedGraph<E extends Entity<ED, RD>, R extends Relationship<ED, 
 
     @Override
     @SuppressWarnings("unchecked")
-    public synchronized R removeRelationship(ED sourceEntity, ED destinationEntity) throws RelationshipNotFoundException, EntityNotFoundException {
+    public synchronized R removeRelationship(D sourceEntity, D destinationEntity) throws RelationshipNotFoundException, EntityNotFoundException {
         var source = entities.get(sourceEntity);
         var destination = entities.get(destinationEntity);
 
@@ -131,7 +131,7 @@ public class DirectedGraph<E extends Entity<ED, RD>, R extends Relationship<ED, 
         return doesNotExist(entity.getData());
     }
 
-    private synchronized boolean doesNotExist(ED entityData){
+    private synchronized boolean doesNotExist(D entityData){
         return !exists(entityData);
     }
 
@@ -139,7 +139,7 @@ public class DirectedGraph<E extends Entity<ED, RD>, R extends Relationship<ED, 
         return exists(entity.getData());
     }
 
-    private synchronized boolean exists(ED entityData){
+    private synchronized boolean exists(D entityData){
         return entities.containsKey(entityData);
     }
 
@@ -151,19 +151,19 @@ public class DirectedGraph<E extends Entity<ED, RD>, R extends Relationship<ED, 
         return entityNotFoundException(entity.getData());
     }
 
-    private synchronized EntityNotFoundException entityNotFoundException(ED entityData){
+    private synchronized EntityNotFoundException entityNotFoundException(D entityData){
         return new EntityNotFoundException(String.format("The entity '%s' was not found", entityData));
     }
 
-    private synchronized RelationshipAlreadyExistsException relationshipAlreadyExistsException(E source, E destination, RD relationshipData){
+    private synchronized RelationshipAlreadyExistsException relationshipAlreadyExistsException(E source, E destination, U relationshipData){
         return relationshipAlreadyExistsException(source.getData(), destination.getData(), relationshipData);
     }
 
-    private synchronized RelationshipAlreadyExistsException relationshipAlreadyExistsException(ED sourceData, ED destinationData, RD relationshipData){
+    private synchronized RelationshipAlreadyExistsException relationshipAlreadyExistsException(D sourceData, D destinationData, U relationshipData){
         return new RelationshipAlreadyExistsException(String.format("Relationship: '%s' from entity '%s' to entity '%s' already exists", relationshipData, sourceData, destinationData));
     }
 
-    private synchronized RelationshipNotFoundException relationshipNotFoundException(ED sourceData, ED destinationData){
+    private synchronized RelationshipNotFoundException relationshipNotFoundException(D sourceData, D destinationData){
         return new RelationshipNotFoundException(String.format("Relationship from entity '%s' to entity '%s' was not found", sourceData, destinationData));
     }
 }

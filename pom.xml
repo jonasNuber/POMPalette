@@ -187,13 +187,13 @@
         <profile>
             <id>acceptance-tests</id>
             <modules>
-                <module>Tests/AcceptanceTests</module>
+                <module>Tests/Acceptance-Tests</module>
             </modules>
         </profile>
         <profile>
             <id>integration-tests</id>
             <modules>
-                <module>Tests/IntegrationTests</module>
+                <module>Tests/Integration-Tests</module>
             </modules>
         </profile>
         <profile>

@@ -2,9 +2,9 @@ package org.nuberjonas.pompalette.core.coreapi.graph.basic;
 
 import org.nuberjonas.pompalette.core.coreapi.graph.api.RelationshipFactory;
 
-public class BasicRelationshipFactory<ED, RD> implements RelationshipFactory<BasicEntity<ED, RD>, BasicRelationship<ED, RD>, ED, RD> {
+public class BasicRelationshipFactory<D, U> implements RelationshipFactory<BasicEntity<D, U>, BasicRelationship<D, U>, D, U> {
     @Override
-    public synchronized BasicRelationship<ED, RD> createRelationship(BasicEntity<ED, RD> source, BasicEntity<ED, RD> destination, RD relationshipData) {
+    public synchronized BasicRelationship<D, U> createRelationship(BasicEntity<D, U> source, BasicEntity<D, U> destination, U relationshipData) {
         return new BasicRelationship<>(source, destination, relationshipData);
     }
 }

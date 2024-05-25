@@ -5,7 +5,7 @@ import org.nuberjonas.pompalette.core.coreapi.graph.api.Relationship;
 
 import java.util.Objects;
 
-public record BasicRelationship<ED, RD>(Entity<ED, RD> source, Entity<ED, RD> destination, RD data) implements Relationship<ED, RD> {
+public record BasicRelationship<D, U>(Entity<D, U> source, Entity<D, U> destination, U data) implements Relationship<D, U> {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

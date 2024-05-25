@@ -8,10 +8,10 @@ import org.nuberjonas.pompalette.core.coreapi.graph.api.exceptions.RelationshipN
 
 import java.util.Set;
 
-public class UndirectedGraph<E extends Entity<ED, RD>, R extends Relationship<ED, RD>, ED, RD> implements Graph<E, R, ED, RD> {
-    private final DirectedGraph<E, R, ED, RD> directedGraph;
+public class UndirectedGraph<E extends Entity<D, U>, R extends Relationship<D, U>, D, U> implements Graph<E, R, D, U> {
+    private final DirectedGraph<E, R, D, U> directedGraph;
 
-    public UndirectedGraph(EntityFactory<E, ED, RD> entityFactory, RelationshipFactory<E, R, ED, RD> relationshipFactory) {
+    public UndirectedGraph(EntityFactory<E, D, U> entityFactory, RelationshipFactory<E, R, D, U> relationshipFactory) {
         this.directedGraph = new DirectedGraph<>(entityFactory, relationshipFactory);
     }
 
@@ -21,7 +21,7 @@ public class UndirectedGraph<E extends Entity<ED, RD>, R extends Relationship<ED
     }
 
     @Override
-    public synchronized E addEntity(ED entityData) throws EntityAlreadyExistsException {
+    public synchronized E addEntity(D entityData) throws EntityAlreadyExistsException {
         return directedGraph.addEntity(entityData);
     }
 
@@ -31,24 +31,24 @@ public class UndirectedGraph<E extends Entity<ED, RD>, R extends Relationship<ED
     }
 
     @Override
-    public synchronized E removeEntity(ED entityData) throws EntityNotFoundException {
+    public synchronized E removeEntity(D entityData) throws EntityNotFoundException {
         return directedGraph.removeEntity(entityData);
     }
 
     @Override
-    public synchronized E getEntity(ED entityData) throws EntityNotFoundException {
+    public synchronized E getEntity(D entityData) throws EntityNotFoundException {
         return directedGraph.getEntity(entityData);
     }
 
     @Override
-    public synchronized R addRelationship(E source, E destination, RD relationshipData) throws RelationshipAlreadyExistsException, EntityNotFoundException {
+    public synchronized R addRelationship(E source, E destination, U relationshipData) throws RelationshipAlreadyExistsException, EntityNotFoundException {
         R relationship = directedGraph.addRelationship(source, destination, relationshipData);
         directedGraph.addRelationship(destination, source, relationshipData);
         return relationship;
     }
 
     @Override
-    public synchronized R addRelationship(ED sourceData, ED destinationData, RD relationshipData) throws RelationshipAlreadyExistsException, EntityNotFoundException {
+    public synchronized R addRelationship(D sourceData, D destinationData, U relationshipData) throws RelationshipAlreadyExistsException, EntityNotFoundException {
         R relationship = directedGraph.addRelationship(sourceData, destinationData, relationshipData);
         directedGraph.addRelationship(destinationData, sourceData, relationshipData);
         return relationship;
@@ -62,7 +62,7 @@ public class UndirectedGraph<E extends Entity<ED, RD>, R extends Relationship<ED
     }
 
     @Override
-    public synchronized R removeRelationship(ED sourceEntity, ED destinationEntity) throws RelationshipNotFoundException, EntityNotFoundException {
+    public synchronized R removeRelationship(D sourceEntity, D destinationEntity) throws RelationshipNotFoundException, EntityNotFoundException {
         R relationship = directedGraph.removeRelationship(sourceEntity, destinationEntity);
         directedGraph.removeRelationship(destinationEntity, sourceEntity);
         return relationship;
