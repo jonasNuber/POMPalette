@@ -18,17 +18,6 @@ class BasicEntityTest extends BaseTest{
     }
 
     @Test
-    void changeData_ShouldChangeDataCorrectly(){
-        var entity = createBasicEntity("oldData");
-        var expected = "newData";
-
-        entity.changeData(expected);
-        var actual = entity.getData();
-
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
     void addRelationship_ShouldAddNewRelationship(){
         var sourceEntity = createBasicEntity("source");
         var destinationEntity = createBasicEntity("destination");
@@ -79,6 +68,26 @@ class BasicEntityTest extends BaseTest{
 
         assertThat(relationshipNotRemoved).isTrue();
         assertThat(sourceEntity.getRelationships()).containsExactly(relationship);
+    }
+
+    @Test
+    void containsRelationship_ShouldReturnTrueWhenRelationshipExists(){
+        var sourceEntity = createBasicEntity("source");
+        var destinationEntity = createBasicEntity("destination");
+        var relationship = createBasicRelationship(sourceEntity, destinationEntity, "relationship");
+
+        sourceEntity.addRelationship(relationship);
+
+        assertThat(sourceEntity.containsRelationship(relationship)).isTrue();
+    }
+
+    @Test
+    void containsRelationship_ShouldReturnFalseWhenRelationshipDoesNotExist(){
+        var sourceEntity = createBasicEntity("source");
+        var destinationEntity = createBasicEntity("destination");
+        var relationship = createBasicRelationship(sourceEntity, destinationEntity, "relationship");
+
+        assertThat(sourceEntity.containsRelationship(relationship)).isFalse();
     }
 
     @Test

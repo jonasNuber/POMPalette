@@ -8,19 +8,12 @@ import java.util.Objects;
 import java.util.Set;
 
 public class BasicEntity<D, U> implements Entity<D, U> {
-    private D data;
+    private final D data;
     private final Set<Relationship<D, U>> relationships;
 
     public BasicEntity(D data) {
         this.data = data;
         relationships = new HashSet<>();
-    }
-
-    @Override
-    public synchronized D changeData(D newData) {
-        var oldData = data;
-        data = newData;
-        return oldData;
     }
 
     @Override
@@ -39,6 +32,11 @@ public class BasicEntity<D, U> implements Entity<D, U> {
     }
 
     @Override
+    public boolean containsRelationship(Relationship<D, U> relationship) {
+        return relationships.contains(relationship);
+    }
+
+    @Override
     public synchronized Set<Relationship<D, U>> getRelationships() {
         return relationships;
     }
@@ -54,5 +52,10 @@ public class BasicEntity<D, U> implements Entity<D, U> {
     @Override
     public int hashCode() {
         return Objects.hash(data);
+    }
+
+    @Override
+    public String toString() {
+        return data.toString();
     }
 }
