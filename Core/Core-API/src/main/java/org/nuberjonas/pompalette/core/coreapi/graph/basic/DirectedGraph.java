@@ -8,6 +8,8 @@ import org.nuberjonas.pompalette.core.coreapi.graph.api.exceptions.RelationshipN
 
 import java.lang.reflect.ParameterizedType;
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("unchecked")
@@ -16,322 +18,410 @@ public class DirectedGraph<E extends Entity<D, U>, R extends Relationship<D, U>,
     private final Map<E, Set<R>> relationshipCache;
     private final EntityFactory<E, D, U> entityFactory;
     private final RelationshipFactory<E, R, D, U> relationshipFactory;
-    
+
+    private final ReentrantReadWriteLock rwLock = new ReentrantReadWriteLock();
+    private final Lock readLock = rwLock.readLock();
+    private final Lock writeLock = rwLock.writeLock();
+
     public DirectedGraph(EntityFactory<E, D, U> entityFactory, RelationshipFactory<E, R, D, U> relationshipFactory) {
-        this.entities = Collections.synchronizedMap(new HashMap<>());
-        this.relationshipCache = Collections.synchronizedMap(new HashMap<>());
+        this.entities = new HashMap<>();
+        this.relationshipCache = new HashMap<>();
         this.entityFactory = entityFactory;
         this.relationshipFactory = relationshipFactory;
     }
 
     @Override
-    public synchronized void addEntity(E entity) throws EntityAlreadyExistsException {
-        if(exists(entity)){
-            throw entityAlreadyExistsException(entity);
-        }
+    public void addEntity(E entity) throws EntityAlreadyExistsException {
+        writeLock.lock();
 
-        entities.put(entity.getData(), entity);
+        try {
+            if (exists(entity)) {
+                throw entityAlreadyExistsException(entity);
+            }
+
+            entities.put(entity.getData(), entity);
+        } finally {
+            writeLock.unlock();
+        }
     }
 
     @Override
-    public synchronized E addEntity(D entityData) throws EntityAlreadyExistsException {
+    public E addEntity(D entityData) throws EntityAlreadyExistsException {
         var entity = entityFactory.createEntity(entityData);
         addEntity(entity);
-
         return entity;
     }
 
     @Override
-    public synchronized E getEntity(D entityData) throws EntityNotFoundException {
-        var entity = entities.get(entityData);
+    public E getEntity(D entityData) throws EntityNotFoundException {
+        readLock.lock();
 
-        if(doesNotExist(entityData) || entity == null){
-            throw entityNotFoundException(entityData);
-        }
+        try {
+            var entity = entities.get(entityData);
 
-        return entity;
-    }
-
-    @Override
-    public synchronized Set<E> getEntities() {
-        return new HashSet<>(entities.values());
-    }
-
-    @Override
-    public synchronized E getRelationshipSourceOf(R relationship) throws EntityNotFoundException, RelationshipNotFoundException {
-        var source = (E) relationship.source();
-        var destination = (E) relationship.destination();
-
-        checkEntities(source, destination);
-
-        if(source.containsRelationship(relationship)){
-            return source;
-        }
-
-        throw relationshipNotFoundException(relationship);
-    }
-
-    @Override
-    public synchronized E getRelationshipTargetOf(R relationship) throws EntityNotFoundException, RelationshipNotFoundException {
-        var source = (E) relationship.source();
-        var destination = (E) relationship.destination();
-
-        checkEntities(source, destination);
-
-        if(source.containsRelationship(relationship)){
-            return destination;
-        }
-
-        throw relationshipNotFoundException(relationship);
-    }
-
-    @Override
-    public synchronized boolean removeEntity(E entity) throws EntityNotFoundException {
-        removeEntity(entity.getData());
-        return !entities.containsValue(entity);
-    }
-
-    @Override
-    public synchronized E removeEntity(D entityData) throws EntityNotFoundException {
-        if(doesNotExist(entityData)){
-            throw entityNotFoundException(entityData);
-        }
-
-        var entity = entities.get(entityData);
-
-        relationshipCache.get(entity).forEach(r -> {
-            if(entity.equals(r.destination())){
-                r.source().removeRelationship(r);
+            if (entity == null) {
+                throw entityNotFoundException(entityData);
             }
-        });
 
-        invalidateCachedRelationshipsOf(entity);
-
-        return entities.remove(entityData);
-    }
-
-    @Override
-    public synchronized boolean removeAllEntities(Collection<E> entities) throws EntityNotFoundException {
-        for (var entity : entities){
-            removeEntity(entity);
+            return entity;
+        } finally {
+            readLock.unlock();
         }
-
-        return !this.entities.values().containsAll(entities);
     }
 
     @Override
-    public synchronized R addRelationship(E source, E destination, U relationshipData) throws RelationshipAlreadyExistsException, EntityNotFoundException {
+    public Set<E> getEntities() {
+        readLock.lock();
+
+        try {
+            return new HashSet<>(entities.values());
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    @Override
+    public E getRelationshipSourceOf(R relationship) throws EntityNotFoundException, RelationshipNotFoundException {
+        readLock.lock();
+
+        try {
+            var source = (E) relationship.source();
+            var destination = (E) relationship.destination();
+            checkEntities(source, destination);
+
+            if (source.containsRelationship(relationship)) {
+                return source;
+            }
+
+            throw relationshipNotFoundException(relationship);
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    @Override
+    public E getRelationshipTargetOf(R relationship) throws EntityNotFoundException, RelationshipNotFoundException {
+        readLock.lock();
+        try {
+            var source = (E) relationship.source();
+            var destination = (E) relationship.destination();
+
+            checkEntities(source, destination);
+
+            if (source.containsRelationship(relationship)) {
+                return destination;
+            }
+
+            throw relationshipNotFoundException(relationship);
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    @Override
+    public boolean removeEntity(E entity) throws EntityNotFoundException {
+        return removeEntity(entity.getData()) != null;
+    }
+
+    @Override
+    public E removeEntity(D entityData) throws EntityNotFoundException {
+        writeLock.lock();
+
+        try {
+            if (!exists(entityData)) {
+                throw entityNotFoundException(entityData);
+            }
+
+            var entity = entities.remove(entityData);
+
+            getCachedRelationshipsOf(entity).forEach(r -> {
+                if (entity.equals(r.destination())) {
+                    r.source().removeRelationship(r);
+                }
+            });
+
+            invalidateCachedRelationshipsOf(entity);
+
+            return entity;
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
+    @Override
+    public boolean removeAllEntities(Collection<E> entities) throws EntityNotFoundException {
+        writeLock.lock();
+
+        try {
+            for (var entity : entities) {
+                removeEntity(entity);
+            }
+
+            return true;
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
+    @Override
+    public R addRelationship(E source, E destination, U relationshipData) throws RelationshipAlreadyExistsException, EntityNotFoundException {
         return addRelationship(source.getData(), destination.getData(), relationshipData);
     }
 
     @Override
-    public synchronized R addRelationship(D sourceData, D destinationData, U relationshipData) throws RelationshipAlreadyExistsException, EntityNotFoundException {
-        var source = entities.get(sourceData);
-        var destination = entities.get(destinationData);
+    public R addRelationship(D sourceData, D destinationData, U relationshipData) throws RelationshipAlreadyExistsException, EntityNotFoundException {
+        writeLock.lock();
+        try {
+            var source = entities.get(sourceData);
+            var destination = entities.get(destinationData);
+            checkEntities(source, destination);
 
-        checkEntities(source, destination);
+            var relationship = relationshipFactory.createRelationship(source, destination, relationshipData);
 
-        var relationship = relationshipFactory.createRelationship(source, destination, relationshipData);
+            if (!source.addRelationship(relationship)) {
+                throw relationshipAlreadyExistsException(source, destination, relationshipData);
+            }
 
-        if(!source.addRelationship(relationship)){
-            throw relationshipAlreadyExistsException(source, destination, relationshipData);
+            invalidateCachedRelationshipsOf(source, destination);
+
+            return relationship;
+        } finally {
+            writeLock.unlock();
         }
-
-        invalidateCachedRelationshipsOf(source, destination);
-
-        return relationship;
     }
 
     @Override
-    public synchronized Set<R> getRelationships() {
-        var relationships = new HashSet<R>();
+    public Set<R> getRelationships() {
+        readLock.lock();
 
-        for(var entity : entities.values()){
-            relationships.addAll((Set<R>) entity.getRelationships());
+        try {
+            var relationships = new HashSet<R>();
+
+            for (var entity : entities.values()) {
+                relationships.addAll((Set<R>) entity.getRelationships());
+            }
+
+            return relationships;
+        } finally {
+            readLock.unlock();
         }
-
-        return relationships;
     }
 
     @Override
-    public synchronized Set<R> getRelationshipsOf(E entity) throws EntityNotFoundException {
+    public Set<R> getRelationshipsOf(E entity) throws EntityNotFoundException {
         return getCachedRelationshipsOf(entity);
     }
 
     @Override
-    public synchronized Set<R> getRelationshipsOf(D entityData) throws EntityNotFoundException {
+    public Set<R> getRelationshipsOf(D entityData) throws EntityNotFoundException {
         return getRelationshipsOf(entities.get(entityData));
     }
 
     @Override
-    public synchronized Set<R> getRelationshipsBetween(E source, E destination) throws EntityNotFoundException {
+    public Set<R> getRelationshipsBetween(E source, E destination) throws EntityNotFoundException {
         checkEntities(source, destination);
 
-        return (Set<R>) source.getRelationships().stream().filter(relationship -> destination.equals(relationship.destination())).collect(Collectors.toSet());
+        return (Set<R>) source.getRelationships().stream()
+                .filter(relationship -> destination.equals(relationship.destination()))
+                .collect(Collectors.toSet());
     }
 
     @Override
-    public synchronized Set<R> getRelationshipsBetween(D sourceData, D destinationData) throws EntityNotFoundException {
+    public Set<R> getRelationshipsBetween(D sourceData, D destinationData) throws EntityNotFoundException {
         return getRelationshipsBetween(entities.get(sourceData), entities.get(destinationData));
     }
 
     @Override
-    public synchronized Set<R> getIncomingRelationshipsOf(E entity) throws EntityNotFoundException {
-        return (Set<R>) getCachedRelationshipsOf(entity).stream().filter(r -> entity.equals(r.destination()));
+    public Set<R> getIncomingRelationshipsOf(E entity) throws EntityNotFoundException {
+        return getCachedRelationshipsOf(entity).stream()
+                .filter(r -> entity.equals(r.destination()))
+                .collect(Collectors.toSet());
     }
 
     @Override
-    public synchronized Set<R> getIncomingRelationshipsOf(D entityData) throws EntityNotFoundException {
+    public Set<R> getIncomingRelationshipsOf(D entityData) throws EntityNotFoundException {
         return getIncomingRelationshipsOf(entities.get(entityData));
     }
 
     @Override
-    public synchronized Set<R> getOutgoingRelationshipsOf(E entity) throws EntityNotFoundException {
+    public Set<R> getOutgoingRelationshipsOf(E entity) throws EntityNotFoundException {
         checkEntities(entity);
+
         return (Set<R>) entity.getRelationships();
     }
 
     @Override
-    public synchronized Set<R> getOutgoingRelationshipsOf(D entityData) throws EntityNotFoundException {
+    public Set<R> getOutgoingRelationshipsOf(D entityData) throws EntityNotFoundException {
         return getOutgoingRelationshipsOf(entities.get(entityData));
     }
 
     @Override
-    public synchronized boolean removeRelationship(R relationship) throws RelationshipNotFoundException, EntityNotFoundException {
-        var source = (E) relationship.source();
-        var destination = (E) relationship.destination();
+    public boolean removeRelationship(R relationship) throws RelationshipNotFoundException, EntityNotFoundException {
+        writeLock.lock();
+        try {
+            var source = (E) relationship.source();
+            var destination = (E) relationship.destination();
+            checkEntities(source, destination);
 
-       checkEntities(source, destination);
+            for (var sourceRelationship : (Set<R>) source.getRelationships()) {
+                if (relationship.equals(sourceRelationship)) {
+                    source.removeRelationship(relationship);
 
-        for(var soureRelationship : source.getRelationships()){
-            if(relationship.equals(soureRelationship)){
-                source.removeRelationship(relationship);
-                invalidateCachedRelationshipsOf(source, destination);
+                    invalidateCachedRelationshipsOf(source, destination);
 
-                return !source.containsRelationship(relationship);
+                    return true;
+                }
             }
+            throw relationshipNotFoundException(relationship);
+        } finally {
+            writeLock.unlock();
         }
-
-        throw relationshipNotFoundException(relationship);
     }
 
     @Override
-    public synchronized boolean removeAllRelationships(Collection<R> relationships) throws RelationshipNotFoundException, EntityNotFoundException {
-        relationships.forEach(this::removeRelationship);
+    public boolean removeAllRelationships(Collection<R> relationships) throws RelationshipNotFoundException, EntityNotFoundException {
+        writeLock.lock();
 
-        return !getRelationships().containsAll(relationships);
+        try {
+            for (var relationship : relationships) {
+                removeRelationship(relationship);
+            }
+
+            return true;
+        } finally {
+            writeLock.unlock();
+        }
     }
 
     @Override
-    public synchronized Set<R> removeAllRelationshipsBetween(E source, E destination) throws EntityNotFoundException {
-        checkEntities(source, destination);
-        var relationships = (Set<R>) source.getRelationships().stream().filter(relationship -> destination.equals(relationship.destination())).collect(Collectors.toSet());
+    public Set<R> removeAllRelationshipsBetween(E source, E destination) throws EntityNotFoundException {
+        writeLock.lock();
 
-        relationships.forEach(this::removeRelationship);
+        try {
+            checkEntities(source, destination);
 
-        return relationships;
+            var relationships = getRelationshipsBetween(source, destination);
+
+            for (var relationship : relationships) {
+                removeRelationship(relationship);
+            }
+
+            return relationships;
+        } finally {
+            writeLock.unlock();
+        }
     }
 
     @Override
-    public synchronized Set<R> removeAllRelationshipsBetween(D sourceData, D destinationData) throws EntityNotFoundException {
+    public Set<R> removeAllRelationshipsBetween(D sourceData, D destinationData) throws EntityNotFoundException {
         return removeAllRelationshipsBetween(entities.get(sourceData), entities.get(destinationData));
     }
 
     @Override
-    public synchronized boolean containsEntity(E entity) {
-        return entities.containsValue(entity);
+    public boolean containsEntity(E entity) {
+        readLock.lock();
+
+        try {
+            return entities.containsValue(entity);
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
-    public synchronized boolean containsEntity(D entityData) {
-        return entities.containsKey(entityData);
+    public boolean containsEntity(D entityData) {
+        readLock.lock();
+
+        try {
+            return entities.containsKey(entityData);
+        } finally {
+            readLock.unlock();
+        }
     }
 
     @Override
-    public synchronized boolean containsRelationship(R relationship) throws EntityNotFoundException {
+    public boolean containsRelationship(R relationship) throws EntityNotFoundException {
         return getRelationships().contains(relationship);
     }
 
     @Override
-    public synchronized boolean containsRelationship(E source, E destination) throws EntityNotFoundException {
+    public boolean containsRelationship(E source, E destination) throws EntityNotFoundException {
         checkEntities(source, destination);
-        return source.getRelationships().stream().anyMatch(relationship -> destination.equals(relationship.destination()));
+
+        return source.getRelationships().stream()
+                .anyMatch(relationship -> destination.equals(relationship.destination()));
     }
 
     @Override
-    public synchronized boolean containsRelationship(D sourceData, D destinationData) throws EntityNotFoundException {
+    public boolean containsRelationship(D sourceData, D destinationData) throws EntityNotFoundException {
         return containsRelationship(entities.get(sourceData), entities.get(destinationData));
     }
 
     @Override
     public Class<E> getEntityType() {
-        return (Class<E>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0].getClass();
+        return (Class<E>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     }
 
     @Override
     public Class<R> getRelationshipType() {
-        return (Class<R>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1].getClass();
+        return (Class<R>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1];
     }
 
-    private synchronized Set<R> getCachedRelationshipsOf(E entity) throws EntityNotFoundException{
+    private Set<R> getCachedRelationshipsOf(E entity) throws EntityNotFoundException {
         checkEntities(entity);
 
-        return relationshipCache.computeIfAbsent(entity, e -> getRelationships().stream().filter(r -> e.equals(r.source()) || e.equals(r.destination())).collect(Collectors.toSet()));
+        readLock.lock();
+
+        try {
+            return relationshipCache.computeIfAbsent(entity, e ->
+                    getRelationships().stream()
+                            .filter(r -> e.equals(r.source()) || e.equals(r.destination()))
+                            .collect(Collectors.toSet()));
+        } finally {
+            readLock.unlock();
+        }
     }
 
-    @SafeVarargs
-    private synchronized void invalidateCachedRelationshipsOf(E... entities){
-        for(var entity : entities){
+    private void invalidateCachedRelationshipsOf(E... entities) {
+        for (var entity : entities) {
             relationshipCache.remove(entity);
         }
     }
 
-    @SafeVarargs
-    private synchronized void checkEntities(E... entities){
-        for(var entity : entities){
-            if(doesNotExist(entity)){
+    private void checkEntities(E... entities) throws EntityNotFoundException {
+        for (var entity : entities) {
+
+            if (!exists(entity)) {
                 throw entityNotFoundException(entity);
             }
         }
     }
 
-    private synchronized boolean doesNotExist(E entity){
-        return doesNotExist(entity.getData());
-    }
-
-    private synchronized boolean doesNotExist(D entityData){
-        return !exists(entityData);
-    }
-
-    private synchronized boolean exists(E entity){
+    private boolean exists(E entity) {
         return exists(entity.getData());
     }
 
-    private synchronized boolean exists(D entityData){
+    private boolean exists(D entityData) {
         return entities.containsKey(entityData);
     }
 
-    private synchronized EntityAlreadyExistsException entityAlreadyExistsException(E entity){
+    private EntityAlreadyExistsException entityAlreadyExistsException(E entity) {
         return new EntityAlreadyExistsException(String.format("The entity: '%s' already exists", entity.getData()));
     }
 
-    private synchronized EntityNotFoundException entityNotFoundException(E entity){
+    private EntityNotFoundException entityNotFoundException(E entity) {
         return entityNotFoundException(entity.getData());
     }
 
-    private synchronized EntityNotFoundException entityNotFoundException(D entityData){
+    private EntityNotFoundException entityNotFoundException(D entityData) {
         return new EntityNotFoundException(String.format("The entity '%s' was not found", entityData));
     }
 
-    private synchronized RelationshipAlreadyExistsException relationshipAlreadyExistsException(E source, E destination, U relationshipData){
-        return relationshipAlreadyExistsException(source.getData(), destination.getData(), relationshipData);
+    private RelationshipAlreadyExistsException relationshipAlreadyExistsException(E source, E destination, U relationshipData) {
+        return new RelationshipAlreadyExistsException(String.format("Relationship: '%s' from entity '%s' to entity '%s' already exists", relationshipData, source.getData(), destination.getData()));
     }
 
-    private synchronized RelationshipAlreadyExistsException relationshipAlreadyExistsException(D sourceData, D destinationData, U relationshipData){
-        return new RelationshipAlreadyExistsException(String.format("Relationship: '%s' from entity '%s' to entity '%s' already exists", relationshipData, sourceData, destinationData));
-    }
-
-    private synchronized RelationshipNotFoundException relationshipNotFoundException(R relationship){
-        return new RelationshipNotFoundException(String.format("Relationship '%s' from entity '%s' to entity '%s' was not found", relationship.data(), relationship.source(), relationship.destination()));
+    private RelationshipNotFoundException relationshipNotFoundException(R relationship) {
+        return new RelationshipNotFoundException(String.format("Relationship '%s' from entity '%s' to entity '%s' was not found", relationship.data(), relationship.source().getData(), relationship.destination().getData()));
     }
 }
