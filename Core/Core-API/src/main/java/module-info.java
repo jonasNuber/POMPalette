@@ -1,5 +1,4 @@
 module org.nuberjonas.pompalette.core.coreapi {
-    exports org.nuberjonas.pompalette.core.coreapi.graph.api;
-    exports org.nuberjonas.pompalette.core.coreapi.graph.basic;
-    exports org.nuberjonas.pompalette.core.coreapi.graph.api.exceptions;
+    exports org.nuberjonas.pompalette.core.coreapi.graph.exceptions;
+    exports org.nuberjonas.pompalette.core.coreapi.graph;
 }
