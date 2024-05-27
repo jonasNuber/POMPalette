@@ -168,6 +168,11 @@
 
             <!-- ++++++++++++++++++++++POM_PALETTE++++++++++++++++++++++ -->
             <dependency>
+                <groupId>org.nuberjonas.pompalette.core</groupId>
+                <artifactId>core-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.nuberjonas.pompalette.userinterface</groupId>
                 <artifactId>javafx</artifactId>
                 <version>${project.version}</version>

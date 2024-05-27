@@ -19,6 +19,7 @@
 
     <modules>
         <module>Core-API</module>
-        <module>Core-Impl</module>
+        <module>Core-Validation</module>
+        <module>Core-Base-Impl</module>
     </modules>
 </project>
