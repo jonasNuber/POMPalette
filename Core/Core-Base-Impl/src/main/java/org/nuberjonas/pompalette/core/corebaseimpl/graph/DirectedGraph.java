@@ -5,6 +5,8 @@ import org.nuberjonas.pompalette.core.coreapi.graph.exceptions.EntityAlreadyExis
 import org.nuberjonas.pompalette.core.coreapi.graph.exceptions.EntityNotFoundException;
 import org.nuberjonas.pompalette.core.coreapi.graph.exceptions.RelationshipAlreadyExistsException;
 import org.nuberjonas.pompalette.core.coreapi.graph.exceptions.RelationshipNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.*;
@@ -14,6 +16,8 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("unchecked")
 public class DirectedGraph<E extends Entity<D, U>, R extends Relationship<D, U>, D, U> implements Graph<E, R, D, U> {
+    private static final Logger logger = LoggerFactory.getLogger(DirectedGraph.class);
+
     private final Map<D, E> entities;
     private final Map<E, Set<R>> relationshipCache;
     private final EntityFactory<E, D, U> entityFactory;
@@ -35,11 +39,15 @@ public class DirectedGraph<E extends Entity<D, U>, R extends Relationship<D, U>,
         writeLock.lock();
 
         try {
+            logger.debug("Adding entity: {}", entity);
+
             if (exists(entity)) {
+                logger.warn("Entity already exists: {}", entity);
                 throw entityAlreadyExistsException(entity);
             }
 
             entities.put(entity.getData(), entity);
+            logger.info("Entity added: {}", entity);
         } finally {
             writeLock.unlock();
         }
@@ -48,7 +56,10 @@ public class DirectedGraph<E extends Entity<D, U>, R extends Relationship<D, U>,
     @Override
     public E addEntity(D entityData) throws EntityAlreadyExistsException {
         var entity = entityFactory.createEntity(entityData);
+
+        logger.debug("Creating and adding entity with data: {}", entityData);
         addEntity(entity);
+
         return entity;
     }
 
@@ -57,12 +68,15 @@ public class DirectedGraph<E extends Entity<D, U>, R extends Relationship<D, U>,
         readLock.lock();
 
         try {
+            logger.debug("Fetching entity with data: {}", entityData);
             var entity = entities.get(entityData);
 
             if (entity == null) {
+                logger.error("Entity not found with data: {}", entityData);
                 throw entityNotFoundException(entityData);
             }
 
+            logger.info("Entity fetched: {}", entity);
             return entity;
         } finally {
             readLock.unlock();
@@ -74,6 +88,7 @@ public class DirectedGraph<E extends Entity<D, U>, R extends Relationship<D, U>,
         readLock.lock();
 
         try {
+            logger.debug("Fetching all entities");
             return new HashSet<>(entities.values());
         } finally {
             readLock.unlock();
@@ -85,14 +100,17 @@ public class DirectedGraph<E extends Entity<D, U>, R extends Relationship<D, U>,
         readLock.lock();
 
         try {
+            logger.debug("Fetching relationship source of: {}", relationship);
             var source = (E) relationship.source();
             var destination = (E) relationship.destination();
             checkEntities(source, destination);
 
             if (source.containsRelationship(relationship)) {
+                logger.info("Relationship source fetched: {}", source);
                 return source;
             }
 
+            logger.error("Relationship not found: {}", relationship);
             throw relationshipNotFoundException(relationship);
         } finally {
             readLock.unlock();
@@ -103,15 +121,18 @@ public class DirectedGraph<E extends Entity<D, U>, R extends Relationship<D, U>,
     public E getRelationshipTargetOf(R relationship) throws EntityNotFoundException, RelationshipNotFoundException {
         readLock.lock();
         try {
+            logger.debug("Fetching relationship destination of: {}", relationship);
             var source = (E) relationship.source();
             var destination = (E) relationship.destination();
 
             checkEntities(source, destination);
 
             if (source.containsRelationship(relationship)) {
+                logger.info("Relationship destination fetched: {}", destination);
                 return destination;
             }
 
+            logger.error("Relationship not found: {}", relationship);
             throw relationshipNotFoundException(relationship);
         } finally {
             readLock.unlock();
@@ -120,6 +141,7 @@ public class DirectedGraph<E extends Entity<D, U>, R extends Relationship<D, U>,
 
     @Override
     public boolean removeEntity(E entity) throws EntityNotFoundException {
+        logger.debug("Removing entity: {}", entity);
         return removeEntity(entity.getData()) != null;
     }
 
@@ -128,7 +150,10 @@ public class DirectedGraph<E extends Entity<D, U>, R extends Relationship<D, U>,
         writeLock.lock();
 
         try {
+            logger.debug("Removing entity with data: {}", entityData);
+
             if (!exists(entityData)) {
+                logger.error("Entity not found: {}", entityData);
                 throw entityNotFoundException(entityData);
             }
 
@@ -142,6 +167,7 @@ public class DirectedGraph<E extends Entity<D, U>, R extends Relationship<D, U>,
 
             invalidateCachedRelationshipsOf(entity);
 
+            logger.info("Entity removed: {}", entity);
             return entity;
         } finally {
             writeLock.unlock();
@@ -153,10 +179,13 @@ public class DirectedGraph<E extends Entity<D, U>, R extends Relationship<D, U>,
         writeLock.lock();
 
         try {
+            logger.debug("Removing all entities in collection");
+
             for (var entity : entities) {
                 removeEntity(entity);
             }
 
+            logger.info("All entities in collection removed");
             return true;
         } finally {
             writeLock.unlock();
@@ -171,7 +200,9 @@ public class DirectedGraph<E extends Entity<D, U>, R extends Relationship<D, U>,
     @Override
     public R addRelationship(D sourceData, D destinationData, U relationshipData) throws RelationshipAlreadyExistsException, EntityNotFoundException {
         writeLock.lock();
+
         try {
+            logger.debug("Adding relationship from {} to {} with data: {}", sourceData, destinationData, relationshipData);
             var source = entities.get(sourceData);
             var destination = entities.get(destinationData);
             checkEntities(source, destination);
@@ -179,11 +210,13 @@ public class DirectedGraph<E extends Entity<D, U>, R extends Relationship<D, U>,
             var relationship = relationshipFactory.createRelationship(source, destination, relationshipData);
 
             if (!source.addRelationship(relationship)) {
+                logger.warn("Relationship already exists from {} to {} with data: {}", source, destination, relationshipData);
                 throw relationshipAlreadyExistsException(source, destination, relationshipData);
             }
 
             invalidateCachedRelationshipsOf(source, destination);
 
+            logger.info("Relationship added from {} to {} with data: {}", source, destination, relationshipData);
             return relationship;
         } finally {
             writeLock.unlock();
@@ -195,6 +228,7 @@ public class DirectedGraph<E extends Entity<D, U>, R extends Relationship<D, U>,
         readLock.lock();
 
         try {
+            logger.debug("Fetching all relationships");
             var relationships = new HashSet<R>();
 
             for (var entity : entities.values()) {
@@ -209,16 +243,21 @@ public class DirectedGraph<E extends Entity<D, U>, R extends Relationship<D, U>,
 
     @Override
     public Set<R> getRelationshipsOf(E entity) throws EntityNotFoundException {
+        logger.debug("Fetching relationships of entity: {}", entity);
+
         return getCachedRelationshipsOf(entity);
     }
 
     @Override
     public Set<R> getRelationshipsOf(D entityData) throws EntityNotFoundException {
+        logger.debug("Fetching relationships of entity with data: {}", entityData);
+
         return getRelationshipsOf(entities.get(entityData));
     }
 
     @Override
     public Set<R> getRelationshipsBetween(E source, E destination) throws EntityNotFoundException {
+        logger.debug("Fetching relationships between {} and {}", source, destination);
         checkEntities(source, destination);
 
         return (Set<R>) source.getRelationships().stream()
@@ -228,11 +267,15 @@ public class DirectedGraph<E extends Entity<D, U>, R extends Relationship<D, U>,
 
     @Override
     public Set<R> getRelationshipsBetween(D sourceData, D destinationData) throws EntityNotFoundException {
+        logger.debug("Fetching relationships between {} and {}", sourceData, destinationData);
+
         return getRelationshipsBetween(entities.get(sourceData), entities.get(destinationData));
     }
 
     @Override
     public Set<R> getIncomingRelationshipsOf(E entity) throws EntityNotFoundException {
+        logger.debug("Fetching incoming relationships of entity: {}", entity);
+
         return getCachedRelationshipsOf(entity).stream()
                 .filter(r -> entity.equals(r.destination()))
                 .collect(Collectors.toSet());
@@ -240,11 +283,14 @@ public class DirectedGraph<E extends Entity<D, U>, R extends Relationship<D, U>,
 
     @Override
     public Set<R> getIncomingRelationshipsOf(D entityData) throws EntityNotFoundException {
+        logger.debug("Fetching incoming relationships of entity with data: {}", entityData);
+
         return getIncomingRelationshipsOf(entities.get(entityData));
     }
 
     @Override
     public Set<R> getOutgoingRelationshipsOf(E entity) throws EntityNotFoundException {
+        logger.debug("Fetching outgoing relationships of entity: {}", entity);
         checkEntities(entity);
 
         return (Set<R>) entity.getRelationships();
@@ -252,13 +298,17 @@ public class DirectedGraph<E extends Entity<D, U>, R extends Relationship<D, U>,
 
     @Override
     public Set<R> getOutgoingRelationshipsOf(D entityData) throws EntityNotFoundException {
+        logger.debug("Fetching outgoing relationships of entity with data: {}", entityData);
+
         return getOutgoingRelationshipsOf(entities.get(entityData));
     }
 
     @Override
     public boolean removeRelationship(R relationship) throws RelationshipNotFoundException, EntityNotFoundException {
         writeLock.lock();
+
         try {
+            logger.debug("Removing relationship: {}", relationship);
             var source = (E) relationship.source();
             var destination = (E) relationship.destination();
             checkEntities(source, destination);
@@ -269,9 +319,12 @@ public class DirectedGraph<E extends Entity<D, U>, R extends Relationship<D, U>,
 
                     invalidateCachedRelationshipsOf(source, destination);
 
+                    logger.info("Relationship removed: {}", relationship);
                     return true;
                 }
             }
+
+            logger.error("Relationship not found: {}", relationship);
             throw relationshipNotFoundException(relationship);
         } finally {
             writeLock.unlock();
@@ -283,10 +336,13 @@ public class DirectedGraph<E extends Entity<D, U>, R extends Relationship<D, U>,
         writeLock.lock();
 
         try {
+            logger.debug("Removing all relationships in collection");
+
             for (var relationship : relationships) {
                 removeRelationship(relationship);
             }
 
+            logger.info("All relationships removed in collection");
             return true;
         } finally {
             writeLock.unlock();
@@ -298,6 +354,7 @@ public class DirectedGraph<E extends Entity<D, U>, R extends Relationship<D, U>,
         writeLock.lock();
 
         try {
+            logger.debug("Removing all relationships between {} and {}", source, destination);
             checkEntities(source, destination);
 
             var relationships = getRelationshipsBetween(source, destination);
@@ -306,6 +363,7 @@ public class DirectedGraph<E extends Entity<D, U>, R extends Relationship<D, U>,
                 removeRelationship(relationship);
             }
 
+            logger.info("All relationships removed between {} and {}", source, destination);
             return relationships;
         } finally {
             writeLock.unlock();
@@ -314,6 +372,8 @@ public class DirectedGraph<E extends Entity<D, U>, R extends Relationship<D, U>,
 
     @Override
     public Set<R> removeAllRelationshipsBetween(D sourceData, D destinationData) throws EntityNotFoundException {
+        logger.debug("Removing all relationships between {} and {}", sourceData, destinationData);
+
         return removeAllRelationshipsBetween(entities.get(sourceData), entities.get(destinationData));
     }
 
@@ -322,6 +382,7 @@ public class DirectedGraph<E extends Entity<D, U>, R extends Relationship<D, U>,
         readLock.lock();
 
         try {
+            logger.debug("Checking if entity exists: {}", entity);
             return entities.containsValue(entity);
         } finally {
             readLock.unlock();
@@ -333,6 +394,7 @@ public class DirectedGraph<E extends Entity<D, U>, R extends Relationship<D, U>,
         readLock.lock();
 
         try {
+            logger.debug("Checking if entity exists with data: {}", entityData);
             return entities.containsKey(entityData);
         } finally {
             readLock.unlock();
@@ -341,11 +403,14 @@ public class DirectedGraph<E extends Entity<D, U>, R extends Relationship<D, U>,
 
     @Override
     public boolean containsRelationship(R relationship) throws EntityNotFoundException {
+        logger.debug("Checking if relationship exists: {}", relationship);
+
         return getRelationships().contains(relationship);
     }
 
     @Override
     public boolean containsRelationship(E source, E destination) throws EntityNotFoundException {
+        logger.debug("Checking if relationship exists between {} and {}", source, destination);
         checkEntities(source, destination);
 
         return source.getRelationships().stream()
@@ -354,25 +419,32 @@ public class DirectedGraph<E extends Entity<D, U>, R extends Relationship<D, U>,
 
     @Override
     public boolean containsRelationship(D sourceData, D destinationData) throws EntityNotFoundException {
+        logger.debug("Checking if relationship exists between {} and {}", sourceData, destinationData);
+
         return containsRelationship(entities.get(sourceData), entities.get(destinationData));
     }
 
     @Override
     public Class<E> getEntityType() {
+        logger.trace("Getting entity type");
+
         return (Class<E>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
     }
 
     @Override
     public Class<R> getRelationshipType() {
+        logger.trace("Getting relationship type");
+
         return (Class<R>) ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[1];
     }
 
     private Set<R> getCachedRelationshipsOf(E entity) throws EntityNotFoundException {
-        checkEntities(entity);
-
         readLock.lock();
 
         try {
+            checkEntities(entity);
+            logger.debug("Fetching cached relationships of entity: {}", entity);
+
             return relationshipCache.computeIfAbsent(entity, e ->
                     getRelationships().stream()
                             .filter(r -> e.equals(r.source()) || e.equals(r.destination()))
@@ -384,14 +456,15 @@ public class DirectedGraph<E extends Entity<D, U>, R extends Relationship<D, U>,
 
     private void invalidateCachedRelationshipsOf(E... entities) {
         for (var entity : entities) {
+            logger.debug("Invalidating cached relationships of entity: {}", entity);
             relationshipCache.remove(entity);
         }
     }
 
     private void checkEntities(E... entities) throws EntityNotFoundException {
         for (var entity : entities) {
-
             if (!exists(entity)) {
+                logger.error("Entity not found: {}", entity);
                 throw entityNotFoundException(entity);
             }
         }
