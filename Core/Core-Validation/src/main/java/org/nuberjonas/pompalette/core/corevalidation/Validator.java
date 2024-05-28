@@ -41,7 +41,7 @@ public interface Validator<K> {
 	 *
 	 * @return The validation for not null.
 	 */
-	default Validation<K> notNull() {
+	default <R> Validation<R> notNull() {
 		return ObjectValidationHelpers.notNull();
 	}
 

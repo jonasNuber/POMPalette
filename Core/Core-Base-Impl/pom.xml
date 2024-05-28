@@ -48,5 +48,9 @@
             <groupId>org.nuberjonas.pompalette.core</groupId>
             <artifactId>core-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.nuberjonas.pompalette.core</groupId>
+            <artifactId>core-validation</artifactId>
+        </dependency>
     </dependencies>
 </project>
