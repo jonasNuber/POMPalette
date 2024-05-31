@@ -14,7 +14,7 @@ public interface Graph<E extends Entity<D, U>, R extends Relationship<D, U>, D, 
     E getEntity(D entityData) throws EntityNotFoundException;
     Set<E> getEntities();
     E getRelationshipSourceOf(R relationship) throws EntityNotFoundException, RelationshipNotFoundException;
-    E getRelationshipTargetOf(R relationship) throws EntityNotFoundException, RelationshipNotFoundException;
+    E getRelationshipDestinationOf(R relationship) throws EntityNotFoundException, RelationshipNotFoundException;
     boolean removeEntity(E entity) throws EntityNotFoundException;
     E removeEntity(D entityData) throws EntityNotFoundException;
     boolean removeAllEntities(Collection<E> entities) throws EntityNotFoundException;

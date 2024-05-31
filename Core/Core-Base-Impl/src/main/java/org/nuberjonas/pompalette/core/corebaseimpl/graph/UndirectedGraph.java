@@ -42,8 +42,8 @@ public class UndirectedGraph<E extends Entity<D, U>, R extends Relationship<D, U
     }
 
     @Override
-    public E getRelationshipTargetOf(R relationship) throws EntityNotFoundException, RelationshipNotFoundException {
-        return directedGraph.getRelationshipTargetOf(relationship);
+    public E getRelationshipDestinationOf(R relationship) throws EntityNotFoundException, RelationshipNotFoundException {
+        return directedGraph.getRelationshipDestinationOf(relationship);
     }
 
     @Override
