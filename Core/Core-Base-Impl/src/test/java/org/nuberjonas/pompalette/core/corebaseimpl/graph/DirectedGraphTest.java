@@ -593,4 +593,336 @@ class DirectedGraphTest extends BaseTest {
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("The entity 'destination' was not found");
     }
+
+    @Test
+    void getRelationshipsBetween_ShouldReturnRelationshipsBetweenTwoEntities_ForEntitiesData(){
+        var entity = createBasicEntity("entity");
+        var someDestination = createBasicEntity("destination");
+        var someOtherDestination = createBasicEntity("otherDestination");
+        var entityToSomeDestination = createBasicRelationship(entity, someDestination, "relationship");
+        var someDestinationToEntity = createBasicRelationship(someDestination, entity, "relationship");
+        var someDestinationToSomeOtherDestination = createBasicRelationship(someDestination, someOtherDestination, "relationship");
+        when(relationshipFactory.createRelationship(entity, someDestination, "relationship")).thenReturn(entityToSomeDestination);
+        when(relationshipFactory.createRelationship(someDestination, entity, "relationship")).thenReturn(someDestinationToEntity);
+        when(relationshipFactory.createRelationship(someDestination, someOtherDestination, "relationship")).thenReturn(someDestinationToSomeOtherDestination);
+        graph.addEntity(entity);
+        graph.addEntity(someDestination);
+        graph.addEntity(someOtherDestination);
+        graph.addRelationship(entity, someDestination, "relationship");
+        graph.addRelationship(someDestination, entity, "relationship");
+        graph.addRelationship(someDestination, someOtherDestination, "relationship");
+
+        var actualRelationships = graph.getRelationshipsBetween("destination", "otherDestination");
+
+        assertThat(actualRelationships).containsExactly(someDestinationToSomeOtherDestination);
+    }
+
+    @Test
+    void getRelationshipsBetween_ShouldReturnEmptySet_ForNoRelationshipsBetweenEntities_EntitiesData(){
+        var source = createBasicEntity("source");
+        var destination = createBasicEntity("destination");
+        graph.addEntity(source);
+        graph.addEntity(destination);
+
+        var actualRelationships = graph.getRelationshipsBetween("source", "destination");
+
+        assertThat(actualRelationships).isEmpty();
+    }
+
+    @Test
+    void getRelationshipsBetween_ShouldThrowEntityNotFoundException_ForSourceEntityDataNotFound(){
+        assertThatThrownBy(() -> graph.getRelationshipsBetween("source", "destination"))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("The entity 'source' was not found");
+    }
+
+    @Test
+    void getRelationshipsBetween_ShouldThrowEntityNotFoundException_ForDestinationEntityDataNotFound(){
+        var source = createBasicEntity("source");
+        graph.addEntity(source);
+
+        assertThatThrownBy(() -> graph.getRelationshipsBetween("source", "destination"))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("The entity 'destination' was not found");
+    }
+
+    @Test
+    void getIncomingRelationshipsOf_ShouldReturnIncomingRelationships_ForEntityObject(){
+        var source = createBasicEntity("source");
+        var destination = createBasicEntity("destination");
+        var expectedIncoming = createBasicRelationship(destination, source, "incoming");
+        var outgoing = createBasicRelationship(source, destination, "outgoing");
+        when(relationshipFactory.createRelationship(destination, source, "incoming")).thenReturn(expectedIncoming);
+        when(relationshipFactory.createRelationship(source, destination, "outgoing")).thenReturn(outgoing);
+        graph.addEntity(source);
+        graph.addEntity(destination);
+        graph.addRelationship(destination, source, "incoming");
+        graph.addRelationship(source, destination, "outgoing");
+
+        var actualIncomingRelationships = graph.getIncomingRelationshipsOf(source);
+
+        assertThat(actualIncomingRelationships).containsExactly(expectedIncoming);
+    }
+
+    @Test
+    void getIncomingRelationshipsOf_ShouldReturnEmptySet_ForNoIncomingRelationshipsInEntityObject(){
+        var source = createBasicEntity("source");
+        graph.addEntity(source);
+
+        var incomingRelationships = graph.getIncomingRelationshipsOf(source);
+
+        assertThat(incomingRelationships).isEmpty();
+    }
+
+    @Test
+    void getIncomingRelationshipsOf_ShouldThrowEntityNotFoundException_ForNotFoundEntityObject(){
+        var source = createBasicEntity("source");
+
+        assertThatThrownBy(() -> graph.getIncomingRelationshipsOf(source))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("The entity 'source' was not found");
+    }
+
+    @Test
+    void getIncomingRelationshipsOf_ShouldReturnIncomingRelationships_ForEntitiesData(){
+        var source = createBasicEntity("source");
+        var destination = createBasicEntity("destination");
+        var expectedIncoming = createBasicRelationship(destination, source, "incoming");
+        var outgoing = createBasicRelationship(source, destination, "outgoing");
+        when(relationshipFactory.createRelationship(destination, source, "incoming")).thenReturn(expectedIncoming);
+        when(relationshipFactory.createRelationship(source, destination, "outgoing")).thenReturn(outgoing);
+        graph.addEntity(source);
+        graph.addEntity(destination);
+        graph.addRelationship(destination, source, "incoming");
+        graph.addRelationship(source, destination, "outgoing");
+
+        var actualIncomingRelationships = graph.getIncomingRelationshipsOf("source");
+
+        assertThat(actualIncomingRelationships).containsExactly(expectedIncoming);
+    }
+
+    @Test
+    void getIncomingRelationshipsOf_ShouldReturnEmptySet_ForNoIncomingRelationshipsInEntitiesData(){
+        var source = createBasicEntity("source");
+        graph.addEntity(source);
+
+        var incomingRelationships = graph.getIncomingRelationshipsOf("source");
+
+        assertThat(incomingRelationships).isEmpty();
+    }
+
+    @Test
+    void getIncomingRelationshipsOf_ShouldThrowEntityNotFoundException_ForNotFoundEntityData(){
+        assertThatThrownBy(() -> graph.getIncomingRelationshipsOf("source"))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("The entity 'source' was not found");
+    }
+
+    @Test
+    void getOutgoingRelationshipsOf_ShouldReturnOutgoingRelationships_ForEntityObject(){
+        var source = createBasicEntity("source");
+        var destination = createBasicEntity("destination");
+        var incoming = createBasicRelationship(destination, source, "incoming");
+        var expectedOutgoing = createBasicRelationship(source, destination, "outgoing");
+        when(relationshipFactory.createRelationship(destination, source, "incoming")).thenReturn(incoming);
+        when(relationshipFactory.createRelationship(source, destination, "outgoing")).thenReturn(expectedOutgoing);
+        graph.addEntity(source);
+        graph.addEntity(destination);
+        graph.addRelationship(destination, source, "incoming");
+        graph.addRelationship(source, destination, "outgoing");
+
+        var actualOutgoingRelationships = graph.getOutgoingRelationshipsOf(source);
+
+        assertThat(actualOutgoingRelationships).containsExactly(expectedOutgoing);
+    }
+
+    @Test
+    void getOutgoingRelationshipsOf_ShouldReturnEmptySet_ForNoOutgoingRelationshipsInEntitiesObject(){
+        var source = createBasicEntity("source");
+        graph.addEntity(source);
+
+        var outgoingRelationships = graph.getOutgoingRelationshipsOf(source);
+
+        assertThat(outgoingRelationships).isEmpty();
+    }
+
+    @Test
+    void getOutgoingRelationshipsOf_ShouldThrowEntityNotFoundException_ForNotFoundEntityObject(){
+        var source = createBasicEntity("source");
+
+        assertThatThrownBy(() -> graph.getOutgoingRelationshipsOf(source))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("The entity 'source' was not found");
+    }
+
+    @Test
+    void getOutgoingRelationshipsOf_ShouldReturnOutgoingRelationships_ForEntitiesData(){
+        var source = createBasicEntity("source");
+        var destination = createBasicEntity("destination");
+        var incoming = createBasicRelationship(destination, source, "incoming");
+        var expectedOutgoing = createBasicRelationship(source, destination, "outgoing");
+        when(relationshipFactory.createRelationship(destination, source, "incoming")).thenReturn(incoming);
+        when(relationshipFactory.createRelationship(source, destination, "outgoing")).thenReturn(expectedOutgoing);
+        graph.addEntity(source);
+        graph.addEntity(destination);
+        graph.addRelationship(destination, source, "incoming");
+        graph.addRelationship(source, destination, "outgoing");
+
+        var actualOutgoingRelationships = graph.getOutgoingRelationshipsOf("source");
+
+        assertThat(actualOutgoingRelationships).containsExactly(expectedOutgoing);
+    }
+
+    @Test
+    void getOutgoingRelationshipsOf_ShouldReturnEmptySet_ForNoOutgoingRelationshipsInEntitiesData(){
+        var source = createBasicEntity("source");
+        graph.addEntity(source);
+
+        var outgoingRelationships = graph.getOutgoingRelationshipsOf("source");
+
+        assertThat(outgoingRelationships).isEmpty();
+    }
+
+    @Test
+    void getOutgoingRelationshipsOf_ShouldThrowEntityNotFoundException_ForNotFoundEntitiesData(){
+        assertThatThrownBy(() -> graph.getOutgoingRelationshipsOf("source"))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("The entity 'source' was not found");
+    }
+
+    @Test
+    void removeRelationship_ShouldRemoveRelationship_ForExistingRelationship(){
+        var source = createBasicEntity("source");
+        var destination = createBasicEntity("destination");
+        var relationship = createBasicRelationship(source, destination, "relationship");
+        when(relationshipFactory.createRelationship(source, destination, "relationship")).thenReturn(relationship);
+        graph.addEntity(source);
+        graph.addEntity(destination);
+        graph.addRelationship(source, destination, "relationship");
+        assertThat(graph.getRelationships()).containsExactly(relationship);
+
+        var isRemoved = graph.removeRelationship(relationship);
+
+        assertThat(isRemoved).isTrue();
+        assertThat(graph.getRelationships()).isEmpty();
+        assertThat(graph.getOutgoingRelationshipsOf(source)).isEmpty();
+    }
+
+    @Test
+    void removeRelationship_ShouldThrowRelationshipNotFoundException_ForARelationshipNotInTheGraph(){
+        var source = createBasicEntity("source");
+        var destination = createBasicEntity("destination");
+        var relationship = createBasicRelationship(source, destination, "relationship");
+        graph.addEntity(source);
+        graph.addEntity(destination);
+        assertThat(graph.getRelationships()).isEmpty();
+
+        assertThatThrownBy(() -> graph.removeRelationship(relationship))
+                .isInstanceOf(RelationshipNotFoundException.class)
+                .hasMessage("Relationship '"+ relationship.toString() +"' from entity 'source' to entity 'destination' was not found");
+    }
+
+    @Test
+    void removeRelationship_ShouldThrowEntityNotFoundException_ForSourceEntityNotInTheGraph(){
+        var source = createBasicEntity("source");
+        var destination = createBasicEntity("destination");
+        var relationship = createBasicRelationship(source, destination, "relationship");
+
+        assertThatThrownBy(() -> graph.removeRelationship(relationship))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("The entity 'source' was not found");
+    }
+
+    @Test
+    void removeRelationship_ShouldThrowEntityNotFoundException_ForDestinationEntityNotInTheGraph(){
+        var source = createBasicEntity("source");
+        var destination = createBasicEntity("destination");
+        var relationship = createBasicRelationship(source, destination, "relationship");
+        graph.addEntity(source);
+
+        assertThatThrownBy(() -> graph.removeRelationship(relationship))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("The entity 'destination' was not found");
+    }
+
+    @Test
+    void removeAllRelationships_ShouldRemoveRelationships_ForExistingRelationships(){
+        var source = createBasicEntity("source");
+        var destination = createBasicEntity("destination");
+        var otherDestination = createBasicEntity("otherDestination");
+        var firstRelationship = createBasicRelationship(source, destination, "firstRelationship");
+        var secondRelationship = createBasicRelationship(source, otherDestination, "secondRelationship");
+        var thirdRelationship = createBasicRelationship(destination, otherDestination, "thirdRelationship");
+        when(relationshipFactory.createRelationship(source, destination, "firstRelationship")).thenReturn(firstRelationship);
+        when(relationshipFactory.createRelationship(source, otherDestination, "secondRelationship")).thenReturn(secondRelationship);
+        when(relationshipFactory.createRelationship(destination, otherDestination, "thirdRelationship")).thenReturn(thirdRelationship);
+        graph.addEntity(source);
+        graph.addEntity(destination);
+        graph.addEntity(otherDestination);
+        graph.addRelationship(source, destination, "firstRelationship");
+        graph.addRelationship(source, otherDestination, "secondRelationship");
+        graph.addRelationship(destination, otherDestination, "thirdRelationship");
+        assertThat(graph.getRelationships()).containsExactlyInAnyOrder(firstRelationship, secondRelationship, thirdRelationship);
+
+        var isRemoved = graph.removeAllRelationships(List.of(firstRelationship, secondRelationship));
+
+        assertThat(isRemoved).isTrue();
+        assertThat(graph.getRelationships()).containsExactly(thirdRelationship);
+    }
+
+    @Test
+    void removeAllRelationships_ShouldThrowEntityNotFoundException_ForSourceEntity(){
+        var source = createBasicEntity("source");
+        var destination = createBasicEntity("destination");
+        var otherDestination = createBasicEntity("otherDestination");
+        var firstRelationship = createBasicRelationship(source, destination, "firstRelationship");
+        var secondRelationship = createBasicRelationship(source, otherDestination, "secondRelationship");
+
+        assertThatThrownBy(() -> graph.removeAllRelationships(List.of(firstRelationship, secondRelationship)))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("The entity 'source' was not found");
+    }
+
+    @Test
+    void removeAllRelationships_ShouldThrowEntityNotFoundException_ForDestinationEntity(){
+        var source = createBasicEntity("source");
+        var destination = createBasicEntity("destination");
+        var otherDestination = createBasicEntity("otherDestination");
+        var firstRelationship = createBasicRelationship(source, destination, "firstRelationship");
+        var secondRelationship = createBasicRelationship(source, otherDestination, "secondRelationship");
+        graph.addEntity(source);
+
+        assertThatThrownBy(() -> graph.removeAllRelationships(List.of(firstRelationship, secondRelationship)))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessage("The entity 'destination' was not found");
+    }
+
+    @Test
+    void removeAllRelationships_ShouldThrowRelationshipNotFoundException_ForNotExistingRelationship(){
+        var source = createBasicEntity("source");
+        var destination = createBasicEntity("destination");
+        var firstRelationship = createBasicRelationship(source, destination, "firstRelationship");
+        graph.addEntity(source);
+        graph.addEntity(destination);
+
+        assertThatThrownBy(() -> graph.removeAllRelationships(List.of(firstRelationship)))
+                .isInstanceOf(RelationshipNotFoundException.class)
+                .hasMessage("Relationship '"+ firstRelationship.toString() +"' from entity 'source' to entity 'destination' was not found");
+    }
+
+//    @Test
+//    void removeAllRelationships_ShouldRemoveAllRelationships_BeforeAEntityNotFoundExceptionIsThrown_ForNotExistingEntity(){
+//        var source = createBasicEntity("source");
+//        var destination = createBasicEntity("destination");
+//        var otherDestination = createBasicEntity("otherDestination");
+//        var firstRelationship = createBasicRelationship(source, destination, "firstRelationship");
+//        var secondRelationship = createBasicRelationship(destination, otherDestination, "secondRelationship");
+//        when(graph.addRelationship(source, destination, "firstRelationship")).thenReturn(firstRelationship);
+//        graph.addEntity(source);
+//        graph.addEntity(destination);
+//        graph.addRelationship(source, destination, "firstRelationship");
+//
+//
+//
+//    }
 }

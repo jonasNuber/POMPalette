@@ -278,6 +278,7 @@ public class DirectedGraph<E extends Entity<D, U>, R extends Relationship<D, U>,
     @Override
     public Set<R> getIncomingRelationshipsOf(D entityData) throws EntityNotFoundException {
         logger.debug("Fetching incoming relationships of entity with data: {}", entityData);
+        checkEntitiesData(entityData);
 
         return getIncomingRelationshipsOf(entities.get(entityData));
     }
@@ -293,6 +294,7 @@ public class DirectedGraph<E extends Entity<D, U>, R extends Relationship<D, U>,
     @Override
     public Set<R> getOutgoingRelationshipsOf(D entityData) throws EntityNotFoundException {
         logger.debug("Fetching outgoing relationships of entity with data: {}", entityData);
+        checkEntitiesData(entityData);
 
         return getOutgoingRelationshipsOf(entities.get(entityData));
     }
