@@ -1,10 +1,7 @@
 package org.nuberjonas.pompalette.core.corebaseimpl.graph;
 
 import org.nuberjonas.pompalette.core.coreapi.graph.*;
-import org.nuberjonas.pompalette.core.coreapi.graph.exceptions.EntityAlreadyExistsException;
-import org.nuberjonas.pompalette.core.coreapi.graph.exceptions.EntityNotFoundException;
-import org.nuberjonas.pompalette.core.coreapi.graph.exceptions.RelationshipAlreadyExistsException;
-import org.nuberjonas.pompalette.core.coreapi.graph.exceptions.RelationshipNotFoundException;
+import org.nuberjonas.pompalette.core.coreapi.graph.exceptions.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -166,14 +163,24 @@ public class DirectedGraph<E extends Entity<D, U>, R extends Relationship<D, U>,
     }
 
     @Override
-    public boolean removeAllEntities(Collection<E> entities) throws EntityNotFoundException {
+    public boolean removeAllEntities(Collection<E> entities) throws NotAllEntitiesRemovedException {
         writeLock.lock();
+        var exceptions = new ArrayList<Exception>();
 
         try {
             logger.debug("Removing all entities in collection");
 
             for (var entity : entities) {
-                removeEntity(entity);
+                try {
+                    removeEntity(entity);
+                } catch (EntityNotFoundException e) {
+                    logger.error("Entity not found during removal: {}", entity, e);
+                    exceptions.add(e);
+                }
+            }
+
+            if (!exceptions.isEmpty()) {
+                throw new NotAllEntitiesRemovedException(exceptions);
             }
 
             logger.info("All entities in collection removed");

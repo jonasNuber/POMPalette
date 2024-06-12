@@ -6,15 +6,11 @@ import org.nuberjonas.pompalette.core.coreapi.graph.Entity;
 import org.nuberjonas.pompalette.core.coreapi.graph.EntityFactory;
 import org.nuberjonas.pompalette.core.coreapi.graph.Relationship;
 import org.nuberjonas.pompalette.core.coreapi.graph.RelationshipFactory;
-import org.nuberjonas.pompalette.core.coreapi.graph.exceptions.EntityAlreadyExistsException;
-import org.nuberjonas.pompalette.core.coreapi.graph.exceptions.EntityNotFoundException;
-import org.nuberjonas.pompalette.core.coreapi.graph.exceptions.RelationshipAlreadyExistsException;
-import org.nuberjonas.pompalette.core.coreapi.graph.exceptions.RelationshipNotFoundException;
+import org.nuberjonas.pompalette.core.coreapi.graph.exceptions.*;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -314,14 +310,23 @@ class DirectedGraphTest extends BaseTest {
     }
 
     @Test
-    void removeAllEntities_ShouldThrowEntityNotFoundException_ForEntityNotInGraph(){
+    void removeAllEntities_ShouldThrowNotAllEntitiesRemovedException_ForEntityNotInGraph(){
         var firstEntity = createBasicEntity("first");
         var secondEntity = createBasicEntity("second");
         graph.addEntity(firstEntity);
 
-        assertThatThrownBy(() -> graph.removeAllEntities(List.of(firstEntity, secondEntity)))
+        var exception = catchThrowable(() -> graph.removeAllEntities(List.of(firstEntity, secondEntity)));
+
+        assertThat(exception)
+                .isInstanceOf(NotAllEntitiesRemovedException.class)
+                .hasMessageContaining("Not all entities could be removed");
+
+        var enclosedExceptions = ((NotAllEntitiesRemovedException) exception).getExceptions();
+
+        assertThat(enclosedExceptions).hasSize(1);
+        assertThat(enclosedExceptions.getFirst())
                 .isInstanceOf(EntityNotFoundException.class)
-                .hasMessage("The entity 'second' was not found");
+                .hasMessageContaining("The entity 'second' was not found");
     }
 
     @Test

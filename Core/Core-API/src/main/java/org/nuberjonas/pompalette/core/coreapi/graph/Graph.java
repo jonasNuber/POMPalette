@@ -1,9 +1,6 @@
 package org.nuberjonas.pompalette.core.coreapi.graph;
 
-import org.nuberjonas.pompalette.core.coreapi.graph.exceptions.EntityAlreadyExistsException;
-import org.nuberjonas.pompalette.core.coreapi.graph.exceptions.EntityNotFoundException;
-import org.nuberjonas.pompalette.core.coreapi.graph.exceptions.RelationshipAlreadyExistsException;
-import org.nuberjonas.pompalette.core.coreapi.graph.exceptions.RelationshipNotFoundException;
+import org.nuberjonas.pompalette.core.coreapi.graph.exceptions.*;
 
 import java.util.Collection;
 import java.util.Set;
@@ -17,7 +14,7 @@ public interface Graph<E extends Entity<D, U>, R extends Relationship<D, U>, D, 
     E getRelationshipDestinationOf(R relationship) throws EntityNotFoundException, RelationshipNotFoundException;
     boolean removeEntity(E entity) throws EntityNotFoundException;
     E removeEntity(D entityData) throws EntityNotFoundException;
-    boolean removeAllEntities(Collection<E> entities) throws EntityNotFoundException;
+    boolean removeAllEntities(Collection<E> entities) throws NotAllEntitiesRemovedException;
     R addRelationship(E source, E destination, U relationshipData) throws RelationshipAlreadyExistsException, EntityNotFoundException;
     R addRelationship(D sourceData, D destinationData, U relationshipData) throws RelationshipAlreadyExistsException, EntityNotFoundException;
     Set<R> getRelationships();
