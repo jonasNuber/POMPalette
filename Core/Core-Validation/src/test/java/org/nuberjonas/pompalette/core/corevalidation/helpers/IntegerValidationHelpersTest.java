@@ -1,11 +1,9 @@
 package org.nuberjonas.pompalette.core.corevalidation.helpers;
 
 import org.junit.jupiter.api.Test;
-import org.nuberjonas.pompalette.core.corevalidation.base.Validation;
+import org.nuberjonas.pompalette.core.corevalidation.BaseTest;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-class IntegerValidationHelpersTest {
+class IntegerValidationHelpersTest extends BaseTest {
 
     @Test
     void sameAmount_ShouldReturnValidResult_ForSameAmount() {
@@ -137,13 +135,5 @@ class IntegerValidationHelpersTest {
         var validation = IntegerValidationHelpers.inBetween(min, max);
 
         assertInvalid(validation, max + 1);
-    }
-
-    private void assertValid(Validation<Integer> validation, int value) {
-        assertThat(validation.test(value).isValid()).isTrue();
-    }
-
-    private void assertInvalid(Validation<Integer> validation, int value) {
-        assertThat(validation.test(value).isInvalid()).isTrue();
     }
 }

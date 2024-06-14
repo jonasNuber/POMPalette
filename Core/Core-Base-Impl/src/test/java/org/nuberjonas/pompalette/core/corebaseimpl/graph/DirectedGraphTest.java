@@ -10,7 +10,8 @@ import org.nuberjonas.pompalette.core.coreapi.graph.exceptions.*;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -42,7 +43,9 @@ class DirectedGraphTest extends BaseTest {
         var entity = createBasicEntity("data");
         graph.addEntity(entity);
 
-        assertThatThrownBy(() -> graph.addEntity(entity))
+        var thrown = catchThrowable(() -> graph.addEntity(entity));
+
+        assertThat(thrown)
                 .isInstanceOf(EntityAlreadyExistsException.class)
                 .hasMessage(String.format("The entity: '%s' already exists", entity));
     }
@@ -64,7 +67,9 @@ class DirectedGraphTest extends BaseTest {
         when(entityFactory.createEntity("data")).thenReturn(entity);
         graph.addEntity("data");
 
-        assertThatThrownBy(() -> graph.addEntity("data"))
+        var thrown = catchThrowable(() -> graph.addEntity("data"));
+
+        assertThat(thrown)
                 .isInstanceOf(EntityAlreadyExistsException.class)
                 .hasMessage(String.format("The entity: '%s' already exists", entity));
     }
@@ -81,7 +86,9 @@ class DirectedGraphTest extends BaseTest {
 
     @Test
     void getEntity_ShouldThrowEntityNotFoundException_ForNotExistingEntity(){
-        assertThatThrownBy(() -> graph.getEntity("data"))
+        var thrown = catchThrowable(() -> graph.getEntity("data"));
+
+        assertThat(thrown)
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("The entity 'data' was not found");
     }
@@ -124,7 +131,9 @@ class DirectedGraphTest extends BaseTest {
         var destination = createBasicEntity("destination");
         var relationship = createBasicRelationship(source, destination, "relationship");
 
-        assertThatThrownBy(() -> graph.getRelationshipSourceOf(relationship))
+        var thrown = catchThrowable(() -> graph.getRelationshipSourceOf(relationship));
+
+        assertThat(thrown)
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("The entity 'source' was not found");
     }
@@ -136,7 +145,9 @@ class DirectedGraphTest extends BaseTest {
         var relationship = createBasicRelationship(source, destination, "relationship");
         graph.addEntity(source);
 
-        assertThatThrownBy(() -> graph.getRelationshipSourceOf(relationship))
+        var thrown = catchThrowable(() -> graph.getRelationshipSourceOf(relationship));
+
+        assertThat(thrown)
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("The entity 'destination' was not found");
     }
@@ -149,7 +160,9 @@ class DirectedGraphTest extends BaseTest {
         graph.addEntity(source);
         graph.addEntity(destination);
 
-        assertThatThrownBy(() -> graph.getRelationshipSourceOf(relationship))
+        var thrown = catchThrowable(() -> graph.getRelationshipSourceOf(relationship));
+
+        assertThat(thrown)
                 .isInstanceOf(RelationshipNotFoundException.class)
                 .hasMessage("Relationship 'BasicRelationship[source=source, destination=destination, data=relationship]' from entity 'source' to entity 'destination' was not found");
     }
@@ -175,7 +188,9 @@ class DirectedGraphTest extends BaseTest {
         var destination = createBasicEntity("destination");
         var relationship = createBasicRelationship(source, destination, "relationship");
 
-        assertThatThrownBy(() -> graph.getRelationshipDestinationOf(relationship))
+        var thrown = catchThrowable(() -> graph.getRelationshipDestinationOf(relationship));
+
+        assertThat(thrown)
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("The entity 'source' was not found");
     }
@@ -187,7 +202,9 @@ class DirectedGraphTest extends BaseTest {
         var relationship = createBasicRelationship(source, destination, "relationship");
         graph.addEntity(source);
 
-        assertThatThrownBy(() -> graph.getRelationshipDestinationOf(relationship))
+        var thrown = catchThrowable(() -> graph.getRelationshipDestinationOf(relationship));
+
+        assertThat(thrown)
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("The entity 'destination' was not found");
     }
@@ -200,7 +217,9 @@ class DirectedGraphTest extends BaseTest {
         graph.addEntity(source);
         graph.addEntity(destination);
 
-        assertThatThrownBy(() -> graph.getRelationshipDestinationOf(relationship))
+        var thrown = catchThrowable(() -> graph.getRelationshipDestinationOf(relationship));
+
+        assertThat(thrown)
                 .isInstanceOf(RelationshipNotFoundException.class)
                 .hasMessage("Relationship 'BasicRelationship[source=source, destination=destination, data=relationship]' from entity 'source' to entity 'destination' was not found");
     }
@@ -227,7 +246,6 @@ class DirectedGraphTest extends BaseTest {
         when(relationshipFactory.createRelationship(entity, someDestination, "relationship")).thenReturn(entityToSomeDestination);
         when(relationshipFactory.createRelationship(someDestination, entity, "relationship")).thenReturn(someDestinationToEntity);
         when(relationshipFactory.createRelationship(someDestination, someOtherDestination, "relationship")).thenReturn(someDestinationToSomeOtherDestination);
-
         graph.addEntity(entity);
         graph.addEntity(someDestination);
         graph.addEntity(someOtherDestination);
@@ -245,7 +263,9 @@ class DirectedGraphTest extends BaseTest {
     void removeEntity_ShouldThrowEntityNotFoundException_ForEntityObject(){
         var entity = createBasicEntity("entity");
 
-        assertThatThrownBy(() -> graph.removeEntity(entity))
+        var thrown = catchThrowable(() -> graph.removeEntity(entity));
+
+        assertThat(thrown)
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("The entity 'entity' was not found");
     }
@@ -272,7 +292,6 @@ class DirectedGraphTest extends BaseTest {
         when(relationshipFactory.createRelationship(entity, someDestination, "relationship")).thenReturn(entityToSomeDestination);
         when(relationshipFactory.createRelationship(someDestination, entity, "relationship")).thenReturn(someDestinationToEntity);
         when(relationshipFactory.createRelationship(someDestination, someOtherDestination, "relationship")).thenReturn(someDestinationToSomeOtherDestination);
-
         graph.addEntity(entity);
         graph.addEntity(someDestination);
         graph.addEntity(someOtherDestination);
@@ -288,7 +307,9 @@ class DirectedGraphTest extends BaseTest {
 
     @Test
     void removeEntity_ShouldThrowEntityNotFoundException_ForEntityData(){
-        assertThatThrownBy(() -> graph.removeEntity("entity"))
+        var thrown = catchThrowable(() -> graph.removeEntity("entity"));
+
+        assertThat(thrown)
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("The entity 'entity' was not found");
     }
@@ -315,14 +336,12 @@ class DirectedGraphTest extends BaseTest {
         var secondEntity = createBasicEntity("second");
         graph.addEntity(firstEntity);
 
-        var exception = catchThrowable(() -> graph.removeAllEntities(List.of(firstEntity, secondEntity)));
+        var thrown = catchThrowable(() -> graph.removeAllEntities(List.of(firstEntity, secondEntity)));
+        var enclosedExceptions = ((NotAllEntitiesRemovedException) thrown).getExceptions();
 
-        assertThat(exception)
+        assertThat(thrown)
                 .isInstanceOf(NotAllEntitiesRemovedException.class)
                 .hasMessageContaining("Not all entities could be removed");
-
-        var enclosedExceptions = ((NotAllEntitiesRemovedException) exception).getExceptions();
-
         assertThat(enclosedExceptions).hasSize(1);
         assertThat(enclosedExceptions.getFirst())
                 .isInstanceOf(EntityNotFoundException.class)
@@ -349,7 +368,9 @@ class DirectedGraphTest extends BaseTest {
         var source = createBasicEntity("source");
         var destination = createBasicEntity("destination");
 
-        assertThatThrownBy(() -> graph.addRelationship(source, destination, "relationship"))
+        var thrown = catchThrowable(() -> graph.addRelationship(source, destination, "relationship"));
+
+        assertThat(thrown)
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("The entity 'source' was not found");
     }
@@ -360,7 +381,9 @@ class DirectedGraphTest extends BaseTest {
         var destination = createBasicEntity("destination");
         graph.addEntity(source);
 
-        assertThatThrownBy(() -> graph.addRelationship(source, destination, "relationship"))
+        var thrown = catchThrowable(() -> graph.addRelationship(source, destination, "relationship"));
+
+        assertThat(thrown)
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("The entity 'destination' was not found");
     }
@@ -373,10 +396,11 @@ class DirectedGraphTest extends BaseTest {
         when(relationshipFactory.createRelationship(source, destination, "relationship")).thenReturn(expectedRelationship);
         graph.addEntity(source);
         graph.addEntity(destination);
-
         graph.addRelationship(source, destination, "relationship");
 
-        assertThatThrownBy(() -> graph.addRelationship(source, destination, "relationship"))
+        var thrown = catchThrowable(() -> graph.addRelationship(source, destination, "relationship"));
+
+        assertThat(thrown)
                 .isInstanceOf(RelationshipAlreadyExistsException.class)
                 .hasMessage("Relationship: 'relationship' from entity 'source' to entity 'destination' already exists");
     }
@@ -400,7 +424,9 @@ class DirectedGraphTest extends BaseTest {
 
     @Test
     void addRelationship_ShouldThrowEntityNotFoundException_ForSourceEntityDataNotInGraph(){
-        assertThatThrownBy(() -> graph.addRelationship("source", "destination", "relationship"))
+        var thrown = catchThrowable(() -> graph.addRelationship("source", "destination", "relationship"));
+
+        assertThat(thrown)
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("The entity 'source' was not found");
     }
@@ -411,7 +437,9 @@ class DirectedGraphTest extends BaseTest {
         when(entityFactory.createEntity("source")).thenReturn(source);
         graph.addEntity(source);
 
-        assertThatThrownBy(() -> graph.addRelationship("source", "destination", "relationship"))
+        var thrown = catchThrowable(() -> graph.addRelationship("source", "destination", "relationship"));
+
+        assertThat(thrown)
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("The entity 'destination' was not found");
     }
@@ -426,10 +454,11 @@ class DirectedGraphTest extends BaseTest {
         when(entityFactory.createEntity("destination")).thenReturn(destination);
         graph.addEntity(source);
         graph.addEntity(destination);
-
         graph.addRelationship("source", "destination", "relationship");
 
-        assertThatThrownBy(() -> graph.addRelationship("source", "destination", "relationship"))
+        var thrown = catchThrowable(() -> graph.addRelationship("source", "destination", "relationship"));
+
+        assertThat(thrown)
                 .isInstanceOf(RelationshipAlreadyExistsException.class)
                 .hasMessage("Relationship: 'relationship' from entity 'source' to entity 'destination' already exists");
     }
@@ -445,10 +474,10 @@ class DirectedGraphTest extends BaseTest {
         when(relationshipFactory.createRelationship(entity, someDestination, "relationship")).thenReturn(entityToSomeDestination);
         when(relationshipFactory.createRelationship(someDestination, entity, "relationship")).thenReturn(someDestinationToEntity);
         when(relationshipFactory.createRelationship(someDestination, someOtherDestination, "relationship")).thenReturn(someDestinationToSomeOtherDestination);
-
         graph.addEntity(entity);
         graph.addEntity(someDestination);
         graph.addEntity(someOtherDestination);
+
         graph.addRelationship(entity, someDestination, "relationship");
         graph.addRelationship(someDestination, entity, "relationship");
         graph.addRelationship(someDestination, someOtherDestination, "relationship");
@@ -498,7 +527,9 @@ class DirectedGraphTest extends BaseTest {
     void getRelationshipsOf_ShouldThrowEntityNotFoundException_ForNotFoundEntityObject(){
         var entity = createBasicEntity("entity");
 
-        assertThatThrownBy(() -> graph.getRelationshipsOf(entity))
+        var thrown = catchThrowable(() -> graph.getRelationshipsOf(entity));
+
+        assertThat(thrown)
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("The entity 'entity' was not found");
     }
@@ -538,7 +569,9 @@ class DirectedGraphTest extends BaseTest {
 
     @Test
     void getRelationshipsOf_ShouldThrowEntityNotFoundException_ForNotFoundEntityData(){
-        assertThatThrownBy(() -> graph.getRelationshipsOf("entity"))
+        var thrown = catchThrowable(() -> graph.getRelationshipsOf("entity"));
+
+        assertThat(thrown)
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("The entity 'entity' was not found");
     }
@@ -583,7 +616,9 @@ class DirectedGraphTest extends BaseTest {
         var source = createBasicEntity("source");
         var destination = createBasicEntity("destination");
 
-        assertThatThrownBy(() -> graph.getRelationshipsBetween(source, destination))
+        var thrown = catchThrowable(() -> graph.getRelationshipsBetween(source, destination));
+
+        assertThat(thrown)
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("The entity 'source' was not found");
     }
@@ -594,7 +629,9 @@ class DirectedGraphTest extends BaseTest {
         var destination = createBasicEntity("destination");
         graph.addEntity(source);
 
-        assertThatThrownBy(() -> graph.getRelationshipsBetween(source, destination))
+        var thrown = catchThrowable(() -> graph.getRelationshipsBetween(source, destination));
+
+        assertThat(thrown)
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("The entity 'destination' was not found");
     }
@@ -636,7 +673,9 @@ class DirectedGraphTest extends BaseTest {
 
     @Test
     void getRelationshipsBetween_ShouldThrowEntityNotFoundException_ForSourceEntityDataNotFound(){
-        assertThatThrownBy(() -> graph.getRelationshipsBetween("source", "destination"))
+        var thrown = catchThrowable(() -> graph.getRelationshipsBetween("source", "destination"));
+
+        assertThat(thrown)
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("The entity 'source' was not found");
     }
@@ -646,7 +685,9 @@ class DirectedGraphTest extends BaseTest {
         var source = createBasicEntity("source");
         graph.addEntity(source);
 
-        assertThatThrownBy(() -> graph.getRelationshipsBetween("source", "destination"))
+        var thrown = catchThrowable(() -> graph.getRelationshipsBetween("source", "destination"));
+
+        assertThat(thrown)
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("The entity 'destination' was not found");
     }
@@ -683,7 +724,9 @@ class DirectedGraphTest extends BaseTest {
     void getIncomingRelationshipsOf_ShouldThrowEntityNotFoundException_ForNotFoundEntityObject(){
         var source = createBasicEntity("source");
 
-        assertThatThrownBy(() -> graph.getIncomingRelationshipsOf(source))
+        var thrown = catchThrowable(() -> graph.getIncomingRelationshipsOf(source));
+
+        assertThat(thrown)
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("The entity 'source' was not found");
     }
@@ -718,7 +761,9 @@ class DirectedGraphTest extends BaseTest {
 
     @Test
     void getIncomingRelationshipsOf_ShouldThrowEntityNotFoundException_ForNotFoundEntityData(){
-        assertThatThrownBy(() -> graph.getIncomingRelationshipsOf("source"))
+        var thrown = catchThrowable(() -> graph.getIncomingRelationshipsOf("source"));
+
+        assertThat(thrown)
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("The entity 'source' was not found");
     }
@@ -755,7 +800,9 @@ class DirectedGraphTest extends BaseTest {
     void getOutgoingRelationshipsOf_ShouldThrowEntityNotFoundException_ForNotFoundEntityObject(){
         var source = createBasicEntity("source");
 
-        assertThatThrownBy(() -> graph.getOutgoingRelationshipsOf(source))
+        var thrown = catchThrowable(() -> graph.getOutgoingRelationshipsOf(source));
+
+        assertThat(thrown)
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("The entity 'source' was not found");
     }
@@ -790,7 +837,9 @@ class DirectedGraphTest extends BaseTest {
 
     @Test
     void getOutgoingRelationshipsOf_ShouldThrowEntityNotFoundException_ForNotFoundEntitiesData(){
-        assertThatThrownBy(() -> graph.getOutgoingRelationshipsOf("source"))
+        var thrown = catchThrowable(() -> graph.getOutgoingRelationshipsOf("source"));
+
+        assertThat(thrown)
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("The entity 'source' was not found");
     }
@@ -822,7 +871,9 @@ class DirectedGraphTest extends BaseTest {
         graph.addEntity(destination);
         assertThat(graph.getRelationships()).isEmpty();
 
-        assertThatThrownBy(() -> graph.removeRelationship(relationship))
+        var thrown = catchThrowable(() -> graph.removeRelationship(relationship));
+
+        assertThat(thrown)
                 .isInstanceOf(RelationshipNotFoundException.class)
                 .hasMessage("Relationship '"+ relationship.toString() +"' from entity 'source' to entity 'destination' was not found");
     }
@@ -833,7 +884,9 @@ class DirectedGraphTest extends BaseTest {
         var destination = createBasicEntity("destination");
         var relationship = createBasicRelationship(source, destination, "relationship");
 
-        assertThatThrownBy(() -> graph.removeRelationship(relationship))
+        var thrown = catchThrowable(() -> graph.removeRelationship(relationship));
+
+        assertThat(thrown)
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("The entity 'source' was not found");
     }
@@ -845,7 +898,9 @@ class DirectedGraphTest extends BaseTest {
         var relationship = createBasicRelationship(source, destination, "relationship");
         graph.addEntity(source);
 
-        assertThatThrownBy(() -> graph.removeRelationship(relationship))
+        var thrown = catchThrowable(() -> graph.removeRelationship(relationship));
+
+        assertThat(thrown)
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("The entity 'destination' was not found");
     }
@@ -883,7 +938,9 @@ class DirectedGraphTest extends BaseTest {
         var firstRelationship = createBasicRelationship(source, destination, "firstRelationship");
         var secondRelationship = createBasicRelationship(source, otherDestination, "secondRelationship");
 
-        assertThatThrownBy(() -> graph.removeAllRelationships(List.of(firstRelationship, secondRelationship)))
+        var thrown = catchThrowable(() -> graph.removeAllRelationships(List.of(firstRelationship, secondRelationship)));
+
+        assertThat(thrown)
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("The entity 'source' was not found");
     }
@@ -897,7 +954,9 @@ class DirectedGraphTest extends BaseTest {
         var secondRelationship = createBasicRelationship(source, otherDestination, "secondRelationship");
         graph.addEntity(source);
 
-        assertThatThrownBy(() -> graph.removeAllRelationships(List.of(firstRelationship, secondRelationship)))
+        var thrown = catchThrowable(() -> graph.removeAllRelationships(List.of(firstRelationship, secondRelationship)));
+
+        assertThat(thrown)
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessage("The entity 'destination' was not found");
     }
@@ -910,7 +969,9 @@ class DirectedGraphTest extends BaseTest {
         graph.addEntity(source);
         graph.addEntity(destination);
 
-        assertThatThrownBy(() -> graph.removeAllRelationships(List.of(firstRelationship)))
+        var thrown = catchThrowable(() -> graph.removeAllRelationships(List.of(firstRelationship)));
+
+        assertThat(thrown)
                 .isInstanceOf(RelationshipNotFoundException.class)
                 .hasMessage("Relationship '"+ firstRelationship.toString() +"' from entity 'source' to entity 'destination' was not found");
     }

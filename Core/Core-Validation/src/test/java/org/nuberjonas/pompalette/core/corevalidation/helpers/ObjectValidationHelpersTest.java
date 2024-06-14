@@ -1,11 +1,9 @@
 package org.nuberjonas.pompalette.core.corevalidation.helpers;
 
 import org.junit.jupiter.api.Test;
-import org.nuberjonas.pompalette.core.corevalidation.base.Validation;
+import org.nuberjonas.pompalette.core.corevalidation.BaseTest;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-class ObjectValidationHelpersTest {
+class ObjectValidationHelpersTest extends BaseTest {
 
     @Test
     void notNull_ShouldReturnValidResult_ForNotNullObject() {
@@ -37,13 +35,5 @@ class ObjectValidationHelpersTest {
         var validation = ObjectValidationHelpers.isEqualTo(testString);
 
         assertInvalid(validation, "different");
-    }
-
-    private <K> void assertValid(Validation<K> validation, K value) {
-        assertThat(validation.test(value).isValid()).isTrue();
-    }
-
-    private <K> void assertInvalid(Validation<K> validation, K value) {
-        assertThat(validation.test(value).isInvalid()).isTrue();
     }
 }

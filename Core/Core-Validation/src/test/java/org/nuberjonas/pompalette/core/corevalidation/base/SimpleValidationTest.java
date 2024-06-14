@@ -2,10 +2,9 @@ package org.nuberjonas.pompalette.core.corevalidation.base;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.nuberjonas.pompalette.core.corevalidation.BaseTest;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-class SimpleValidationTest {
+class SimpleValidationTest extends BaseTest {
 
     private static SimpleValidation<Integer> validation;
 
@@ -15,16 +14,20 @@ class SimpleValidationTest {
     }
 
     @Test
-    void test_ShouldReturnValidResultForValidInput() {
+    void test_ShouldReturnValidResult_ForValidInput() {
         var result = validation.test(2);
 
-        assertThat(result.isValid()).isTrue();
+        var isValid = result.isValid();
+
+        assertValid(isValid);
     }
 
     @Test
-    void test_ShouldReturnInvalidResultForInvalidInput() {
+    void test_ShouldReturnInvalidResult_ForInvalidInput() {
         var result = validation.test(3);
 
-        assertThat(result.isValid()).isFalse();
+        var isInvalid = result.isInvalid();
+
+        assertInvalid(isInvalid);
     }
 }

@@ -1,6 +1,5 @@
 package org.nuberjonas.pompalette.core.corebaseimpl.graph;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -10,8 +9,8 @@ class BasicEntityTest extends BaseTest{
     @Test
     void new_ShouldHaveDataAndNoRelationships(){
         var expected = "data";
-
         var entity = createBasicEntity(expected);
+
         var actual = entity.getData();
 
         assertThat(actual).isEqualTo(expected);
@@ -40,7 +39,7 @@ class BasicEntityTest extends BaseTest{
         var relationshipNotAddedAgain = !sourceEntity.addRelationship(expected);
 
         assertThat(relationshipsAdded).isTrue();
-        Assertions.assertThat(relationshipNotAddedAgain).isTrue();
+        assertThat(relationshipNotAddedAgain).isTrue();
         assertThat(sourceEntity.getRelationships()).containsExactly(expected);
     }
 

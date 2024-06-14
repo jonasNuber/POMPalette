@@ -3,9 +3,7 @@ package org.nuberjonas.pompalette.core.corevalidation;
 import org.junit.jupiter.api.Test;
 import org.nuberjonas.pompalette.core.corevalidation.base.Validation;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-class ValidatorTest {
+class ValidatorTest extends BaseTest {
 
     private final Validator<Object> validator = toValidate -> {
         // No validation logic needed for this test
@@ -341,13 +339,5 @@ class ValidatorTest {
         var validation = validator.inBetween(min, max);
 
         assertInvalid(validation, max + 1);
-    }
-
-    private <K> void assertValid(Validation<K> validation, K value) {
-        assertThat(validation.test(value).isValid()).isTrue();
-    }
-
-    private <K> void assertInvalid(Validation<K> validation, K value) {
-        assertThat(validation.test(value).isInvalid()).isTrue();
     }
 }

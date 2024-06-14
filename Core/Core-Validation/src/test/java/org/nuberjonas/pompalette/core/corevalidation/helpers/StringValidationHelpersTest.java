@@ -1,11 +1,9 @@
 package org.nuberjonas.pompalette.core.corevalidation.helpers;
 
 import org.junit.jupiter.api.Test;
-import org.nuberjonas.pompalette.core.corevalidation.base.Validation;
+import org.nuberjonas.pompalette.core.corevalidation.BaseTest;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-class StringValidationHelpersTest {
+class StringValidationHelpersTest extends BaseTest {
 
     @Test
     void exactly_ShouldReturnValidResult_ForStringOfExactLength() {
@@ -173,13 +171,5 @@ class StringValidationHelpersTest {
         var validation = StringValidationHelpers.containsIgnoreCase(str);
 
         assertInvalid(validation, "this is a tes");
-    }
-
-    private void assertValid(Validation<String> validation, String value) {
-        assertThat(validation.test(value).isValid()).isTrue();
-    }
-
-    private void assertInvalid(Validation<String> validation, String value) {
-        assertThat(validation.test(value).isInvalid()).isTrue();
     }
 }

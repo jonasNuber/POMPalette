@@ -2,10 +2,9 @@ package org.nuberjonas.pompalette.core.corevalidation.base;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.nuberjonas.pompalette.core.corevalidation.BaseTest;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-class ValidationTest {
+class ValidationTest extends BaseTest {
 
     private static Validation<Object> valid;
     private static Validation<Object> inValid;
@@ -17,48 +16,62 @@ class ValidationTest {
     }
 
     @Test
-    void and_ShouldBeTrueForTwoValidValidation() {
+    void and_ShouldBeTrue_ForTwoValidValidation() {
         var result = valid.and(valid).test(null);
 
-        assertThat(result.isValid()).isTrue();
+        var isValid = result.isValid();
+
+        assertValid(isValid);
     }
 
     @Test
-    void and_ShouldBeInvalidForTwoInvalidValidations() {
+    void and_ShouldBeInvalid_ForTwoInvalidValidations() {
         var result = inValid.and(inValid).test(null);
 
-        assertThat(result.isValid()).isFalse();
+        var isInvalid = result.isInvalid();
+
+        assertInvalid(isInvalid);
     }
 
     @Test
-    void and_ShouldBeInvalidForOneValidAndOneInvalidValidation() {
+    void and_ShouldBeInvalid_ForOneValidAndOneInvalidValidation() {
         var resultValidInvalid = valid.and(inValid).test(null);
         var resultInvalidValid = inValid.and(valid).test(null);
 
-        assertThat(resultValidInvalid.isValid()).isFalse();
-        assertThat(resultInvalidValid.isValid()).isFalse();
+        var validInvalid_isInvalid = resultValidInvalid.isInvalid();
+        var invalidValid_isInvalid = resultInvalidValid.isInvalid();
+
+        assertValid(validInvalid_isInvalid);
+        assertValid(invalidValid_isInvalid);
     }
 
     @Test
-    void or_ShouldBeValidForTwoValidValidations() {
+    void or_ShouldBeValid_ForTwoValidValidations() {
         var result = valid.or(valid).test(null);
 
-        assertThat(result.isValid()).isTrue();
+        var isValid = result.isValid();
+
+        assertValid(isValid);
     }
 
     @Test
-    void or_ShouldBeInvalidForTwoInvalidValidations() {
+    void or_ShouldBeInvalid_ForTwoInvalidValidations() {
         var result = inValid.or(inValid).test(null);
 
-        assertThat(result.isValid()).isFalse();
+        var isInvalid = result.isInvalid();
+
+        assertInvalid(isInvalid);
     }
 
     @Test
-    void or_ShouldBeValidForOneInvalidAndOneValidValidation() {
+    void or_ShouldBeValid_ForOneInvalidAndOneValidValidation() {
         var resultInvalidValid = inValid.or(valid).test(null);
         var resultValidInvalid = valid.or(inValid).test(null);
 
-        assertThat(resultInvalidValid.isValid()).isTrue();
-        assertThat(resultValidInvalid.isValid()).isTrue();
+        var invalidValid_isValid = resultInvalidValid.isValid();
+        var validInvalid_isValid = resultValidInvalid.isValid();
+
+        assertValid(invalidValid_isValid);
+        assertValid(validInvalid_isValid);
     }
 }

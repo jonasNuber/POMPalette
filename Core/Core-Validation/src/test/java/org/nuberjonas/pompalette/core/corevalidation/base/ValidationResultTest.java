@@ -1,18 +1,23 @@
 package org.nuberjonas.pompalette.core.corevalidation.base;
 
 import org.junit.jupiter.api.Test;
+import org.nuberjonas.pompalette.core.corevalidation.BaseTest;
 import org.nuberjonas.pompalette.core.corevalidation.exceptions.InvalidAttributeValueException;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 
-class ValidationResultTest {
+class ValidationResultTest extends BaseTest {
 
     @Test
     void ok_ShouldReturnValidResult() {
         var result = ValidationResult.ok();
 
-        assertThat(result.isValid()).isTrue();
-        assertThat(result.isInvalid()).isFalse();
+        var isValid = result.isValid();
+        var isInvalid = result.isInvalid();
+
+        assertValid(isValid);
+        assertNotInvalid(isInvalid);
     }
 
     @Test
@@ -20,24 +25,30 @@ class ValidationResultTest {
         var errorMessage = "error message";
         var result = ValidationResult.fail(errorMessage);
 
-        assertThat(result.isValid()).isFalse();
-        assertThat(result.isInvalid()).isTrue();
+        var isValid = result.isValid();
+        var isInvalid = result.isInvalid();
+
+        assertNotValid(isValid);
+        assertInvalid(isInvalid);
     }
 
     @Test
-    void throwIfInvalid_ShouldNotThrowExceptionForValidResult() {
+    void throwIfInvalid_ShouldNotThrowException_ForValidResult() {
         var result = ValidationResult.ok();
 
-        assertThatCode(() -> result.throwIfInvalid("fieldName"))
-                .doesNotThrowAnyException();
+        ThrowingCallable executable = () -> result.throwIfInvalid("fieldName");
+
+        assertThatCode(executable).doesNotThrowAnyException();
     }
 
     @Test
-    void throwIfInvalid_ShouldThrowExceptionForInvalidResult() {
+    void throwIfInvalid_ShouldThrowException_ForInvalidResult() {
         var errorMessage = "is not valid";
         var result = ValidationResult.fail(errorMessage);
 
-        assertThatThrownBy(() -> result.throwIfInvalid("fieldName"))
+        var thrown = catchThrowable(() -> result.throwIfInvalid("fieldName"));
+
+        assertThat(thrown)
                 .isInstanceOf(InvalidAttributeValueException.class)
                 .hasMessage(String.format("The field: \"%s\" is invalid, because %s", "fieldName", errorMessage));
     }
