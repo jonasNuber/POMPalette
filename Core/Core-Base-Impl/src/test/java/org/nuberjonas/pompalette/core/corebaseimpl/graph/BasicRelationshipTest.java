@@ -20,7 +20,7 @@ class BasicRelationshipTest extends BaseTest{
     }
 
     @Test
-    void equals_ShouldBeEqualForRelationshipWithSameSourceAndDestinationAndData(){
+    void equals_ShouldBeEqual_ForRelationshipWithSameSourceAndDestinationAndData(){
         var firstSource = createBasicEntity("source");
         var firstDestination = createBasicEntity("destination");
         var secondSource = createBasicEntity("source");
@@ -33,7 +33,7 @@ class BasicRelationshipTest extends BaseTest{
     }
 
     @Test
-    void equals_ShouldNotBeEqualForDifferentData(){
+    void equals_ShouldNotBeEqual_ForDifferentData(){
         var firstSource = createBasicEntity("source");
         var firstDestination = createBasicEntity("destination");
         var secondSource = createBasicEntity("source");
@@ -46,7 +46,7 @@ class BasicRelationshipTest extends BaseTest{
     }
 
     @Test
-    void equals_ShouldNotBeEqualForDifferentSourceEntity(){
+    void equals_ShouldNotBeEqual_ForDifferentSourceEntity(){
         var firstSource = createBasicEntity("source");
         var firstDestination = createBasicEntity("destination");
         var secondSource = createBasicEntity("otherSource");
@@ -59,7 +59,7 @@ class BasicRelationshipTest extends BaseTest{
     }
 
     @Test
-    void equals_ShouldNotBeEqualForDifferentDestinationEntity(){
+    void equals_ShouldNotBeEqual_ForDifferentDestinationEntity(){
         var firstSource = createBasicEntity("source");
         var firstDestination = createBasicEntity("destination");
         var secondSource = createBasicEntity("source");

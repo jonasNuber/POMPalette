@@ -57,7 +57,7 @@ class BasicEntityTest extends BaseTest{
     }
 
     @Test
-    void removeRelationship_ShouldNotRemoveRelationshipForUnknown(){
+    void removeRelationship_ShouldNotRemoveRelationship_ForUnknown(){
         var sourceEntity = createBasicEntity("source");
         var destinationEntity = createBasicEntity("destination");
         var relationship = createBasicRelationship(sourceEntity, destinationEntity, "relationship");
@@ -71,23 +71,26 @@ class BasicEntityTest extends BaseTest{
     }
 
     @Test
-    void containsRelationship_ShouldReturnTrueWhenRelationshipExists(){
+    void containsRelationship_ShouldReturnTrue_WhenRelationshipExists(){
         var sourceEntity = createBasicEntity("source");
         var destinationEntity = createBasicEntity("destination");
         var relationship = createBasicRelationship(sourceEntity, destinationEntity, "relationship");
 
         sourceEntity.addRelationship(relationship);
+        var containsRelationship = sourceEntity.containsRelationship(relationship);
 
-        assertThat(sourceEntity.containsRelationship(relationship)).isTrue();
+        assertThat(containsRelationship).isTrue();
     }
 
     @Test
-    void containsRelationship_ShouldReturnFalseWhenRelationshipDoesNotExist(){
+    void containsRelationship_ShouldReturnFalse_WhenRelationshipDoesNotExist(){
         var sourceEntity = createBasicEntity("source");
         var destinationEntity = createBasicEntity("destination");
         var relationship = createBasicRelationship(sourceEntity, destinationEntity, "relationship");
 
-        assertThat(sourceEntity.containsRelationship(relationship)).isFalse();
+        var containsRelationship = sourceEntity.containsRelationship(relationship);
+
+        assertThat(containsRelationship).isFalse();
     }
 
     @Test

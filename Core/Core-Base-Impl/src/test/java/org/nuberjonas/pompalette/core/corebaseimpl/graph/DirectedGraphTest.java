@@ -39,7 +39,7 @@ class DirectedGraphTest extends BaseTest {
     }
 
     @Test
-    void addEntity_ShouldThrowEntityAlreadyExistsException_ForEntityWhichAlreadyExists(){
+    void addEntity_ShouldThrowEntityAlreadyExistsException_ForEntityObjectWhichAlreadyExists(){
         var entity = createBasicEntity("data");
         graph.addEntity(entity);
 
